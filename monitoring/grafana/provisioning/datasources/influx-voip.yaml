@@ -1,0 +1,16 @@
+# InfluxDB 2 — Flux (token via variable d’environnement du conteneur Grafana)
+apiVersion: 1
+datasources:
+  - name: InfluxDB-VoIP
+    uid: influx-voip
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    isDefault: true
+    jsonData:
+      version: Flux
+      organization: voip
+      defaultBucket: asterisk
+      tlsSkipVerify: false
+    secureJsonData:
+      token: ${INFLUX_ADMIN_TOKEN}

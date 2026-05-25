@@ -1,0 +1,4 @@
+# Numéros ou suffixes considérés VIP par phase3_intelligent_ivr.py (optionnel).
+# Exemples : extension interne, préfixe, numéro complet.
+1001
+1002

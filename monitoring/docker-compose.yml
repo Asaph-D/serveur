@@ -1,0 +1,67 @@
+# Stack observabilité Phase 3 — aligné architecture (InfluxDB + Grafana + Telegraf)
+# Telegraf en network_mode: host pour joindre AMI Asterisk sur 127.0.0.1:5038
+#
+# Démarrage : cd monitoring && docker compose up -d
+# Grafana : http://HOST:3000  (admin / voir .env)
+
+services:
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: voip-influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUX_ADMIN_USER:-admin}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUX_ADMIN_PASSWORD:?set INFLUX_ADMIN_PASSWORD in .env}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_ORG:-voip}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUX_BUCKET:-asterisk}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_ADMIN_TOKEN:?set INFLUX_ADMIN_TOKEN in .env}
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: voip-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_HTTP_PORT: "3000"
+      # Substitution par Grafana dans provisioning/datasources/*.yaml (secureJsonData.token)
+      INFLUX_ADMIN_TOKEN: ${INFLUX_ADMIN_TOKEN:?définir INFLUX_ADMIN_TOKEN dans monitoring/.env}
+    depends_on:
+      - influxdb
+
+  telegraf:
+    build:
+      context: ./telegraf
+      dockerfile: Dockerfile
+    image: voip-telegraf:1.33-ami
+    container_name: voip-telegraf
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/log/asterisk/full:/var/log/asterisk/full:ro
+      - /var/log/fail2ban.log:/var/log/fail2ban.log:ro
+    environment:
+      INFLUX_ORG: ${INFLUX_ORG:-voip}
+      INFLUX_BUCKET: ${INFLUX_BUCKET:-asterisk}
+      INFLUX_TOKEN: ${INFLUX_ADMIN_TOKEN}
+      AMI_USER: ${AMI_TELEGRAF_USER:-telegraf}
+      AMI_PASSWORD: ${AMI_TELEGRAF_PASSWORD:?set AMI_TELEGRAF_PASSWORD in .env}
+    depends_on:
+      - influxdb
+
+volumes:
+  influxdb_data:
+  grafana_data:

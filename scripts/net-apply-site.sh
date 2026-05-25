@@ -1,0 +1,130 @@
+#!/bin/bash
+# Applique le “profil site” : FreePBX localnets + UFW + mDNS (pbx.local).
+# Exécuter : sudo bash /home/asaph/Documents/serveur/scripts/net-apply-site.sh
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+CFG="$ROOT/network/site.env"
+
+[[ $(id -u) -eq 0 ]] || { echo "Root requis."; exit 1; }
+[[ -f "$CFG" ]] || { echo "Config introuvable: $CFG"; exit 1; }
+
+# shellcheck disable=SC1090
+source "$CFG"
+
+if [[ -z "${MGMT_CIDR:-}" || -z "${VOICE_CIDR:-}" ]]; then
+  echo "MGMT_CIDR et VOICE_CIDR doivent être définis dans $CFG" >&2
+  exit 1
+fi
+
+echo "=== 1) mDNS / hostname : ${PBX_MDNS_NAME}.local ==="
+if ! command -v avahi-daemon >/dev/null 2>&1; then
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y avahi-daemon
+fi
+if [[ -n "${PBX_MDNS_NAME:-}" ]]; then
+  hostnamectl set-hostname "${PBX_MDNS_NAME}"
+fi
+systemctl enable --now avahi-daemon
+
+echo "=== 2) FreePBX localnets (PJSIP) ==="
+export EXTRA_LAN_CIDRS
+php -r '
+include "/etc/freepbx.conf";
+$db = \FreePBX::Database();
+$mgmt = getenv("MGMT_CIDR");
+$voice = getenv("VOICE_CIDR");
+$lines = array_values(array_unique(array_filter([$mgmt, $voice])));
+$extra = trim((string) getenv("EXTRA_LAN_CIDRS"));
+if ($extra !== "") {
+  foreach (preg_split("/\s+/", $extra) as $c) {
+    if ($c !== "" && !in_array($c, $lines, true)) { $lines[] = $c; }
+  }
+}
+$val = implode("\n", $lines);
+$stmt = $db->prepare("UPDATE kvstore_Sipsettings SET val = :val WHERE `key` = \"localnets\"");
+$stmt->execute([":val" => $val]);
+echo "kvstore_Sipsettings.localnets mis à jour:\n$val\n";
+' >/dev/null
+
+echo "=== 3) UFW (SIP/RTP selon site.env) ==="
+ufw --force enable >/dev/null || true
+
+# Toujours autoriser depuis VLAN voix
+ufw allow from "${VOICE_CIDR}" to any port 5060 proto udp comment "PJSIP UDP VOICE" >/dev/null || true
+ufw allow from "${VOICE_CIDR}" to any port 5060 proto tcp comment "PJSIP TCP VOICE" >/dev/null || true
+ufw allow from "${VOICE_CIDR}" to any port 5061 proto tcp comment "PJSIP TLS VOICE" >/dev/null || true
+ufw allow from "${VOICE_CIDR}" to any port 5160 proto udp comment "PJSIP 5160 UDP VOICE" >/dev/null || true
+ufw allow from "${VOICE_CIDR}" to any port 5161 proto tcp comment "PJSIP 5161 TLS VOICE" >/dev/null || true
+ufw allow from "${VOICE_CIDR}" to any port 10000:20000 proto udp comment "RTP VOICE" >/dev/null || true
+
+if [[ "${WEBRTC_ENABLE:-no}" == "yes" ]]; then
+  WHP="${WEBRTC_HTTP_PORT:-8088}"
+  WWP="${WEBRTC_WSS_PORT:-8089}"
+  ufw allow from "${VOICE_CIDR}" to any port "${WHP}" proto tcp comment "Asterisk HTTP WebRTC VOICE" >/dev/null || true
+  ufw allow from "${VOICE_CIDR}" to any port "${WWP}" proto tcp comment "Asterisk WSS WebRTC VOICE" >/dev/null || true
+  ufw allow from "${MGMT_CIDR}" to any port "${WHP}" proto tcp comment "Asterisk HTTP WebRTC MGMT" >/dev/null || true
+  ufw allow from "${MGMT_CIDR}" to any port "${WWP}" proto tcp comment "Asterisk WSS WebRTC MGMT" >/dev/null || true
+  # RTP média WebRTC / softphones depuis les LAN listés dans EXTRA_LAN_CIDRS
+  if [[ -n "${EXTRA_LAN_CIDRS:-}" ]]; then
+    read -r -a _extra_lans <<< "${EXTRA_LAN_CIDRS}"
+    for c in "${_extra_lans[@]}"; do
+      [[ -z "${c}" ]] && continue
+      ufw allow from "${c}" to any port "${WHP}" proto tcp comment "Asterisk HTTP WebRTC EXTRA" >/dev/null || true
+      ufw allow from "${c}" to any port "${WWP}" proto tcp comment "Asterisk WSS WebRTC EXTRA" >/dev/null || true
+      ufw allow from "${c}" to any port 10000:20000 proto udp comment "RTP WebRTC/softphone EXTRA" >/dev/null || true
+    done
+  fi
+fi
+
+if [[ "${ALLOW_SIP_FROM_MGMT:-no}" == "yes" ]]; then
+  ufw allow from "${MGMT_CIDR}" to any port 5060 proto udp comment "PJSIP UDP MGMT" >/dev/null || true
+  ufw allow from "${MGMT_CIDR}" to any port 5060 proto tcp comment "PJSIP TCP MGMT" >/dev/null || true
+  ufw allow from "${MGMT_CIDR}" to any port 5160 proto udp comment "PJSIP 5160 UDP MGMT" >/dev/null || true
+fi
+
+if [[ "${ALLOW_TLS_FROM_MGMT:-no}" == "yes" ]]; then
+  ufw allow from "${MGMT_CIDR}" to any port 5061 proto tcp comment "PJSIP TLS MGMT" >/dev/null || true
+  ufw allow from "${MGMT_CIDR}" to any port 5161 proto tcp comment "PJSIP 5161 TLS MGMT" >/dev/null || true
+fi
+
+ufw reload >/dev/null
+
+echo "=== 4) Monitoring (Docker) ==="
+if [[ "${MONITORING_ALLOW_FROM_MGMT:-no}" == "yes" ]]; then
+  ufw allow from "${MGMT_CIDR}" to any port "${GRAFANA_PORT:-3000}" proto tcp comment "Grafana MGMT" >/dev/null || true
+  ufw allow from "${MGMT_CIDR}" to any port "${INFLUXDB_PORT:-8086}" proto tcp comment "InfluxDB MGMT" >/dev/null || true
+  ufw reload >/dev/null
+fi
+
+if [[ "${MONITORING_ENABLE:-no}" == "yes" ]]; then
+  if command -v docker >/dev/null 2>&1; then
+    (cd "$ROOT/monitoring" && docker compose up -d) >/dev/null
+  else
+    echo "Docker non trouvé : monitoring non démarré." >&2
+  fi
+fi
+
+echo "=== 5) Reload FreePBX / Asterisk ==="
+fwconsole reload >/dev/null
+
+echo "=== 6) Aide Windows (hosts) ==="
+# Windows ne résout pas toujours mDNS (.local) par défaut.
+# On génère une ligne prête à coller dans C:\Windows\System32\drivers\etc\hosts
+MGMT_IP="$(ip -4 -o addr show dev ens33 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | head -1 || true)"
+if [[ -n "${MGMT_IP}" && -n "${PBX_MDNS_NAME:-}" ]]; then
+  OUT="$ROOT/network/windows-hosts.txt"
+  {
+    echo "# Copier dans le fichier hosts Windows (en admin) :"
+    echo "#   C:\\Windows\\System32\\drivers\\etc\\hosts"
+    echo "# Mise à jour quand l’IP change de routeur."
+    echo "${MGMT_IP}  ${PBX_MDNS_NAME}.local  ${PBX_MDNS_NAME}"
+  } > "$OUT"
+  echo "Généré : $OUT"
+fi
+
+echo "OK."
+echo "- Nom à utiliser côté téléphones/softphones: ${PBX_MDNS_NAME}.local"
+echo "- Vérifier enregistrements: sudo asterisk -rx \"pjsip show contacts\""
+echo "- UFW: sudo ufw status numbered"
+

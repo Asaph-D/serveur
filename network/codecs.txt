@@ -1,0 +1,85 @@
+# Codecs / Audio — guide de connexion des postes (FreePBX / Asterisk)
+#
+# Objectif: éviter les erreurs SDP (488/603/503), garder une qualité correcte,
+# et assurer que chaque poste s’enregistre + appelle sans “surprise”.
+#
+# Contexte actuel (serveur):
+# - SIP: PJSIP sur 5060/UDP (et TLS 5061 si utilisé)
+# - RTP: 10000–20000/UDP
+# - SRTP: désactivé côté extensions (media_encryption=no) car SRTP côté Asterisk
+#   n’est pas disponible/chargé dans ton environnement actuel.
+#
+# ---------------------------------------------------------------------------
+# 1) Configuration RECOMMANDÉE côté téléphone / softphone (Zoiper/Linphone/etc.)
+# ---------------------------------------------------------------------------
+# **Serveur SIP**
+# - Utilise l’IP du serveur (recommandé, plus fiable que pbx.local):
+#   - LAN 192.168.171.0/24  → 192.168.171.61
+#   - LAN 192.168.137.0/24  → 192.168.137.225 (si c’est l’IP active)
+#   - VLAN voix 10.10.10.0/24 → 10.10.10.10
+# - Port: 5060
+# - Transport: UDP
+#
+# **Identifiant**
+# - Username/Auth ID: 100x
+# - Password: mot de passe PJSIP de l’extension
+# - SIP domain/realm: laisser vide ou mettre l’IP du serveur si requis
+#
+# **DTMF**
+# - DTMF: RFC4733 (aussi appelé RTP/AVP “telephone-event”)
+#
+# **Codecs (ordre de préférence)**
+# Active uniquement ces codecs (dans CET ordre si possible):
+# 1) G.722  (HD, interne LAN, top qualité/CPU ok)
+# 2) PCMU / G.711u / ulaw
+# 3) PCMA / G.711a / alaw
+#
+# Désactive (si présent) pour éviter les négociations bizarres:
+# - Opus (sauf si tu l’as explicitement activé côté serveur)
+# - GSM, iLBC, Speex, G.729 (souvent payant/non dispo)…
+#
+# **SRTP / chiffrement media**
+# - Désactiver SRTP (ou mettre “SRTP optional” OFF) tant que le serveur n’est pas prêt.
+#   Si SRTP est forcé côté poste alors que le serveur est en "no", tu verras:
+#   - 488 / 503 / "Couldn't add sdp streams"
+#
+# **rtcp-mux**
+# - Désactiver si option disponible (plus compatible). Sinon laisser par défaut.
+#
+# ---------------------------------------------------------------------------
+# 2) Configuration RECOMMANDÉE côté FreePBX (extensions PJSIP)
+# ---------------------------------------------------------------------------
+# Pour chaque extension 1001-1010:
+# - disallow=all
+# - allow=ulaw,alaw,g722   (ou ulaw&alaw&g722 selon stockage)
+# - dtmf_mode=rfc4733
+# - rtcp_mux=no
+# - direct_media=no
+# - rewrite_contact=yes / force_rport=yes / rtp_symmetric=yes (NAT-friendly)
+# - media_encryption=no
+# - media_encryption_optimistic=no
+#
+# ---------------------------------------------------------------------------
+# 3) Diagnostic rapide (si un nouveau poste ne marche pas)
+# ---------------------------------------------------------------------------
+# Sur le serveur:
+# - Voir si le poste s’enregistre:
+#   sudo asterisk -rx "pjsip show contacts"
+#
+# - Voir ses paramètres runtime:
+#   sudo asterisk -rx "pjsip show endpoint 100X" | egrep -i 'allow|media_encryption|direct_media|rtcp_mux|dtmf'
+#
+# - Si appels qui sonnent mais pas d’audio puis coupure ~35-40s:
+#   => RTP bloqué (pare-feu) ou routeur/NAT.
+#   Vérifier UFW:
+#   sudo ufw status verbose | grep -E '10000:20000/udp'
+#
+# - Si erreur SDP:
+#   "Couldn't add sdp streams" / 488 / 503
+#   => mismatch codec/SRTP/rtcp-mux.
+#
+# ---------------------------------------------------------------------------
+# 4) Commandes utiles (audit d’une extension en base FreePBX)
+# ---------------------------------------------------------------------------
+# Exemple: vérifier les champs clés (id=1003):
+sudo php -r 'include "/etc/freepbx.conf"; $db=\FreePBX::Database(); foreach($db->query("SELECT keyword,data FROM sip WHERE id=\"1003\" AND keyword IN (\"media_encryption\",\"media_encryption_optimistic\",\"rtcp_mux\",\"direct_media\",\"allow\",\"disallow\",\"dtmfmode\")") as $r){ echo $r[\"keyword\"].\"=\".$r[\"data\"].\"\\n\"; }' 2>&1

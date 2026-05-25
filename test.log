@@ -1,0 +1,736 @@
+[2026-03-29 08:39:31] Asterisk 20.18.2 built by root @ asaph-VMware-Virtual-Platform on a x86_64 running Linux on 2026-03-17 21:45:03 UTC
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-setrvol' tries to include nonexistent context 'dialparties-setrvol-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-finalbuild' tries to include nonexistent context 'dialparties-finalbuild-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-ringallv2' tries to include nonexistent context 'dialparties-ringallv2-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkblkvm' tries to include nonexistent context 'dialparties-checkblkvm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-builddshunt-shuffle' tries to include nonexistent context 'dialparties-builddshunt-shuffle-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-builddshunt' tries to include nonexistent context 'dialparties-builddshunt-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-firstnotonphone' tries to include nonexistent context 'dialparties-firstnotonphone-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-call-trace' tries to include nonexistent context 'dialparties-call-trace-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-getdialstring' tries to include nonexistent context 'dialparties-getdialstring-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkcfextension' tries to include nonexistent context 'dialparties-checkcfextension-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-mainloop' tries to include nonexistent context 'dialparties-mainloop-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-isextavail' tries to include nonexistent context 'dialparties-isextavail-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkdndextensions' tries to include nonexistent context 'dialparties-checkdndextensions-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkcfextensions' tries to include nonexistent context 'dialparties-checkcfextensions-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-callscreencheck' tries to include nonexistent context 'dialparties-callscreencheck-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-preringprep' tries to include nonexistent context 'dialparties-preringprep-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-setmodes' tries to include nonexistent context 'dialparties-setmodes-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-setheader' tries to include nonexistent context 'dialparties-setheader-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-alertinfo' tries to include nonexistent context 'dialparties-alertinfo-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-queuewait' tries to include nonexistent context 'dialparties-queuewait-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties' tries to include nonexistent context 'dialparties-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'func-apply-sipheaders' tries to include nonexistent context 'func-apply-sipheaders-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'func-set-sipheader' tries to include nonexistent context 'func-set-sipheader-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-dial-one' tries to include nonexistent context 'macro-dial-one-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-user-logoff' tries to include nonexistent context 'macro-user-logoff-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-user-logon' tries to include nonexistent context 'macro-user-logon-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-hangupcall' tries to include nonexistent context 'macro-hangupcall-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-check' tries to include nonexistent context 'macro-blkvm-check-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-clr' tries to include nonexistent context 'macro-blkvm-clr-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-set' tries to include nonexistent context 'macro-blkvm-set-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-setifempty' tries to include nonexistent context 'macro-blkvm-setifempty-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'originate-skipvm' tries to include nonexistent context 'originate-skipvm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-simple-dial' tries to include nonexistent context 'macro-simple-dial-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-exten-vm' tries to include nonexistent context 'macro-exten-vm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-vm' tries to include nonexistent context 'macro-vm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-block-cf' tries to include nonexistent context 'macro-block-cf-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-setmusic' tries to include nonexistent context 'macro-setmusic-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-dial-confirm' tries to include nonexistent context 'macro-dial-confirm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'from-dahdi' tries to include nonexistent context 'from-dahdi-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'from-zaptel' tries to include nonexistent context 'from-zaptel-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-outbound-callerid' tries to include nonexistent context 'macro-outbound-callerid-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-user-callerid' tries to include nonexistent context 'macro-user-callerid-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-privacy-mgr' tries to include nonexistent context 'macro-privacy-mgr-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'sub-send-obroute-email' tries to include nonexistent context 'sub-send-obroute-email-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'sub-pincheck' tries to include nonexistent context 'sub-pincheck-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-auto-blkvm' tries to include nonexistent context 'macro-auto-blkvm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-auto-confirm' tries to include nonexistent context 'macro-auto-confirm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-confirm' tries to include nonexistent context 'macro-confirm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'sub-presencestate-display' tries to include nonexistent context 'sub-presencestate-display-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'bad-number' tries to include nonexistent context 'bad-number-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'app-blackhole' tries to include nonexistent context 'app-blackhole-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-outisbusy' tries to include nonexistent context 'macro-outisbusy-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'outbound-allroutes' tries to include nonexistent context 'outbound-allroutes-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-prepend-cid' tries to include nonexistent context 'macro-prepend-cid-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'ext-did-catchall' tries to include nonexistent context 'ext-did-catchall-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'ext-did' tries to include nonexistent context 'ext-did-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'findmefollow-ringallv2' tries to include nonexistent context 'findmefollow-ringallv2-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'ext-local-confirm' tries to include nonexistent context 'ext-local-confirm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-dial' tries to include nonexistent context 'macro-dial-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'app-dialvm' tries to include nonexistent context 'app-dialvm-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'from-did-direct-ivr' tries to include nonexistent context 'from-did-direct-ivr-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'ext-local' tries to include nonexistent context 'ext-local-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'app-vmmain' tries to include nonexistent context 'app-vmmain-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'vm-callme' tries to include nonexistent context 'vm-callme-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'macro-systemrecording' tries to include nonexistent context 'macro-systemrecording-custom'
+[Mar 29 08:39:31] WARNING[20598] pbx.c: Context 'systemrecording-gui' tries to include nonexistent context 'systemrecording-gui-custom'
+[Mar 29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'extconfig' (Configuration)
+[Mar 29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'logger' (Logger)
+[2026-03-29 08:39:31] VERBOSE[20598] logger.c: Asterisk Queue Logger restarted
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_config_wizard.so' (PJSIP Config Wizard)
+[2026-03-29 08:39:31] NOTICE[20598] res_pjsip/config_transport.c: Transport '0.0.0.0-udp' is not fully reloadable, not reloading: protocol, bind, TLS (everything but certificate and private key if filename is unchanged), TCP, ToS, or CoS options.
+[2026-03-29 08:39:31] NOTICE[20598] res_pjsip/config_transport.c: Transport '0.0.0.0-tls' is not fully reloadable, not reloading: protocol, bind, TLS (everything but certificate and private key if filename is unchanged), TCP, ToS, or CoS options.
+[2026-03-29 08:39:31] NOTICE[20598] sorcery.c: Type 'system' is not reloadable, maintaining previous values
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_statsd.so' (StatsD client support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'cdr' (CDR Engine)
+[2026-03-29 08:39:31] NOTICE[20598] cdr.c: CDR logging disabled.
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'cel' (CEL Engine)
+[2026-03-29 08:39:31] VERBOSE[20598] cel.c: CEL logging disabled.
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'dnsmgr' (DNS Manager)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'dsp' (DSP)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'enum' (ENUM Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'features' (Call Features)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'http' (Built-in HTTP Server)
+[2026-03-29 08:39:31] VERBOSE[20598] tcptls.c: TLS/SSL certificate ok
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'indications' (Indication Tone Handling)
+[2026-03-29 08:39:31] NOTICE[20598] indications.c: Default country for indication tones: us
+[2026-03-29 08:39:31] NOTICE[20598] indications.c: Setting default indication country to 'us'
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'acl' (Named ACL system)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'manager' (Asterisk Manager Interface)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'plc' (PLC)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'udptl' (UDPTL)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjproject.so' (PJPROJECT Log and Utility Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip.so' (Basic SIP resource)
+[2026-03-29 08:39:31] NOTICE[10929] sorcery.c: Type 'system' is not reloadable, maintaining previous values
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_authenticator_digest.so' (PJSIP authentication resource)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_endpoint_identifier_ip.so' (PJSIP IP endpoint identifier)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_musiconhold.so' (Music On Hold Resource)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_aeap.so' (Asterisk External Application Protocol Module for Asterisk)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_crypto.so' (Cryptographic Digital Signatures)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_stun_monitor.so' (STUN Network Monitor)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_rtp_asterisk.so' (Asterisk RTP Stack)
+[2026-03-29 08:39:31] VERBOSE[20598] res_rtp_asterisk.c: RTP Allocating from port range 10000 -> 20000
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_websocket_client.so' (WebSocket Client Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_smdi.so' (Simplified Message Desk Interface (SMDI) Resource)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_outbound_publish.so' (PJSIP Outbound Publish Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_mwi.so' (PJSIP MWI resource)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_publish_asterisk.so' (PJSIP Asterisk Event PUBLISH Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'chan_iax2.so' (Inter Asterisk eXchange (Ver 2))
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'chan_websocket.so' (Websocket Media Channel)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_adsi.so' (ADSI Resource)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_fax.so' (Generic FAX Applications)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_hep.so' (HEPv3 API)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_outbound_registration.so' (PJSIP Outbound Registration Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_ari.so' (Asterisk RESTful Interface)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_pjsip_notify.so' (CLI/AMI PJSIP NOTIFY Support)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_calendar.so' (Asterisk Calendar integration)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_parking.so' (Call Parking Resource)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_confbridge.so' (Conference Bridge Application)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_agent_pool.so' (Call center agent pool applications)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'cdr_manager.so' (Asterisk Manager Interface CDR Backend)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'cel_manager.so' (Asterisk Manager Interface CEL Backend)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'cdr_csv.so' (Comma Separated Values CDR Backend)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_alarmreceiver.so' (Alarm Receiver for Asterisk)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'chan_unistim.so' (UNISTIM Protocol (USTM))
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_voicemail.so' (Comedian Mail (Voicemail System))
+[2026-03-29 08:39:31] VERBOSE[10973] chan_unistim.c: Reloading unistim.conf...
+[2026-03-29 08:39:31] WARNING[20598] app_voicemail.c: maxsilence should be less than minsecs or you may get empty messages
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_followme.so' (Find-Me/Follow-Me Application)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_playback.so' (Sound File Playback Application)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'pbx_ael.so' (Asterisk Extension Language Compiler)
+[2026-03-29 08:39:31] VERBOSE[20598] pbx_variables.c: Setting global variable 'CONSOLE-AEL' to '"Console/dsp"'
+[2026-03-29 08:39:31] VERBOSE[20598] pbx_variables.c: Setting global variable 'OUTBOUND-TRUNK' to '"Zap/g2"'
+[2026-03-29 08:39:31] VERBOSE[20598] pbx_variables.c: Setting global variable 'OUTBOUND-TRUNKMSD' to '1'
+[2026-03-29 08:39:31] VERBOSE[20598] pbx.c: Including switch 'DUNDi/e164' in context 'ael-dundi-e164-switch'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'systemrecording-gui' tries to include nonexistent context 'systemrecording-gui-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-systemrecording' tries to include nonexistent context 'macro-systemrecording-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'vm-callme' tries to include nonexistent context 'vm-callme-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'app-vmmain' tries to include nonexistent context 'app-vmmain-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'ext-local' tries to include nonexistent context 'ext-local-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-did-direct-ivr' tries to include nonexistent context 'from-did-direct-ivr-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'app-dialvm' tries to include nonexistent context 'app-dialvm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-dial' tries to include nonexistent context 'macro-dial-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'ext-local-confirm' tries to include nonexistent context 'ext-local-confirm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'findmefollow-ringallv2' tries to include nonexistent context 'findmefollow-ringallv2-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'ext-did' tries to include nonexistent context 'ext-did-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'ext-did-catchall' tries to include nonexistent context 'ext-did-catchall-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-prepend-cid' tries to include nonexistent context 'macro-prepend-cid-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'outbound-allroutes' tries to include nonexistent context 'outbound-allroutes-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-outisbusy' tries to include nonexistent context 'macro-outisbusy-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'app-blackhole' tries to include nonexistent context 'app-blackhole-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'bad-number' tries to include nonexistent context 'bad-number-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'sub-presencestate-display' tries to include nonexistent context 'sub-presencestate-display-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-confirm' tries to include nonexistent context 'macro-confirm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-auto-confirm' tries to include nonexistent context 'macro-auto-confirm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-auto-blkvm' tries to include nonexistent context 'macro-auto-blkvm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'sub-pincheck' tries to include nonexistent context 'sub-pincheck-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'sub-send-obroute-email' tries to include nonexistent context 'sub-send-obroute-email-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-privacy-mgr' tries to include nonexistent context 'macro-privacy-mgr-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-user-callerid' tries to include nonexistent context 'macro-user-callerid-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-outbound-callerid' tries to include nonexistent context 'macro-outbound-callerid-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-zaptel' tries to include nonexistent context 'from-zaptel-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-dahdi' tries to include nonexistent context 'from-dahdi-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-dial-confirm' tries to include nonexistent context 'macro-dial-confirm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-setmusic' tries to include nonexistent context 'macro-setmusic-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-block-cf' tries to include nonexistent context 'macro-block-cf-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-vm' tries to include nonexistent context 'macro-vm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-exten-vm' tries to include nonexistent context 'macro-exten-vm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-simple-dial' tries to include nonexistent context 'macro-simple-dial-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'originate-skipvm' tries to include nonexistent context 'originate-skipvm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-setifempty' tries to include nonexistent context 'macro-blkvm-setifempty-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-set' tries to include nonexistent context 'macro-blkvm-set-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-clr' tries to include nonexistent context 'macro-blkvm-clr-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-blkvm-check' tries to include nonexistent context 'macro-blkvm-check-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-hangupcall' tries to include nonexistent context 'macro-hangupcall-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-user-logon' tries to include nonexistent context 'macro-user-logon-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-user-logoff' tries to include nonexistent context 'macro-user-logoff-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'macro-dial-one' tries to include nonexistent context 'macro-dial-one-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'func-set-sipheader' tries to include nonexistent context 'func-set-sipheader-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'func-apply-sipheaders' tries to include nonexistent context 'func-apply-sipheaders-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties' tries to include nonexistent context 'dialparties-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-queuewait' tries to include nonexistent context 'dialparties-queuewait-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-alertinfo' tries to include nonexistent context 'dialparties-alertinfo-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-setheader' tries to include nonexistent context 'dialparties-setheader-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-setmodes' tries to include nonexistent context 'dialparties-setmodes-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-preringprep' tries to include nonexistent context 'dialparties-preringprep-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-callscreencheck' tries to include nonexistent context 'dialparties-callscreencheck-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkcfextensions' tries to include nonexistent context 'dialparties-checkcfextensions-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkdndextensions' tries to include nonexistent context 'dialparties-checkdndextensions-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-isextavail' tries to include nonexistent context 'dialparties-isextavail-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-mainloop' tries to include nonexistent context 'dialparties-mainloop-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkcfextension' tries to include nonexistent context 'dialparties-checkcfextension-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-getdialstring' tries to include nonexistent context 'dialparties-getdialstring-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-call-trace' tries to include nonexistent context 'dialparties-call-trace-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-firstnotonphone' tries to include nonexistent context 'dialparties-firstnotonphone-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-builddshunt' tries to include nonexistent context 'dialparties-builddshunt-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-builddshunt-shuffle' tries to include nonexistent context 'dialparties-builddshunt-shuffle-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-checkblkvm' tries to include nonexistent context 'dialparties-checkblkvm-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-ringallv2' tries to include nonexistent context 'dialparties-ringallv2-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-finalbuild' tries to include nonexistent context 'dialparties-finalbuild-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'dialparties-setrvol' tries to include nonexistent context 'dialparties-setrvol-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-internal-additional' tries to include nonexistent context 'from-internal-additional-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-internal-noxfer-additional' tries to include nonexistent context 'from-internal-noxfer-additional-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-pstn' tries to include nonexistent context 'from-pstn-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-internal-noxfer' tries to include nonexistent context 'from-internal-noxfer-custom'
+[2026-03-29 08:39:31] WARNING[20598] pbx.c: Context 'from-did-direct' tries to include nonexistent context 'ext-findmefollow'
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_amd.so' (Answering Machine Detection Application)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'res_prometheus.so' (Asterisk Prometheus Module)
+[2026-03-29 08:39:31] VERBOSE[20598] loader.c: Reloading module 'app_queue.so' (True Call Queueing)
+[2026-03-29 08:39:31] NOTICE[20598] app_queue.c: queuerules.conf has not changed since it was last loaded. Not taking any action.
+[2026-03-29 08:39:31] VERBOSE[20598] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:33] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:33] VERBOSE[20646] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:36] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:36] VERBOSE[20661] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:40] VERBOSE[20882] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:43] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:43] VERBOSE[21043] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:46] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:46] VERBOSE[21057] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:50] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:50] VERBOSE[21075] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:53] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:53] VERBOSE[21088] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:39:57] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:39:57] VERBOSE[21109] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:00] VERBOSE[21155] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:04] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:04] VERBOSE[21224] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:07] VERBOSE[21303] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:10] VERBOSE[21377] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:14] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:14] VERBOSE[21430] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:17] VERBOSE[21445] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:20] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:20] VERBOSE[21458] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:24] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:24] VERBOSE[21470] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:27] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:27] VERBOSE[21481] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:31] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:31] VERBOSE[21496] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:34] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:34] VERBOSE[21510] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:37] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:37] VERBOSE[21523] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:40] VERBOSE[21536] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:44] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:44] VERBOSE[21547] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:47] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:47] VERBOSE[21562] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:51] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:51] VERBOSE[21589] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:54] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:54] VERBOSE[21611] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:40:57] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:40:57] VERBOSE[21622] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:01] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:01] VERBOSE[21635] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:04] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:04] VERBOSE[21719] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:07] VERBOSE[21732] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:10] VERBOSE[21746] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:14] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:14] VERBOSE[21792] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:17] VERBOSE[21807] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:20] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:20] VERBOSE[21821] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:23] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:23] VERBOSE[21832] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:27] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:27] VERBOSE[21843] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:30] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:30] VERBOSE[21857] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:34] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:34] VERBOSE[21882] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:37] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:37] VERBOSE[21894] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:40] VERBOSE[21908] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:43] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:43] VERBOSE[21919] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:47] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:47] VERBOSE[21930] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:50] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:50] VERBOSE[21945] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:53] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:53] VERBOSE[21988] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:41:56] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:41:56] VERBOSE[21993] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:00] VERBOSE[21999] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:03] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:03] VERBOSE[22070] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:06] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:06] VERBOSE[22099] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:09] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:09] VERBOSE[22120] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:13] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:13] VERBOSE[22127] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:16] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:16] VERBOSE[22132] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:19] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:19] VERBOSE[22141] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:23] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:23] VERBOSE[22150] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:26] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:26] VERBOSE[22155] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:29] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:29] VERBOSE[22161] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:33] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:33] VERBOSE[22213] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:36] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:36] VERBOSE[22218] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:39] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:39] VERBOSE[22224] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:42] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:42] VERBOSE[22250] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:46] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:46] VERBOSE[22280] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:49] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:49] VERBOSE[22287] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:52] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:52] VERBOSE[22308] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:56] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:56] VERBOSE[22324] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:42:59] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:42:59] VERBOSE[22329] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:02] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:02] VERBOSE[22409] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:06] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:06] VERBOSE[22423] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:09] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:09] VERBOSE[22429] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:12] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:12] VERBOSE[22438] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:15] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:15] VERBOSE[22445] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:19] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:19] VERBOSE[22454] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:22] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:22] VERBOSE[22461] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:25] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:25] VERBOSE[22466] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:28] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:28] VERBOSE[22471] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:32] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:32] VERBOSE[22478] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:35] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:35] VERBOSE[22483] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:38] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:38] VERBOSE[22488] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:41] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:41] VERBOSE[22495] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:45] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:45] VERBOSE[22500] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:48] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:48] VERBOSE[22507] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:51] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:51] VERBOSE[22515] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:54] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:54] VERBOSE[22520] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:43:58] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:43:58] VERBOSE[22525] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:01] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:01] VERBOSE[22533] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:04] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:04] VERBOSE[22613] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:07] VERBOSE[22618] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:11] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:11] VERBOSE[22636] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:14] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:14] VERBOSE[22641] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:17] VERBOSE[22661] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:21] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:21] VERBOSE[22677] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:24] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:24] VERBOSE[22683] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:27] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:27] VERBOSE[22698] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:31] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:31] VERBOSE[22705] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:34] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:34] VERBOSE[22719] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:37] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:37] VERBOSE[22725] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:40] VERBOSE[22732] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:44] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:44] VERBOSE[22737] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:47] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:47] VERBOSE[22742] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:50] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:50] VERBOSE[22751] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:53] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:53] VERBOSE[22770] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:44:57] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:44:57] VERBOSE[22775] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:00] VERBOSE[22793] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:03] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:03] VERBOSE[22876] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:06] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:06] VERBOSE[22881] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:10] VERBOSE[22887] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:13] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:13] VERBOSE[22893] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:16] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:16] VERBOSE[22898] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:19] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:19] VERBOSE[22917] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:23] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:23] VERBOSE[22934] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:26] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:26] VERBOSE[22949] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:29] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:29] VERBOSE[22964] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:32] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:32] VERBOSE[22984] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:36] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:36] VERBOSE[22998] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:39] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:39] VERBOSE[23011] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:42] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:42] VERBOSE[23022] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:45] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:45] VERBOSE[23037] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:49] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:49] VERBOSE[23053] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:52] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:52] VERBOSE[23071] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:55] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:55] VERBOSE[23087] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:45:58] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:45:58] VERBOSE[23102] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:02] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:02] VERBOSE[23117] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:05] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:05] VERBOSE[23191] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:08] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:08] VERBOSE[23196] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:11] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:11] VERBOSE[23203] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:15] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:15] VERBOSE[23208] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:18] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:18] VERBOSE[23217] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:21] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:21] VERBOSE[23224] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:24] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:24] VERBOSE[23229] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:28] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:28] VERBOSE[23234] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:31] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:31] VERBOSE[23241] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:34] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:34] VERBOSE[23246] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:37] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:37] VERBOSE[23256] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:41] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:41] VERBOSE[23264] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:44] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:44] VERBOSE[23301] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:47] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:47] VERBOSE[23310] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:51] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:51] VERBOSE[23328] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:54] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:54] VERBOSE[23342] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:46:57] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:46:57] VERBOSE[23347] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:00] VERBOSE[23365] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:04] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:04] VERBOSE[23443] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:07] VERBOSE[23462] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:10] VERBOSE[23470] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:13] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:13] VERBOSE[23475] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:17] VERBOSE[23484] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:20] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:20] VERBOSE[23491] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:23] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:23] VERBOSE[23497] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:26] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:26] VERBOSE[23503] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:30] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:30] VERBOSE[23547] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:33] VERBOSE[23588] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:33] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:36] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:36] VERBOSE[23644] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:39] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:39] VERBOSE[23687] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:43] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:43] VERBOSE[23694] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:46] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:46] VERBOSE[23699] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:49] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:49] VERBOSE[23706] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:52] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:52] VERBOSE[23714] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:56] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:56] VERBOSE[23719] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:47:59] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:47:59] VERBOSE[23724] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:02] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:02] VERBOSE[23773] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:06] VERBOSE[23817] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:09] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:09] VERBOSE[23823] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:12] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:12] VERBOSE[23830] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:16] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:16] VERBOSE[23835] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:19] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:19] VERBOSE[23844] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:22] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:22] VERBOSE[23852] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:26] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:26] VERBOSE[23856] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:29] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:29] VERBOSE[23861] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:32] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:32] VERBOSE[23888] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:35] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:35] VERBOSE[23896] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:39] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:39] VERBOSE[23901] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:42] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:42] VERBOSE[23924] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:45] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:45] VERBOSE[23934] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:48] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:48] VERBOSE[23984] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:52] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:52] VERBOSE[24011] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:48:57] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:48:57] VERBOSE[24179] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:00] VERBOSE[24352] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:04] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:04] VERBOSE[24447] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:07] VERBOSE[24473] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:10] VERBOSE[24483] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:14] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:14] VERBOSE[24533] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:17] VERBOSE[24545] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:20] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:20] VERBOSE[24554] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:24] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:24] VERBOSE[24582] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:27] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:27] VERBOSE[24594] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:30] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:30] VERBOSE[24613] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:34] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:34] VERBOSE[24619] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:37] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:37] VERBOSE[24624] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:40] VERBOSE[24631] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:43] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:43] VERBOSE[24659] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:47] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:47] VERBOSE[24664] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:50] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:50] VERBOSE[24675] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:53] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:53] VERBOSE[24681] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:49:56] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:49:56] VERBOSE[24686] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:00] VERBOSE[24694] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:03] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:03] VERBOSE[24765] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:07] VERBOSE[24780] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:10] VERBOSE[24787] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:14] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:14] VERBOSE[24792] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:17] VERBOSE[24808] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:20] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:20] VERBOSE[24815] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:23] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:23] VERBOSE[24823] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:27] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:27] VERBOSE[24844] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:30] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:30] VERBOSE[24851] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:33] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:33] VERBOSE[24859] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:36] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:36] VERBOSE[24865] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:40] VERBOSE[24911] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:43] VERBOSE[24918] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:43] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:46] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:46] VERBOSE[24922] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:49] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:49] VERBOSE[24929] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:53] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:53] VERBOSE[24950] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:50:56] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:50:56] VERBOSE[24955] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:00] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:00] VERBOSE[24973] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:03] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:03] VERBOSE[25051] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:06] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:06] VERBOSE[25056] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:10] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:10] VERBOSE[25062] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:13] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:13] VERBOSE[25069] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:16] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:16] VERBOSE[25074] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:19] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:19] VERBOSE[25083] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:23] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:23] VERBOSE[25090] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:26] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:26] VERBOSE[25095] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:29] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:29] VERBOSE[25100] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:32] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:32] VERBOSE[25107] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:36] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:36] VERBOSE[25112] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:39] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:39] VERBOSE[25117] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:42] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:42] VERBOSE[25161] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:45] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:45] VERBOSE[25166] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:49] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:49] VERBOSE[25173] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:52] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:52] VERBOSE[25181] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:55] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:55] VERBOSE[25186] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:51:58] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:51:58] VERBOSE[25191] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:02] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:02] VERBOSE[25213] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:05] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:05] VERBOSE[25278] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:08] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:08] VERBOSE[25283] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:11] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:11] VERBOSE[25290] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:15] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:15] VERBOSE[25296] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:18] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:18] VERBOSE[25305] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:21] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:21] VERBOSE[25347] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:24] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:24] VERBOSE[25352] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:28] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:28] VERBOSE[25358] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:31] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:31] VERBOSE[25366] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:34] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:34] VERBOSE[25371] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:38] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:38] VERBOSE[25378] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:41] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:41] VERBOSE[25398] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:45] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:45] VERBOSE[25403] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:48] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:48] VERBOSE[25456] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:51] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:51] VERBOSE[25478] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:54] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:54] VERBOSE[25482] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:52:58] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:52:58] VERBOSE[25487] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:01] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:01] VERBOSE[25494] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:04] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:04] VERBOSE[25585] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:07] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:07] VERBOSE[25598] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:11] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:11] VERBOSE[25605] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:14] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:14] VERBOSE[25610] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:17] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:17] VERBOSE[25619] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:20] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:20] VERBOSE[25626] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:24] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:24] VERBOSE[25631] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:27] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:27] VERBOSE[25636] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:30] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:30] VERBOSE[25643] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:34] VERBOSE[25648] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:37] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:37] VERBOSE[25653] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:40] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:40] VERBOSE[25660] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:43] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:43] VERBOSE[25665] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:47] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:47] VERBOSE[25670] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:50] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:50] VERBOSE[25679] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:53] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:53] VERBOSE[25685] asterisk.c: Remote UNIX connection disconnected
+[2026-03-29 08:53:56] VERBOSE[10896] asterisk.c: Remote UNIX connection
+[2026-03-29 08:53:56] VERBOSE[25690] asterisk.c: Remote UNIX connection disconnected
+                                                                                                                                                             

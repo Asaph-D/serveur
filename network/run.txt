@@ -1,0 +1,9 @@
+sudo bash /home/asaph/Documents/serveur/scripts/net-apply-site.sh
+sudo bash /home/asaph/Documents/serveur/scripts/fix-cert-perms.sh
+
+#extentions not loaded
+sudo rm -f /var/lib/php/sessions/sess_* 2>/dev/null || true; sudo chown root:root /var/lib/php/sessions && sudo chmod 1733 /var/lib/php/sessions && ls -ld /var/lib/php/sessions
+sudo systemctl restart apache2 2>&1 && sudo systemctl --no-pager --full status apache2 2>&1 | sed -n '1,60p'
+
+#codecs
+sudo bash /home/asaph/Documents/serveur/scripts/align-pjsip-site.sh

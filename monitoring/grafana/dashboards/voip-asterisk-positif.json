@@ -1,0 +1,418 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "options": {
+        "content": "**Rapports positifs (santé & usage)** — objectif: vérifier en 30 secondes que tout fonctionne (SIP, appels, enregistrements, stabilité).",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.4.0",
+      "title": "VoIP / Asterisk — Rapports positifs",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 } ] },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 3 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_core\" and r[\"_field\"] == \"registered_contacts\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "📞 Postes (contacts)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "blue", "value": null }, { "color": "yellow", "value": 1 } ] },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 3 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_core\" and r[\"_field\"] == \"active_calls\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "📞 Appels actifs",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 } ] },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 3 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_core\" and r[\"_field\"] == \"active_channels\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "📶 Canaux actifs",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 3 },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_events\" and r[\"_field\"] == \"rtp_timeout\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "🔈 RTP timeout",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 3 },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"fail2ban_events\" and r[\"_field\"] == \"ban\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "🛡️ Bans",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 } ] },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 3 },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"fail2ban_events\" and r[\"_field\"] == \"found\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "🔎 Found",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 7 },
+      "id": 10,
+      "options": {
+        "legend": { "calcs": [ "mean", "lastNotNull" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_core\")\n  |> filter(fn: (r) => r[\"_field\"] == \"active_channels\" or r[\"_field\"] == \"active_calls\" or r[\"_field\"] == \"registered_contacts\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "📈 Line chart (tendance)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 85,
+            "gradientMode": "opacity",
+            "lineWidth": 0,
+            "showPoints": "never",
+            "stacking": { "group": "A", "mode": "normal" }
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 7 },
+      "id": 11,
+      "options": {
+        "legend": { "calcs": [ "sum", "lastNotNull" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pjsip_auth_fail\" or r[\"_field\"] == \"pjsip_reg_fail\" or r[\"_field\"] == \"sdp_fail\")\n  |> aggregateWindow(every: v.windowPeriod, fn: sum, createEmpty: false)\n  |> yield(name: \"sum\")",
+          "refId": "A"
+        }
+      ],
+      "title": "📊 Bar chart (événements)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 60,
+            "gradientMode": "opacity",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never",
+            "stacking": { "group": "A", "mode": "normal" }
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "id": 12,
+      "options": {
+        "legend": { "calcs": [ "mean", "lastNotNull" ], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_core\")\n  |> filter(fn: (r) => r[\"_field\"] == \"registered_contacts\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "🌊 Area (contacts) — vue alternative",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false }
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "id": 13,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "scale": "exponential",
+          "scheme": "Oranges"
+        },
+        "filterValues": { "le": 1e9 },
+        "legend": { "show": true },
+        "reverseYBuckets": false,
+        "showValue": "never",
+        "tooltip": { "show": true, "yHistogram": true }
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"asterisk_events\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pjsip_auth_fail\" or r[\"_field\"] == \"pjsip_reg_fail\" or r[\"_field\"] == \"sdp_fail\" or r[\"_field\"] == \"rtp_timeout\")\n  |> aggregateWindow(every: 5m, fn: sum, createEmpty: false)\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "🔥 Heatmap (densité événements / 5min)",
+      "type": "heatmap"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influx-voip" },
+      "fieldConfig": { "defaults": { "unit": "none" }, "overrides": [] },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 32 },
+      "id": 20,
+      "options": {
+        "showHeader": true,
+        "sortBy": [ { "desc": false, "displayName": "endpoint" } ]
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "influx-voip" },
+          "query": "from(bucket: \"asterisk\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"pjsip_endpoint_presence\")\n  |> filter(fn: (r) => r[\"_field\"] == \"present\")\n  |> group(columns: [\"endpoint\"])\n  |> last()\n  |> keep(columns: [\"_time\",\"endpoint\",\"_value\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "🧾 Inventaire endpoints (dernière présence vue)",
+      "type": "table"
+    },
+    {
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 42 },
+      "id": 30,
+      "options": {
+        "content": "**Prometheus**: non utilisé.  \nChaîne: Telegraf (scripts AMI + logs) → InfluxDB → Grafana (provisioning).",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.4.0",
+      "title": "Note",
+      "transparent": true,
+      "type": "text"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [ "voip", "asterisk", "positive", "influxdb", "telegraf" ],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "VoIP / Asterisk — Rapports positifs",
+  "uid": "voip-asterisk-positif",
+  "version": 1,
+  "weekStart": ""
+}
+

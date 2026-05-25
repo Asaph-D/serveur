@@ -1,0 +1,17 @@
+# Phase 4 — jail Asterisk / PJSIP (équivalent cahier « asterisk-iptables » : bannissement IP /32 via nftables)
+# FreePBX journalise surtout dans full ; le paquet Debian pointe par défaut sur messages (souvent absent).
+
+[asterisk]
+enabled = true
+# Le défaut Ubuntu (defaults-debian.conf) impose backend=systemd : incompatible avec logpath fichier.
+backend = auto
+filter   = asterisk
+logpath  = /var/log/asterisk/full
+port     = 5060,5061,5160,5161
+protocol = tcp,udp
+maxretry = 5
+findtime = 10m
+bantime  = 1h
+# Même logique que jail.conf Debian : règles séparées TCP / UDP (nftables)
+action_  = %(default/action_)s[name=%(__name__)s-tcp, protocol="tcp"]
+           %(default/action_)s[name=%(__name__)s-udp, protocol="udp"]
