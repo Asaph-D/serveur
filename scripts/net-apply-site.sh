@@ -28,13 +28,19 @@ fi
 systemctl enable --now avahi-daemon
 
 echo "=== 2) FreePBX localnets (PJSIP) ==="
-export EXTRA_LAN_CIDRS
+export EXTRA_LAN_CIDRS EXTRA_VOICE_CIDRS
 php -r '
 include "/etc/freepbx.conf";
 $db = \FreePBX::Database();
 $mgmt = getenv("MGMT_CIDR");
 $voice = getenv("VOICE_CIDR");
 $lines = array_values(array_unique(array_filter([$mgmt, $voice])));
+$extra_voice = trim((string) getenv("EXTRA_VOICE_CIDRS"));
+if ($extra_voice !== "") {
+  foreach (preg_split("/\s+/", $extra_voice) as $c) {
+    if ($c !== "" && !in_array($c, $lines, true)) { $lines[] = $c; }
+  }
+}
 $extra = trim((string) getenv("EXTRA_LAN_CIDRS"));
 if ($extra !== "") {
   foreach (preg_split("/\s+/", $extra) as $c) {
@@ -50,19 +56,38 @@ echo "kvstore_Sipsettings.localnets mis à jour:\n$val\n";
 echo "=== 3) UFW (SIP/RTP selon site.env) ==="
 ufw --force enable >/dev/null || true
 
-# Toujours autoriser depuis VLAN voix
-ufw allow from "${VOICE_CIDR}" to any port 5060 proto udp comment "PJSIP UDP VOICE" >/dev/null || true
-ufw allow from "${VOICE_CIDR}" to any port 5060 proto tcp comment "PJSIP TCP VOICE" >/dev/null || true
-ufw allow from "${VOICE_CIDR}" to any port 5061 proto tcp comment "PJSIP TLS VOICE" >/dev/null || true
-ufw allow from "${VOICE_CIDR}" to any port 5160 proto udp comment "PJSIP 5160 UDP VOICE" >/dev/null || true
-ufw allow from "${VOICE_CIDR}" to any port 5161 proto tcp comment "PJSIP 5161 TLS VOICE" >/dev/null || true
-ufw allow from "${VOICE_CIDR}" to any port 10000:20000 proto udp comment "RTP VOICE" >/dev/null || true
+allow_voice_cidr() {
+  local cidr="$1"
+  local label="$2"
+
+  ufw allow from "${cidr}" to any port 5060 proto udp comment "PJSIP UDP ${label}" >/dev/null || true
+  ufw allow from "${cidr}" to any port 5060 proto tcp comment "PJSIP TCP ${label}" >/dev/null || true
+  ufw allow from "${cidr}" to any port 5061 proto tcp comment "PJSIP TLS ${label}" >/dev/null || true
+  ufw allow from "${cidr}" to any port 5160 proto udp comment "PJSIP 5160 UDP ${label}" >/dev/null || true
+  ufw allow from "${cidr}" to any port 5161 proto tcp comment "PJSIP 5161 TLS ${label}" >/dev/null || true
+  ufw allow from "${cidr}" to any port 10000:20000 proto udp comment "RTP ${label}" >/dev/null || true
+
+  if [[ "${WEBRTC_ENABLE:-no}" == "yes" ]]; then
+    local whp="${WEBRTC_HTTP_PORT:-8088}"
+    local wwp="${WEBRTC_WSS_PORT:-8089}"
+    ufw allow from "${cidr}" to any port "${whp}" proto tcp comment "Asterisk HTTP WebRTC ${label}" >/dev/null || true
+    ufw allow from "${cidr}" to any port "${wwp}" proto tcp comment "Asterisk WSS WebRTC ${label}" >/dev/null || true
+  fi
+}
+
+# Toujours autoriser depuis le VLAN voix principal et les secteurs voix routés.
+allow_voice_cidr "${VOICE_CIDR}" "VOICE"
+if [[ -n "${EXTRA_VOICE_CIDRS:-}" ]]; then
+  read -r -a _extra_voice_lans <<< "${EXTRA_VOICE_CIDRS}"
+  for c in "${_extra_voice_lans[@]}"; do
+    [[ -z "${c}" ]] && continue
+    allow_voice_cidr "${c}" "VOICE EXTRA"
+  done
+fi
 
 if [[ "${WEBRTC_ENABLE:-no}" == "yes" ]]; then
   WHP="${WEBRTC_HTTP_PORT:-8088}"
   WWP="${WEBRTC_WSS_PORT:-8089}"
-  ufw allow from "${VOICE_CIDR}" to any port "${WHP}" proto tcp comment "Asterisk HTTP WebRTC VOICE" >/dev/null || true
-  ufw allow from "${VOICE_CIDR}" to any port "${WWP}" proto tcp comment "Asterisk WSS WebRTC VOICE" >/dev/null || true
   ufw allow from "${MGMT_CIDR}" to any port "${WHP}" proto tcp comment "Asterisk HTTP WebRTC MGMT" >/dev/null || true
   ufw allow from "${MGMT_CIDR}" to any port "${WWP}" proto tcp comment "Asterisk WSS WebRTC MGMT" >/dev/null || true
   # RTP média WebRTC / softphones depuis les LAN listés dans EXTRA_LAN_CIDRS
