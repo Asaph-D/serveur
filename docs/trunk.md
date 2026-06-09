@@ -141,7 +141,26 @@ Sous FreePBX, le cœur du dialplan est **généré** par l’UI ; le custom rest
 
 ---
 
-## 6. Implémentation FreePBX (recommandée)
+## 6. Implémentation automatisée (ce projet)
+
+```bash
+sudo cp network/trunks.secrets.env.example /root/trunks-secrets.env
+sudo chmod 600 /root/trunks-secrets.env
+sudo nano /root/trunks-secrets.env
+sudo bash /home/asaph/Documents/serveur/scripts/apply-trunks.sh
+```
+
+| Fichier | Rôle |
+|---------|------|
+| `network/trunks.env` | Trunks, routes, DID, UFW opérateur |
+| `/root/trunks-secrets.env` | Identifiants opérateur (hors Git) |
+| `scripts/apply-trunks.sh` | Application complète |
+
+Trunks : `trunk-operateur-pstn` (PSTN), `trunk-interpbx-site-b` (inter-PBX, préfixe `8`).
+
+---
+
+## 7. Implémentation FreePBX manuelle (alternative UI)
 
 En production, préférer l’**UI FreePBX** plutôt que l’édition manuelle de `pjsip.conf` :
 

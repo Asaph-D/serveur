@@ -9,15 +9,19 @@ Aligné sur `network/site.env` et `scripts/net-apply-site.sh`.
 ## 1. Architecture de référence
 
 ```text
-                    Site du PBX
+                    Site du PBX (état actuel)
     ┌─────────────────────────────────────────────────────┐
     │  MGMT 192.168.1.0/24                                │
-    │    PBX gestion .......... 192.168.1.61  (ens33)     │
-    │    Softphone local ...... 192.168.1.45              │
+    │    PBX gestion .......... 192.168.1.104  (ens33)    │
+    │    Softphone local ...... 192.168.1.101             │
     │                                                     │
     │  VLAN 10 — 10.10.10.0/24 (stable, switch local)   │
     │    PBX voix ............. 10.10.10.10  (ens33.10)   │
     │    Téléphone bureau ..... 10.10.10.50               │
+    │                                                     │
+    │  VPN WireGuard — 10.200.0.0/24 (wg0)              │
+    │    PBX tunnel ............ 10.200.0.1               │
+    │    Client distant ........ 10.200.0.2               │
     └─────────────────────────────────────────────────────┘
 ```
 
@@ -27,9 +31,12 @@ Aligné sur `network/site.env` et `scripts/net-apply-site.sh`.
 | **VLAN 10 voix** | `VOICE_CIDR="10.10.10.0/24"` | Téléphonie dédiée sur le site (téléphones IP) |
 | **Autres LAN clients** | `EXTRA_LAN_CIDRS` | PC Windows, softphones sur d’autres préfixes autorisés |
 
-Le serveur a **deux pattes IP** :
-- **gestion** : ex. `192.168.1.61` sur `ens33`
+Le serveur a **trois pattes IP** (état actuel) :
+- **gestion** : `192.168.1.104` sur `ens33`
 - **voix** : `10.10.10.10` sur `ens33.10` (VLAN 10)
+- **VPN** : `10.200.0.1` sur `wg0` (WireGuard, port UDP `51820`)
+
+> Guide d’installation : `docs/implement-VPN.md` — config client : `network/vpn/client-distant.conf`
 
 ---
 
@@ -59,16 +66,17 @@ Ce n’est **pas** un réseau universel qui regroupe `192.168.1.0/24`, `192.168.
 ```text
                     PBX (deux pattes)
          ┌────────────────────────────────┐
-         │ ens33      → 192.168.1.61     │  ← MGMT
+         │ ens33      → 192.168.1.104    │  ← MGMT
          │ ens33.10   → 10.10.10.10      │  ← VLAN 10 (local)
+         │ wg0        → 10.200.0.1       │  ← VPN WireGuard
          └────────────────────────────────┘
                     ▲           ▲
-         192.168.1.45      10.10.10.50
-         (softphone        (téléphone IP
-          sur MGMT)         sur VLAN 10)
+         192.168.1.101      10.10.10.50
+         (1001 UDP +        (téléphone IP
+          1003 WSS)          sur VLAN 10)
 
     192.168.137.20  ──✗──  n'est sur AUCUN de ces réseaux
-    (chez soi)             sans VPN ou lien dédié
+    (chez soi)             sans VPN (10.200.0.2) ou lien dédié
 ```
 
 Le VLAN 10 est une **clôture** autour des téléphones du site, pas un **pont** vers tous les réseaux `192.168.x.x`.
@@ -79,10 +87,10 @@ Le VLAN 10 est une **clôture** autour des téléphones du site, pas un **pont**
 
 ### État initial (tout fonctionne)
 
-M. Dupont, softphone `192.168.1.45` sur `192.168.1.0/24`, PBX `192.168.1.61` :
+M. Dupont, softphone `192.168.1.101` sur `192.168.1.0/24`, PBX `192.168.1.104` :
 
-1. Résout `pbx.local` → mDNS → `192.168.1.61`
-2. REGISTER SIP vers `192.168.1.61:5060` (ou TLS `5061`)
+1. Résout `pbx.local` → mDNS → `192.168.1.104`
+2. REGISTER SIP vers `192.168.1.104:5060` (ou TLS `5061`, ou WSS `8089`)
 3. UFW : source ∈ `192.168.1.0/24` → **autorisé**
 4. Asterisk : source ∈ `localnets` → **OK**
 5. RTP UDP `10000–20000` → **autorisé**
@@ -91,13 +99,13 @@ Les téléphones VLAN 10 (`10.10.10.50`) continuent via `10.10.10.10`, indépend
 
 ### M. Dupont part sur `192.168.137.0/24` (`192.168.137.20`)
 
-Le serveur **ne bouge pas** (`192.168.1.61` + `10.10.10.10`). `site.env` reste `MGMT_CIDR="192.168.1.0/24"`.
+Le serveur **ne bouge pas** (`192.168.1.104` + `10.10.10.10` + `10.200.0.1`). `site.env` reste `MGMT_CIDR="192.168.1.0/24"`.
 
 ```text
     Site PBX (fixe)                      Nouveau lieu
     ┌────────────────────────┐           ┌────────────────────────┐
     │ MGMT 192.168.1.0/24    │    ???    │ LAN 192.168.137.0/24   │
-    │  PBX .. 192.168.1.61   │  ◄────►   │  PC .. 192.168.137.20  │
+    │  PBX .. 192.168.1.104  │  ◄────►   │  PC .. 192.168.137.20  │
     │  VLAN10 .. 10.10.10.10 │  route ?  │                        │
     └────────────────────────┘           └────────────────────────┘
 ```
@@ -107,8 +115,8 @@ Le serveur **ne bouge pas** (`192.168.1.61` + `10.10.10.10`). `site.env` reste `
 | Action | Résultat |
 |--------|----------|
 | mDNS `pbx.local` | **Échec** (mDNS ne traverse pas Internet / autre LAN) |
-| Fichier `hosts` avec `192.168.1.61` | IP privée **inaccessible** depuis `192.168.137.0/24` |
-| Ping `192.168.1.61` | **Échec** (sauf VPN) |
+| Fichier `hosts` avec `192.168.1.104` | IP privée **inaccessible** depuis `192.168.137.0/24` |
+| Ping `192.168.1.104` | **Échec** (sauf VPN WireGuard actif) |
 
 #### Étape 2 — Routage (couche 3)
 
@@ -135,7 +143,7 @@ T+3   Statut : « Hors ligne » / « Registration failed »
 
 | Élément | Statut |
 |---------|--------|
-| PBX `192.168.1.61` | Inchangé, actif |
+| PBX `192.168.1.104` | Inchangé, actif |
 | VLAN 10 `10.10.10.10` | Stable, téléphones OK |
 | Autres softphones sur `192.168.1.0/24` | OK |
 
@@ -147,16 +155,18 @@ T+3   Statut : « Hors ligne » / « Registration failed »
 
 ```env
 MGMT_CIDR="192.168.1.0/24"
-EXTRA_LAN_CIDRS="192.168.1.0/24 192.168.137.0/24"
+EXTRA_LAN_CIDRS="192.168.1.0/24 10.200.0.0/24"
 ```
+
+> **Important** : autoriser le **sous-réseau VPN** (`10.200.0.0/24`), pas le LAN distant (`192.168.137.0/24`). Le PBX voit l’IP tunnel (`10.200.0.2`), pas l’IP du réseau chez M. Dupont.
 
 Puis :
 
 ```bash
-sudo bash serveur/scripts/net-apply-site.sh
+sudo bash /home/asaph/Documents/serveur/scripts/net-apply-site.sh
 ```
 
-Configurer le softphone sur l’**IP ou FQDN joignable via VPN** (pas seulement `pbx.local` si mDNS ne fonctionne pas sur le tunnel).
+Configurer le softphone sur **`192.168.1.104`** ou `pbx.local` (fichier `hosts` si mDNS ne traverse pas le VPN). Voir `docs/implement-VPN.md` §6.3 pour les règles UFW SIP complètes.
 
 ---
 
@@ -239,7 +249,7 @@ Pour softphone      Non (sauf via opérateur)      Oui (télétravail)
 └─────┼────────────────────┼───────────────────────────────────┘
       │                    │
 ┌─────▼────────────────────▼───────────────────────────────────┐
-│  SERVEUR FreePBX / Asterisk (192.168.1.61 + 10.10.10.10)   │
+│  SERVEUR FreePBX / Asterisk (192.168.1.104 + 10.10.10.10 + wg0) │
 │  ┌─────────────┐  ┌──────────────┐  ┌─────────────────────┐  │
 │  │ Trunks SIP  │  │ Extensions │  │ VPN serveur (opt.)  │  │
 │  │ (FreePBX)   │  │ PJSIP      │  │ wg0 / tailscale     │  │
@@ -289,8 +299,9 @@ sudo bash serveur/scripts/net-apply-site.sh
 | Besoin | Solution | Dispositif ? | Niveau |
 |--------|----------|--------------|--------|
 | Téléphones sur site | **VLAN 10** | Switch (ou hyperviseur) | Couche 2 |
-| Softphone sur LAN bureau (`192.168.1.x`) | Accès direct | Non | Client → `192.168.1.61` |
-| M. Dupont chez lui (`192.168.137.x`) | **VPN** + `EXTRA_LAN_CIDRS` | Non | OS serveur + client PC |
+| Softphone sur LAN bureau (`192.168.1.x`) | Accès direct | Non | Client → `192.168.1.104` |
+| M. Dupont chez lui (`192.168.137.x`) | **VPN WireGuard** + `10.200.0.0/24` dans `EXTRA_LAN_CIDRS` | Non | `wg0` + `network/vpn/client-distant.conf` |
+| Appels internes UDP ↔ WSS (1001 ↔ 1003) | **Extensions PJSIP** (pas de trunk) | Non | Asterisk fait le pont media |
 | Appels vers l’extérieur (PSTN) | **Trunk SIP** opérateur | Non | FreePBX |
 | Exposition sans VPN | NAT + TLS 5061 + SRTP + Fail2Ban | Non | Routeur + FreePBX (risqué) |
 | Deux sites avec chacun un PBX | **Trunk SIP** inter-PBX | Non | FreePBX des deux côtés |
@@ -319,7 +330,56 @@ Le script `scripts/net-apply-site.sh` applique le profil réseau :
 - **Pont téléphonie** : trunk SIP — **logiciel** dans FreePBX, pour opérateur ou autre PBX.
 - **Seul élément « matériel » structurant** pour la voix sur site : le **switch** (VLAN 10).
 
-Pour le télétravail vers un PBX fixe sur `192.168.1.0/24` : **VPN utilisateur** sur le serveur (ou Tailscale) + mise à jour de `EXTRA_LAN_CIDRS` + `net-apply-site.sh`.
+Pour le télétravail vers un PBX fixe sur `192.168.1.0/24` : **VPN utilisateur WireGuard** (`wg0`, `10.200.0.0/24`) + mise à jour de `EXTRA_LAN_CIDRS` + `net-apply-site.sh`.
+
+---
+
+## 11. Faut-il implémenter les trunks ?
+
+### Ce qui fonctionne déjà sans trunk
+
+D’après les tests actuels sur le PBX :
+
+| Scénario | Mécanisme | Trunk nécessaire ? |
+|----------|-----------|-------------------|
+| `1001` (UDP) → `1003` (WSS/WebRTC) | Extensions PJSIP + Asterisk B2BUA | **Non** |
+| Appels entre extensions internes (1001–1010) | Dialplan FreePBX `from-internal` | **Non** |
+| Appels de groupe / conférence | ConfBridge côté Asterisk | **Non** |
+| Télétravail (softphone distant) | VPN WireGuard + extension PJSIP | **Non** (trunk ≠ VPN) |
+| Téléphones VLAN 10 (`10.10.10.x`) | Extension PJSIP vers `10.10.10.10` | **Non** |
+
+Les trunks SIP et les extensions PJSIP sont **complémentaires**, pas interchangeables.
+
+### Quand implémenter un trunk
+
+| Besoin | Solution | Quand le faire |
+|--------|----------|----------------|
+| Appeler un **mobile ou fixe externe** (PSTN) | Trunk opérateur (OVH, Twilio…) | Dès que tu veux des appels hors réseau interne |
+| Recevoir des appels **depuis l’extérieur** (numéro DID) | Trunk opérateur + routes entrantes | Dès qu’un numéro public est requis |
+| Relier **deux PBX** sur deux sites distincts | Trunk inter-PBX | Uniquement si chaque site a son propre PBX |
+| Connecter un PC distant au PBX | **VPN** (déjà en place) | Pas un trunk |
+
+### Conclusion
+
+**Non, les trunks ne sont pas nécessaires** tant que tu restes sur de la **téléphonie interne** (extensions, conférences, mix UDP/WebRTC). La VoIP interne passe par les **extensions PJSIP**, pas par un trunk.
+
+**Oui, implémente un trunk** uniquement si tu as besoin d’appels **vers ou depuis le réseau téléphonique public** (PSTN), ou de relier **un autre PBX**. Voir `docs/trunk.md`.
+
+**État actuel** : trunks et routes préconfigurés via `scripts/apply-trunks.sh` :
+- trunk PSTN (`trunk-operateur-pstn`) — actif après renseignement de `/root/trunks-secrets.env`
+- trunk inter-PBX (`trunk-interpbx-site-b`) — réception depuis `192.168.1.0/24` et `10.200.0.0/24`
+- routes sortantes France / International / Inter-PBX
+- route entrante catch-all → IVR `7000`
+
+### Point de vigilance (logs actuels)
+
+L’appel `1001 → 1003` fonctionne (sonnerie, décrochage, bridge), mais un avertissement DTLS apparaît :
+
+```text
+DTLS packet from 192.168.1.101 dropped. ICE not completed yet.
+```
+
+Ce n’est **pas** un problème de trunk — c’est un souci **media WebRTC/ICE** côté client `1003`. Si l’audio est instable, vérifier ICE/STUN, les ports RTP `10000–20000/udp` et la config WebRTC de l’extension.
 
 ---
 
@@ -327,6 +387,9 @@ Pour le télétravail vers un PBX fixe sur `192.168.1.0/24` : **VPN utilisateur*
 
 - `network/site.env` — configuration site
 - `scripts/net-apply-site.sh` — application UFW + localnets
+- `docs/implement-VPN.md` — installation WireGuard (opérationnel)
+- `network/vpn/client-distant.conf` — config client VPN
+- `docs/trunk.md` — trunks SIP (PSTN, inter-PBX)
 - `docs/Configuration-VLAN-VoIP-production.md` — architecture VLAN production
 - `Plan-adressage-reseau-VoIP-QoS.md` — VLAN 10 et QoS RTP
 - `S4-Phase4-Securite-complete.md` — TLS, SRTP, Fail2Ban (exposition Internet)
