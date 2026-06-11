@@ -1,0 +1,7 @@
+# Secrets provisionnement / trunks — ne jamais committer
+network/provision.secrets.env
+network/*.secrets.env
+/root/provision-secrets.env
+/root/trunks-secrets.env
+/root/phase2-pjsip-secrets.txt
+/root/provision-master.key
