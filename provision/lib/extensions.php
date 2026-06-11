@@ -54,21 +54,116 @@ function provision_extension_exists(PDO $db, string $extension): bool {
 	return (bool) $sth->fetchColumn();
 }
 
+/** Extension garantie : authentification SIP confirmée (consume → provisioned). */
+function provision_get_extension_owner(PDO $db, string $extension): ?array {
+	$sth = $db->prepare(
+		"SELECT email, status, email_verified, updated_at FROM provision_requests
+		 WHERE extension = ? AND extension IS NOT NULL AND extension != ''
+		 AND status = 'provisioned'
+		 LIMIT 1"
+	);
+	$sth->execute([$extension]);
+	$row = $sth->fetch();
+	return $row ?: null;
+}
+
+/** QR envoyé mais pas encore authentifié — n'empêche pas la réattribution du pool. */
+function provision_get_extension_pending(PDO $db, string $extension): ?array {
+	$sth = $db->prepare(
+		"SELECT email, status, email_verified, updated_at FROM provision_requests
+		 WHERE extension = ? AND extension IS NOT NULL AND extension != ''
+		 AND status IN ('verified', 'pending_admin')
+		 ORDER BY updated_at DESC LIMIT 1"
+	);
+	$sth->execute([$extension]);
+	$row = $sth->fetch();
+	return $row ?: null;
+}
+
+function provision_find_email_pending_extension(PDO $db, string $email): ?string {
+	$sth = $db->prepare(
+		"SELECT extension FROM provision_requests
+		 WHERE email = ? AND extension IS NOT NULL AND extension != ''
+		 AND status IN ('verified', 'pending_admin')
+		 LIMIT 1"
+	);
+	$sth->execute([$email]);
+	$ext = $sth->fetchColumn();
+	return is_string($ext) && $ext !== '' ? $ext : null;
+}
+
 function provision_is_extension_available(PDO $db, string $extension): bool {
 	if (!provision_extension_exists($db, $extension)) {
 		return false;
 	}
 
-	$sth = $db->prepare(
-		"SELECT 1 FROM provision_requests
-		 WHERE extension = ? AND status IN ('verified', 'pending_admin', 'provisioned')
-		 LIMIT 1"
-	);
-	$sth->execute([$extension]);
-	return !$sth->fetchColumn();
+	return provision_get_extension_owner($db, $extension) === null;
 }
 
-function provision_assign_next_extension(PDO $db, string $email): ?string {
+function provision_extension_status(PDO $db, string $extension, ?string $forEmail = null): array {
+	$inPool = in_array($extension, provision_ext_pool(), true);
+	$exists = provision_extension_exists($db, $extension);
+	$owner = provision_get_extension_owner($db, $extension);
+	$pending = provision_get_extension_pending($db, $extension);
+
+	$free = $exists && $inPool && $owner === null;
+	$available = false;
+	$reason = 'unknown';
+
+	if (!$exists) {
+		$reason = 'not_in_freepbx';
+	} elseif (!$inPool) {
+		$reason = 'outside_pool';
+	} elseif ($owner === null) {
+		$available = true;
+		$reason = 'free';
+	} elseif ($forEmail !== null && $owner['email'] === $forEmail) {
+		$available = false;
+		$reason = 'authenticated_as_you';
+	} else {
+		$available = false;
+		$reason = 'authenticated';
+	}
+
+	return [
+		'extension' => $extension,
+		'exists' => $exists,
+		'in_pool' => $inPool,
+		'free' => $free,
+		'available' => $available,
+		'taken' => $owner !== null,
+		'associated_email' => $owner['email'] ?? null,
+		'associated_status' => $owner['status'] ?? null,
+		'pending_email' => $pending['email'] ?? null,
+		'pending_status' => $pending['status'] ?? null,
+		'reason' => $reason,
+	];
+}
+
+function provision_pool_status(PDO $db, ?string $forEmail = null): array {
+	$items = [];
+	$freeCount = 0;
+	$takenCount = 0;
+	foreach (provision_ext_pool() as $ext) {
+		$st = provision_extension_status($db, $ext, $forEmail);
+		$items[] = $st;
+		if ($st['free']) {
+			$freeCount++;
+		}
+		if ($st['taken']) {
+			$takenCount++;
+		}
+	}
+
+	return [
+		'pool' => $items,
+		'total' => count($items),
+		'free_count' => $freeCount,
+		'taken_count' => $takenCount,
+	];
+}
+
+function provision_assign_next_extension(PDO $db): ?string {
 	foreach (provision_ext_pool() as $ext) {
 		if (provision_is_extension_available($db, $ext)) {
 			return $ext;

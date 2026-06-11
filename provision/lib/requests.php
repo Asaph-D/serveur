@@ -76,8 +76,13 @@ function provision_resolve_extension_after_verify(PDO $db, string $email): array
 		return ['extension' => null, 'status' => 'pending_admin', 'send_qr' => false];
 	}
 
-	// auto
-	$ext = provision_assign_next_extension($db, $email);
+	// auto — réutiliser l’extension en attente d’auth pour ce compte (QR déjà envoyé)
+	$pending = provision_find_email_pending_extension($db, $email);
+	if ($pending !== null && provision_is_extension_available($db, $pending)) {
+		return ['extension' => $pending, 'status' => 'verified', 'send_qr' => true];
+	}
+
+	$ext = provision_assign_next_extension($db);
 	if ($ext === null) {
 		throw new RuntimeException('Pool d\'extensions épuisé');
 	}

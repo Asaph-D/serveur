@@ -1,29 +1,58 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Gmail : AUTH + enveloppe SMTP (MAIL FROM) via EMAIL_USER.
- * EMAIL_FROM sert de Reply-To ; affichage From = EMAIL_USER sans alias Google configuré.
- */
+/** Expéditeur réel = EMAIL_USER (Gmail). EMAIL_FROM est un placeholder futur, non utilisé pour l’envoi. */
 function provision_smtp_identity(): array {
 	$user = provision_env('EMAIL_USER', '');
-	$display = provision_env('EMAIL_FROM', provision_env('PROVISION_MAIL_FROM', $user));
-	$host = provision_env('EMAIL_HOST', 'smtp.gmail.com');
-
 	if ($user === '') {
 		throw new RuntimeException('EMAIL_USER manquant dans provision-secrets.env');
-	}
-
-	$headerFrom = $display;
-	if (str_contains($host, 'gmail.com') && strcasecmp($display, $user) !== 0) {
-		$headerFrom = $user;
 	}
 
 	return [
 		'user' => $user,
 		'envelope' => $user,
-		'header_from' => 'Asaphone <' . $headerFrom . '>',
-		'reply_to' => $display,
+		'header_from' => 'Asaphone <' . $user . '>',
+		'reply_to' => $user,
+		'brand' => 'Asaphone',
+	];
+}
+
+function provision_mail_layout(string $title, string $bodyHtml, ?string $footerNote = null): string {
+	$brand = 'Asaphone';
+	$year = date('Y');
+	$footer = $footerNote ?? 'Ce message a été envoyé automatiquement. Merci de ne pas y répondre directement.';
+
+	return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+		. '<title>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</title></head>'
+		. '<body style="margin:0;padding:0;background:#f4f6f8;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1a1a2e;">'
+		. '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:32px 16px;">'
+		. '<tr><td align="center">'
+		. '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">'
+		. '<tr><td style="background:#1a56db;padding:24px 32px;">'
+		. '<p style="margin:0;font-size:20px;font-weight:600;color:#ffffff;letter-spacing:.5px;">' . htmlspecialchars($brand, ENT_QUOTES, 'UTF-8') . '</p>'
+		. '<p style="margin:4px 0 0;font-size:13px;color:#c3dafe;">Téléphonie professionnelle</p>'
+		. '</td></tr>'
+		. '<tr><td style="padding:32px;">'
+		. '<h1 style="margin:0 0 16px;font-size:22px;font-weight:600;color:#1a1a2e;">' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</h1>'
+		. $bodyHtml
+		. '</td></tr>'
+		. '<tr><td style="padding:20px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;">'
+		. '<p style="margin:0;font-size:12px;color:#6b7280;line-height:1.5;">' . htmlspecialchars($footer, ENT_QUOTES, 'UTF-8') . '</p>'
+		. '<p style="margin:8px 0 0;font-size:11px;color:#9ca3af;">&copy; ' . $year . ' ' . htmlspecialchars($brand, ENT_QUOTES, 'UTF-8') . '</p>'
+		. '</td></tr></table></td></tr></table></body></html>';
+}
+
+function provision_mail_headers(array $id, string $to, string $subject): array {
+	return [
+		'MIME-Version: 1.0',
+		'From: ' . $id['header_from'],
+		'Reply-To: ' . $id['reply_to'],
+		'To: ' . $to,
+		'Subject: ' . $subject,
+		'X-Mailer: Asaphone-Provision/1.0',
+		'X-Priority: 3',
+		'Precedence: bulk',
+		'Auto-Submitted: auto-generated',
 	];
 }
 
@@ -44,14 +73,8 @@ function provision_smtp_send(string $to, string $subject, string $html, ?string 
 	$text ??= strip_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $html));
 
 	$boundary = 'b_' . bin2hex(random_bytes(8));
-	$headers = [
-		'MIME-Version: 1.0',
-		'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
-		'From: ' . $id['header_from'],
-		'Reply-To: ' . $id['reply_to'],
-		'To: ' . $to,
-		'Subject: ' . $subject,
-	];
+	$headers = provision_mail_headers($id, $to, $subject);
+	$headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
 
 	$body = "--{$boundary}\r\n";
 	$body .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
@@ -90,14 +113,8 @@ function provision_smtp_send_with_image(
 	$altBoundary = 'alt_' . bin2hex(random_bytes(6));
 	$mixedBoundary = 'mix_' . bin2hex(random_bytes(6));
 
-	$headers = [
-		'MIME-Version: 1.0',
-		'Content-Type: multipart/mixed; boundary="' . $mixedBoundary . '"',
-		'From: ' . $id['header_from'],
-		'Reply-To: ' . $id['reply_to'],
-		'To: ' . $to,
-		'Subject: ' . $subject,
-	];
+	$headers = provision_mail_headers($id, $to, $subject);
+	$headers[] = 'Content-Type: multipart/mixed; boundary="' . $mixedBoundary . '"';
 
 	$text = strip_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $html));
 
@@ -201,39 +218,61 @@ function provision_smtp_expect($fp, array $codes): void {
 }
 
 function provision_mail_verify_code(string $to, string $code, int $ttlMinutes): void {
-	$subject = provision_env('PROVISION_MAIL_VERIFY_SUBJECT', 'Code de vérification Asaphone');
+	$subject = provision_env('PROVISION_MAIL_VERIFY_SUBJECT', 'Votre code de vérification — Asaphone');
 	$verifyUrl = provision_base_url() . '/verify/?email=' . rawurlencode($to) . '&code=' . rawurlencode($code);
+	$codeEsc = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
+	$urlEsc = htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8');
 
-	$html = '<p>Bonjour,</p>';
-	$html .= '<p>Votre code de vérification Asaphone : <strong style="font-size:24px;letter-spacing:4px;">'
-		. htmlspecialchars($code, ENT_QUOTES, 'UTF-8') . '</strong></p>';
-	$html .= '<p>Ce code expire dans ' . $ttlMinutes . ' minutes.</p>';
-	$html .= '<p>Ou cliquez sur ce lien : <a href="' . htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8') . '">'
-		. htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8') . '</a></p>';
-	$html .= '<p>Si vous n\'avez pas demandé cette inscription, ignorez ce message.</p>';
+	$body = '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#374151;">Bonjour,</p>';
+	$body .= '<p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#374151;">'
+		. 'Pour activer votre compte téléphonique, saisissez le code ci-dessous dans l\'application <strong>Asaphone</strong> :</p>';
+	$body .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px 0 24px;">'
+		. '<div style="display:inline-block;background:#f0f5ff;border:2px solid #1a56db;border-radius:8px;padding:16px 32px;">'
+		. '<span style="font-size:32px;font-weight:700;letter-spacing:8px;color:#1a56db;font-family:Consolas,Monaco,monospace;">'
+		. $codeEsc . '</span></div></td></tr></table>';
+	$body .= '<p style="margin:0 0 8px;font-size:14px;color:#6b7280;">Ce code expire dans <strong>' . $ttlMinutes . ' minutes</strong>.</p>';
+	$body .= '<p style="margin:0 0 16px;font-size:14px;color:#6b7280;">'
+		. 'Vous pouvez aussi <a href="' . $urlEsc . '" style="color:#1a56db;">confirmer via le navigateur</a>.</p>';
+	$body .= '<p style="margin:0;font-size:13px;color:#9ca3af;">Si vous n\'avez pas demandé cette inscription, ignorez ce message.</p>';
 
-	provision_smtp_send($to, $subject, $html);
+	$html = provision_mail_layout('Vérification de votre adresse e-mail', $body);
+	$text = "Bonjour,\n\nVotre code de vérification Asaphone : $code\n\n"
+		. "Saisissez ce code dans l'application Asaphone.\n"
+		. "Expire dans $ttlMinutes minutes.\n\n"
+		. "Lien : $verifyUrl\n";
+
+	provision_smtp_send($to, $subject, $html, $text);
 }
 
 function provision_mail_credentials(string $to, string $extension, string $qrPath, string $claimUrl): void {
-	$subject = provision_env('PROVISION_MAIL_SUBJECT', 'Vos identifiants Asaphone');
+	$subject = provision_env('PROVISION_MAIL_SUBJECT', 'Vos identifiants — Asaphone');
 	$server = provision_env('PROVISION_PBX_HOST', 'pbx.local');
 	$ttlHours = (int) ceil(provision_qr_ttl() / 3600);
+	$extEsc = htmlspecialchars($extension, ENT_QUOTES, 'UTF-8');
+	$srvEsc = htmlspecialchars($server, ENT_QUOTES, 'UTF-8');
+	$urlEsc = htmlspecialchars($claimUrl, ENT_QUOTES, 'UTF-8');
 
-	$html = '<p>Bonjour,</p>';
-	$html .= '<p>Votre compte téléphonique est prêt.</p>';
-	$html .= '<ol>';
-	$html .= '<li>Ouvrez <strong>Asaphone</strong> sur votre appareil</li>';
-	$html .= '<li>Choisissez « Scanner un QR » ou « J\'ai déjà mes identifiants »</li>';
-	$html .= '<li>Scannez le QR ci-dessous (valable ' . $ttlHours . ' h)</li>';
-	$html .= '</ol>';
-	$html .= '<p><img src="cid:qr-code" alt="QR provisionnement" style="max-width:280px;" /></p>';
-	$html .= '<p>Extension : <strong>' . htmlspecialchars($extension, ENT_QUOTES, 'UTF-8') . '</strong><br>';
-	$html .= 'Serveur : <strong>' . htmlspecialchars($server, ENT_QUOTES, 'UTF-8') . '</strong></p>';
-	$html .= '<p>Lien direct (si scan impossible) :<br><a href="'
-		. htmlspecialchars($claimUrl, ENT_QUOTES, 'UTF-8') . '">'
-		. htmlspecialchars($claimUrl, ENT_QUOTES, 'UTF-8') . '</a></p>';
-	$html .= '<p><em>Ce QR est personnel et à usage unique. Ne partagez pas ce message.</em></p>';
+	$body = '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#374151;">Bonjour,</p>';
+	$body .= '<p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#374151;">'
+		. 'Votre adresse e-mail est confirmée. Votre compte téléphonique est prêt.</p>';
+	$body .= '<ol style="margin:0 0 24px;padding-left:20px;font-size:14px;line-height:1.8;color:#374151;">';
+	$body .= '<li>Ouvrez <strong>Asaphone</strong> sur votre appareil</li>';
+	$body .= '<li>Choisissez « Scanner un QR »</li>';
+	$body .= '<li>Scannez le code ci-dessous (valable ' . $ttlHours . ' h)</li>';
+	$body .= '</ol>';
+	$body .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 24px;">'
+		. '<img src="cid:qr-code" alt="QR provisionnement" style="max-width:240px;border:1px solid #e5e7eb;border-radius:8px;" />'
+		. '</td></tr></table>';
+	$body .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:6px;margin-bottom:16px;">'
+		. '<tr><td style="padding:16px;font-size:14px;color:#374151;">'
+		. '<strong>Extension :</strong> ' . $extEsc . '<br>'
+		. '<strong>Serveur :</strong> ' . $srvEsc
+		. '</td></tr></table>';
+	$body .= '<p style="margin:0;font-size:13px;color:#6b7280;">'
+		. 'Lien alternatif : <a href="' . $urlEsc . '" style="color:#1a56db;word-break:break-all;">' . $urlEsc . '</a></p>';
+	$body .= '<p style="margin:16px 0 0;font-size:13px;color:#9ca3af;">'
+		. 'Ce QR est personnel et à usage unique. Ne partagez pas ce message.</p>';
 
+	$html = provision_mail_layout('Vos identifiants téléphoniques', $body, 'Ne transférez pas ce message — il contient vos accès personnels.');
 	provision_smtp_send_with_image($to, $subject, $html, $qrPath, 'qr-code');
 }

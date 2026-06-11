@@ -19,13 +19,20 @@ try {
 		provision_ok(['status' => 'unknown', 'email_verified' => false]);
 	}
 
-	provision_ok([
+	$out = [
 		'status' => $req['status'],
 		'email_verified' => (bool) $req['email_verified'],
 		'extension' => $req['extension'],
+		'policy' => provision_policy(),
 		'created_at' => $req['created_at'],
 		'updated_at' => $req['updated_at'],
-	]);
+	];
+
+	if (!empty($req['extension'])) {
+		$out['extension_info'] = provision_extension_status($db, (string) $req['extension'], $email);
+	}
+
+	provision_ok($out);
 } catch (Throwable $e) {
 	provision_error($e->getMessage(), 400);
 }

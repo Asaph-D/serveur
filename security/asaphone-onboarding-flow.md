@@ -24,8 +24,9 @@ Voir aussi : `security/cryptographic_implementation.md` (couches L6, normes cryp
 10. [Base de données](#10-base-de-données)
 11. [Sécurité du flux](#11-sécurité-du-flux)
 12. [Attribution d’extension](#12-attribution-dextension)
-13. [Fichiers à créer](#13-fichiers-à-créer)
+13. [Fichiers (implémentés)](#13-fichiers-implémentés)
 14. [Roadmap](#14-roadmap)
+15. [HTTPS et commandes de scénario](#15-https-et-commandes-de-scénario)
 
 ---
 
@@ -330,7 +331,9 @@ Endpoints sous `https://pbx.local/provision/api/v1/` :
 | `POST` | `register.php` | Saisie e-mail → envoi code vérification (6 chiffres) |
 | `POST` | `verify.php` | Valide code → `pending_admin` ou envoi QR (selon politique) |
 | `GET` | `claim.php?token=` | Retourne credentials SIP (token one-shot) |
-| `GET` | `status.php?email=` | État : pending / pending_admin / provisioned |
+| `GET` | `status.php?email=` | État compte + `extension_info` si attribuée |
+| `GET` | `extension.php?ext=` | Extension libre / associée à un compte |
+| `GET` | `extension.php` | État de tout le pool `1003–1010` |
 | `POST` | `consume.php` | Révoque token après scan / REGISTER (`jti`) |
 
 Page web : `https://pbx.local/provision/verify/` — saisie code depuis le lien e-mail.
@@ -352,10 +355,22 @@ Isolé de l’admin FreePBX (pas de session admin pour register) ; rate-limit IP
 
 ### Prérequis
 
-- **HTTPS** recommandé (certificat Certman / Let’s Encrypt) — HTTP LAN fonctionne pour tests
-- **UFW** : ouvrir `443/tcp` (et `80/tcp` LAN) depuis LAN / VPN
+- **HTTPS** actif sur le port 443 (`scripts/enable-apache-https.sh`) — certificat FreePBX `/etc/asterisk/keys/default.crt`
+- **UFW** : `80/tcp` et `443/tcp` ouverts (LAN / VPN)
 - **SMTP Gmail** : `EMAIL_USER` + mot de passe d’application dans `/etc/provision/provision-secrets.env`
 - **qrencode** : génération PNG des QR
+
+### HTTPS
+
+Pas de service séparé : la mini-API est servie par **Apache** (comme FreePBX). Au démarrage, `serveur-startup.service` appelle `enable-apache-https.sh`.
+
+Activation manuelle :
+
+```bash
+sudo bash /home/asaph/Documents/serveur/scripts/enable-apache-https.sh
+```
+
+Certificat actuel : auto-signé Certman (CN du serveur). Les clients doivent faire confiance au certificat ou utiliser `curl -k` en test. Pour un certificat reconnu : FreePBX → Admin → Certificats → Let’s Encrypt, puis relancer le script.
 
 ---
 
@@ -407,6 +422,7 @@ Lien avec FreePBX : secret PJSIP lu depuis `/root/phase2-pjsip-secrets.txt` ou t
 | QR intercepté | Token usage unique ; expiry 24 h ; révocation `jti` |
 | Secret SIP dans mail clair | **QR chiffré uniquement** dans le mail |
 | Rejeu QR | `used=1` après premier scan ou REGISTER |
+| Extension réservée trop tôt | Seul `provisioned` (après `/consume`) bloque le pool ; `verified` = QR envoyé seulement |
 | RGPD | Consentement e-mail ; politique rétention `provision_*` |
 
 ---
@@ -421,9 +437,55 @@ Trois politiques possibles (choix métier) :
 | **B — Validation admin** | Après vérif e-mail → statut `pending_admin` → admin valide dans FreePBX → envoi QR |
 | **C — Pré-provisionnement** | Admin crée ext + e-mail à l’avance → utilisateur ne fait que vérifier que l’e-mail correspond |
 
-**Recommandation démarrage** : **B** (validation admin) pour un petit site ; **A** si pool d’extensions dédié onboarding.
+**Configuration actuelle** : **`auto`** — QR envoyé automatiquement après vérification du code e-mail.
 
 Config : `network/provision.env` → `PROVISION_POLICY=admin|auto|preprovisioned`
+
+### Vérifier si une extension est libre ou associée
+
+**Règle** : une extension n’est **prise** (`taken=true`) que si le compte s’est **authentifié** au moins une fois (SIP REGISTER → `POST /consume` → statut `provisioned`).  
+L’envoi du code de vérification ou du QR **ne réserve pas** l’extension dans le pool.
+
+```bash
+curl -sk "https://pbx.local/provision/api/v1/extension.php?ext=1007"
+curl -sk "https://pbx.local/provision/api/v1/extension.php"
+```
+
+Réponse — libre (QR envoyé mais pas encore authentifié) :
+
+```json
+{
+  "ok": true,
+  "extension": "1007",
+  "free": true,
+  "taken": false,
+  "associated_email": null,
+  "pending_email": "user@example.com",
+  "pending_status": "verified",
+  "reason": "free"
+}
+```
+
+Réponse — authentifiée (extension garantie) :
+
+```json
+{
+  "ok": true,
+  "extension": "1007",
+  "free": false,
+  "taken": true,
+  "associated_email": "user@example.com",
+  "associated_status": "provisioned",
+  "reason": "authenticated"
+}
+```
+
+CLI équivalent :
+
+```bash
+sudo php scripts/provision-assign-ext.php --pool
+sudo php scripts/provision-assign-ext.php --check 1007
+```
 
 ---
 
@@ -452,6 +514,8 @@ Config : `network/provision.env` → `PROVISION_POLICY=admin|auto|preprovisioned
   scripts/provision-send-mail.php      # Test SMTP
   scripts/provision-assign-ext.php     # Validation admin + envoi QR
   scripts/provision-generate-qr.php
+  scripts/enable-apache-https.sh     # Port 443 (cert FreePBX)
+  apache/freepbx-ssl.conf
   security/asaphone-onboarding-flow.md ← ce document
 ```
 
@@ -461,7 +525,7 @@ Config : `network/provision.env` → `PROVISION_POLICY=admin|auto|preprovisioned
 
 | Phase | Livrable | État |
 |-------|----------|------|
-| **1** | SMTP Gmail + test mail ; `provision.env` | ✅ |
+| **1** | SMTP Gmail + test mail ; `provision.env` ; HTTPS 443 | ✅ |
 | **2** | Tables SQL + `/register` + `/verify` | ✅ |
 | **3** | Génération QR + e-mail credentials + `/claim` | ✅ |
 | **4** | Écran Asaphone (2 boutons + scan) | 🔲 côté client |
@@ -476,6 +540,143 @@ Config : `network/provision.env` → `PROVISION_POLICY=admin|auto|preprovisioned
 - La **vérification e-mail** et l’**envoi du QR** passent par une **mini-API PHP sur le même serveur** + **SMTP Gmail** — pas une API backend séparée.
 - Après scan du QR, la **connexion au PBX reste identique** (WSS, REGISTER, DTLS-SRTP).
 - La sécurité est en **couche L6** (provisionnement) pour l’onboarding ; **L4/L5** inchangées pour les appels.
+
+---
+
+---
+
+## 15. HTTPS et commandes de scénario
+
+### Installation initiale (une fois)
+
+```bash
+# Mini-API + tables SQL + alias Apache + HTTPS
+sudo bash /home/asaph/Documents/serveur/scripts/provision-install.sh
+
+# Secrets SMTP (hors Git)
+sudo nano /etc/provision/provision-secrets.env
+# EMAIL_USER, EMAIL_PASSWORD (mot de passe d'application Google), EMAIL_ENABLED=true
+
+# Copier la config politique
+sudo cp /home/asaph/Documents/serveur/network/provision.env /etc/provision/provision.env
+sudo chown root:www-data /etc/provision/provision.env /etc/provision/provision-secrets.env
+sudo chmod 640 /etc/provision/provision.env /etc/provision/provision-secrets.env
+```
+
+### Vérifier que tout tourne
+
+```bash
+# Apache + HTTPS (443)
+sudo systemctl status apache2
+ss -tlnp | grep ':443'
+
+# Santé mini-API (certificat auto-signé → -k)
+curl -sk https://pbx.local/provision/
+```
+
+Réponse attendue :
+
+```json
+{"service":"asaphone-provision","version":"1.0","enabled":true,"policy":"admin","base_url":"https://pbx.local/provision"}
+```
+
+### Scénario complet — Parcours B (inscription)
+
+**Étape 1 — Asaphone envoie l’e-mail, serveur délivre le code de vérification**
+
+```bash
+curl -sk -X POST https://pbx.local/provision/api/v1/register.php \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"utilisateur@example.com"}'
+```
+
+→ L’utilisateur reçoit un mail avec un **code à 6 chiffres** (valable 15 min).  
+→ Asaphone **attend** la saisie du code.
+
+**Étape 2 — Asaphone soumet le code, serveur vérifie**
+
+```bash
+curl -sk -X POST https://pbx.local/provision/api/v1/verify.php \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"utilisateur@example.com","code":"123456"}'
+```
+
+Avec `PROVISION_POLICY=auto` (actuel) : **QR envoyé par mail immédiatement** après code valide.
+
+Avec `PROVISION_POLICY=admin` : statut `pending_admin` — pas de QR tant que l’admin n’a pas approuvé.
+
+Alternative navigateur (lien dans le mail) :
+
+```bash
+curl -sk "https://pbx.local/provision/verify/?email=utilisateur%40example.com&code=123456"
+```
+
+**Étape 3 — (auto) QR déjà envoyé par mail** — ou admin si `PROVISION_POLICY=admin` :
+
+```bash
+sudo php /home/asaph/Documents/serveur/scripts/provision-assign-ext.php \
+  --approve utilisateur@example.com --extension 1007
+```
+
+Vérifier le pool avant/après :
+
+```bash
+curl -sk https://pbx.local/provision/api/v1/extension.php
+sudo php /home/asaph/Documents/serveur/scripts/provision-assign-ext.php --pool
+```
+
+**Étape 4 — Asaphone scanne le QR → récupère les credentials**
+
+```bash
+# Récupérer le claim_token en base (debug admin)
+sudo mysql -u asteriskuser -p asterisk -N -e \
+  "SELECT claim_token FROM provision_tokens WHERE email='utilisateur@example.com' ORDER BY created_at DESC LIMIT 1"
+
+curl -sk "https://pbx.local/provision/api/v1/claim.php?token=TOKEN_ICI"
+```
+
+**Étape 5 — Asaphone REGISTER réussi → révoquer le token**
+
+```bash
+curl -sk -X POST https://pbx.local/provision/api/v1/consume.php \
+  -H 'Content-Type: application/json' \
+  -d '{"jti":"UUID_DU_TOKEN"}'
+```
+
+### Commandes utiles
+
+```bash
+# Test SMTP seul
+sudo php /home/asaph/Documents/serveur/scripts/provision-send-mail.php --to test@gmail.com
+
+# État d’une inscription
+curl -sk "https://pbx.local/provision/api/v1/status.php?email=utilisateur@example.com"
+
+# Politique auto (sans validation admin) : dans provision.env
+# PROVISION_POLICY="auto"
+# → verify envoie le QR directement après le code
+
+# Réactiver HTTPS après reboot (déjà dans serveur-startup.service)
+sudo bash /home/asaph/Documents/serveur/scripts/enable-apache-https.sh
+```
+
+### Politique `auto` — scénario actuel
+
+```bash
+# 0. Vérifier extensions libres
+curl -sk https://pbx.local/provision/api/v1/extension.php
+
+# 1. Register → code par mail
+curl -sk -X POST https://pbx.local/provision/api/v1/register.php \
+  -H 'Content-Type: application/json' -d '{"email":"user@example.com"}'
+
+# 2. Verify → attribution auto + QR par mail
+curl -sk -X POST https://pbx.local/provision/api/v1/verify.php \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"user@example.com","code":"XXXXXX"}'
+
+# 3. Scan QR dans Asaphone → claim → consume
+```
 
 ---
 

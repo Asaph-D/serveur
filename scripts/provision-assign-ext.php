@@ -11,6 +11,10 @@
  *
  * Liste en attente :
  *   sudo php provision-assign-ext.php --list-pending
+ *
+ * Vérifier une extension (libre / associée) :
+ *   sudo php provision-assign-ext.php --check 1007
+ *   sudo php provision-assign-ext.php --pool
  */
 declare(strict_types=1);
 
@@ -21,17 +25,42 @@ if (posix_geteuid() !== 0) {
 
 require_once dirname(__DIR__) . '/provision/lib/bootstrap.php';
 
-$opts = getopt('', ['email:', 'extension:', 'approve:', 'list-pending', 'help']);
+$opts = getopt('', ['email:', 'extension:', 'approve:', 'list-pending', 'check:', 'pool', 'help']);
 
 if (isset($opts['help'])) {
 	echo "Usage:\n";
 	echo "  --list-pending\n";
+	echo "  --pool                          (état du pool onboarding)\n";
+	echo "  --check EXT                     (extension libre / associée ?)\n";
 	echo "  --approve EMAIL --extension EXT\n";
 	echo "  --email EMAIL --extension EXT   (pré-provisionnement)\n";
 	exit(0);
 }
 
 $db = provision_pdo();
+
+if (isset($opts['pool'])) {
+	$pool = provision_pool_status($db);
+	printf("Pool : %d extensions, %d libres, %d authentifiées\n", $pool['total'], $pool['free_count'], $pool['taken_count']);
+	foreach ($pool['pool'] as $st) {
+		printf(
+			"  %s  free=%s  taken=%s  owner=%s  pending=%s  reason=%s\n",
+			$st['extension'],
+			$st['free'] ? 'yes' : 'no',
+			$st['taken'] ? 'yes' : 'no',
+			$st['associated_email'] ?? '-',
+			$st['pending_email'] ?? '-',
+			$st['reason']
+		);
+	}
+	exit(0);
+}
+
+if (isset($opts['check'])) {
+	$ext = trim((string) $opts['check']);
+	echo json_encode(provision_extension_status($db, $ext), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+	exit(0);
+}
 
 if (isset($opts['list-pending'])) {
 	$sth = $db->query(

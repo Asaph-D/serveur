@@ -39,4 +39,7 @@ bash /home/asaph/Documents/serveur/scripts/net-apply-site.sh
 echo "== fix cert permissions =="
 bash /home/asaph/Documents/serveur/scripts/fix-cert-perms.sh
 
+echo "== enable apache HTTPS (443) =="
+bash /home/asaph/Documents/serveur/scripts/enable-apache-https.sh
+
 echo "=== serveur-startup: OK $(date -Is) ==="

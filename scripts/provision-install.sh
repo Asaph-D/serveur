@@ -101,6 +101,9 @@ if command -v apache2ctl >/dev/null 2>&1; then
 	systemctl reload apache2 || systemctl restart apache2
 fi
 
+echo "==> HTTPS (port 443)"
+bash "$ROOT/scripts/enable-apache-https.sh"
+
 echo "==> Scripts CLI exécutables"
 chmod +x "$ROOT/scripts/provision-assign-ext.php"
 chmod +x "$ROOT/scripts/provision-send-mail.php"
