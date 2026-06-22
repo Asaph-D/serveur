@@ -26,12 +26,10 @@ exten => 7000,1,NoOp(Phase3 time condition)
  same => n(closed),Playback(vm-goodbye)
  same => n,Hangup()
 
-; IVR intelligent (AGI Python)
-exten => 7010,1,NoOp(Phase3 IVR AGI)
- same => n,AGI(phase3_intelligent_ivr.py,fr)
- same => n,Hangup()
+; IVR intelligent (AGI Python) — dialplan queue : scripts/apply-ivr-queues.sh (7010, 7101-7110)
+; exten => 7010 … défini dans BEGIN_IVR_QUEUES
 
-; File d’attente ACD (app_queue) — stratégie leastrecent dans queues_custom.conf ; sonnerie groupée : créer une 2e queue ringall si besoin
+; File d’attente ACD globale (tous les postes 1001-1010)
 exten => 7020,1,NoOp(Phase3 queue phase3-support)
  same => n,Set(CALLFILE=${STRFTIME(${EPOCH},,%Y%m%d-%H%M%S)}-${FILTER(0-9,${CALLERID(num)})})
  same => n,MixMonitor(/var/spool/asterisk/monitor/${CALLFILE}.wav,b)
@@ -69,29 +67,7 @@ install -d -o asterisk -g asterisk -m 0755 /var/lib/asterisk/agi-bin
 install -m 0755 -o asterisk -g asterisk "$REPO/phase3/agi/phase3_intelligent_ivr.py" /var/lib/asterisk/agi-bin/phase3_intelligent_ivr.py
 install -m 0644 -o asterisk -g asterisk "$REPO/phase3/asterisk/phase3-vip.txt" /etc/asterisk/phase3-vip.txt
 
-if [[ ! -s /etc/asterisk/queues_custom.conf ]] || ! grep -q '^\[phase3-support\]' /etc/asterisk/queues_custom.conf; then
-	cat >> /etc/asterisk/queues_custom.conf <<'QC'
-[phase3-support]
-strategy=leastrecent
-timeout=20
-retry=2
-wrapuptime=5
-maxlen=0
-ringinuse=no
-joinempty=yes
-leavewhenempty=no
-member => PJSIP/1001,0
-member => PJSIP/1002,0
-member => PJSIP/1003,0
-member => PJSIP/1004,0
-member => PJSIP/1005,0
-; MoH : classe default (core sounds). Installer module music FreePBX pour fichiers dédiés.
-musicclass=default
-QC
-	echo "Queue phase3-support ajoutée dans queues_custom.conf"
-else
-	echo "Queue phase3-support déjà définie"
-fi
+bash "$REPO/scripts/apply-ivr-queues.sh"
 
 AMI_PASS=""
 if [[ -f "$REPO/monitoring/.env" ]]; then

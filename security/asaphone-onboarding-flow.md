@@ -677,7 +677,11 @@ curl -sk -X POST https://pbx.local/provision/api/v1/verify.php \
 
 # 3. Scan QR dans Asaphone → claim → consume
 ```
-
+sudo mysql -u asteriskuser -p1234 asterisk -e "
+DELETE FROM provision_tokens WHERE email='adengioce@gmail.com';
+DELETE FROM provision_requests WHERE email='adengioce@gmail.com';
+SELECT 'reset OK' AS status;
+"
 ---
 
 *Document flux Asaphone — serveur implémenté ; client Asaphone en cours (phase 4).*

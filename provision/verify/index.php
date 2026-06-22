@@ -21,25 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || ($email !== '' && $code !== '')) {
 		}
 
 		$db = provision_pdo();
-		$req = provision_get_request_by_email($db, $email);
-		if (!$req || empty($req['verify_code_hash'])) {
-			throw new RuntimeException('Demande introuvable ou déjà vérifiée');
-		}
-		if (!empty($req['verify_expires'])) {
-			$exp = new DateTimeImmutable($req['verify_expires']);
-			if ($exp < new DateTimeImmutable('now')) {
-				throw new RuntimeException('Code expiré');
-			}
-		}
-		if (!provision_verify_code_match($code, $req['verify_code_hash'])) {
-			throw new RuntimeException('Code incorrect');
-		}
+		$resolved = provision_execute_verify($db, $email, $code);
 
-		$resolved = provision_resolve_extension_after_verify($db, $email);
-		provision_mark_verified($db, $email, $resolved['extension'], $resolved['status']);
-
-		if ($resolved['send_qr'] && $resolved['extension'] !== null) {
-			provision_send_qr_email($db, $email, $resolved['extension']);
+		if (!empty($resolved['qr_resent'])) {
+			$result = 'Vos identifiants Asaphone vous ont été renvoyés par courrier.';
+		} elseif ($resolved['send_qr'] && $resolved['extension'] !== null) {
 			$result = 'Votre e-mail est vérifié. Vos identifiants Asaphone vous ont été envoyés par courrier.';
 		} elseif ($resolved['status'] === 'pending_admin') {
 			$result = 'Votre e-mail est vérifié. Un administrateur validera votre extension sous peu.';

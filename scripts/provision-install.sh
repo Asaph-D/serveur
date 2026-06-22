@@ -25,7 +25,10 @@ apt-get install -y qrencode php-cli php-mysql php-json 2>/dev/null || {
 
 echo "==> Répertoires"
 mkdir -p "$WWW" "$ETC" "$LOG" "$LIB/qr"
-chmod 750 "$LOG" "$LIB"
+chown www-data:www-data "$LIB" "$LIB/qr" 2>/dev/null || true
+chmod 775 "$LIB" "$LIB/qr"
+chmod 750 "$LOG"
+chown www-data:www-data "$LOG" 2>/dev/null || true
 
 echo "==> Secrets SMTP"
 if [[ ! -f "$SECRETS" ]]; then
@@ -74,6 +77,10 @@ if [[ -r /etc/freepbx.conf ]]; then
 	DB_PASS="${_db[2]}"
 	DB_NAME="${_db[3]}"
 	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema.sql"
+	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-voicemail.sql" 2>/dev/null || {
+		mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-voicemail.sql" || true
+	}
+	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-chat.sql" 2>/dev/null || true
 else
 	mysql asterisk < "$ROOT/scripts/provision-schema.sql"
 fi
@@ -104,10 +111,21 @@ fi
 echo "==> HTTPS (port 443)"
 bash "$ROOT/scripts/enable-apache-https.sh"
 
+echo "==> Wrapper externnotify messagerie"
+install -m 0755 "$ROOT/scripts/asaphone-vm-notify.sh" /usr/local/bin/asaphone-vm-notify
+install -m 0755 "$ROOT/scripts/asaphone-vm-originate.sh" /usr/local/bin/asaphone-vm-originate
+install -m 0755 "$ROOT/scripts/asaphone-chat-ingest.sh" /usr/local/bin/asaphone-chat-ingest
+install -m 0440 "$ROOT/scripts/asaphone-chat-ingest.sudoers" /etc/sudoers.d/asaphone-chat-ingest
+visudo -c -f /etc/sudoers.d/asaphone-chat-ingest
+install -m 0440 "$ROOT/scripts/asaphone-vm-notify.sudoers" /etc/sudoers.d/asaphone-vm-notify
+visudo -c -f /etc/sudoers.d/asaphone-vm-notify
+
 echo "==> Scripts CLI exécutables"
 chmod +x "$ROOT/scripts/provision-assign-ext.php"
 chmod +x "$ROOT/scripts/provision-send-mail.php"
 chmod +x "$ROOT/scripts/provision-generate-qr.php"
+chmod +x "$WWW/bin/vm-notify.php" 2>/dev/null || true
+chmod +x "$WWW/bin/chat-ingest.php" 2>/dev/null || true
 
 echo ""
 echo "Installation terminée."

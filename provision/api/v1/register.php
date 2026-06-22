@@ -10,6 +10,7 @@ try {
 
 	$body = array_merge($_POST, provision_read_json_body());
 	$email = provision_normalize_email((string) ($body['email'] ?? ''));
+	$phone = provision_normalize_phone(isset($body['phone']) ? (string) $body['phone'] : null);
 
 	if (!provision_valid_email($email)) {
 		provision_error('Adresse e-mail invalide');
@@ -27,7 +28,7 @@ try {
 	$hash = provision_hash_code($code);
 	$expires = (new DateTimeImmutable('now'))->modify('+' . provision_verify_ttl() . ' seconds');
 
-	provision_upsert_register($db, $email, $hash, $expires);
+	provision_upsert_register($db, $email, $hash, $expires, $phone);
 
 	$ttlMin = (int) ceil(provision_verify_ttl() / 60);
 	provision_mail_verify_code($email, $code, $ttlMin);
@@ -41,6 +42,9 @@ try {
 	$msg = $e->getMessage();
 	if (str_contains($msg, 'Trop de tentatives')) {
 		provision_error($msg, 429);
+	}
+	if (str_contains($msg, 'déjà provisionné')) {
+		provision_error($msg, 409);
 	}
 	provision_error('Impossible d\'envoyer le code de vérification', 500);
 }

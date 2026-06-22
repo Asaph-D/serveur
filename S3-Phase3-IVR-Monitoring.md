@@ -60,7 +60,18 @@ Appliqué par `sudo bash scripts/phase3-apply-asterisk.sh` (idempotent : bloc ma
 | **8100** | Test **MixMonitor** + renvoi messagerie 1001 |
 | **8000** | Inchangé (Phase 2 — sonnerie groupe) |
 
-**File d’attente** : `/etc/asterisk/queues_custom.conf`, section `[phase3-support]` (membres **PJSIP/1001–1005** par défaut — adapter).
+**File d’attente** : `phase3/asterisk/queues-ivr.conf` → `queues_custom.conf` via `scripts/apply-ivr-queues.sh` :
+
+| Queue | Membres | Accès dialplan |
+|-------|---------|----------------|
+| `phase3-support` | 1001–1010 | **7020** |
+| `ivr-ext-1001` … `ivr-ext-1010` | 1 poste chacune | **7101**–**7110** ou **7010** (saisie ext.) |
+
+Appliquer / mettre à jour :
+
+```bash
+sudo bash scripts/apply-ivr-queues.sh
+```
 
 **Trunk SIP** : modèle **wizard** commenté dans `/etc/asterisk/pjsip_custom_post.conf` ; en production, préférer **Connectivité → Trunks** FreePBX quand les modules réseau Sangoma sont stables.
 

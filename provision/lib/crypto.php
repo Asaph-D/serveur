@@ -51,11 +51,6 @@ function provision_build_qr_content(string $claimToken): string {
 }
 
 function provision_generate_qr_png(string $content, string $outPath): void {
-	$dir = dirname($outPath);
-	if (!is_dir($dir) && !mkdir($dir, 0700, true) && !is_dir($dir)) {
-		throw new RuntimeException("Impossible de créer $dir");
-	}
-
 	$tmpIn = tempnam(sys_get_temp_dir(), 'qrin_');
 	$tmpOut = tempnam(sys_get_temp_dir(), 'qrout_') . '.png';
 	file_put_contents($tmpIn, $content);

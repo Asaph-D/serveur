@@ -24,24 +24,7 @@ try {
 	provision_rate_limit('verify_ip', $ip, $maxVerify);
 
 	$db = provision_pdo();
-	$req = provision_get_request_by_email($db, $email);
-	if (!$req || empty($req['verify_code_hash'])) {
-		provision_error('Demande introuvable ou déjà vérifiée', 404);
-	}
-
-	if (!empty($req['verify_expires'])) {
-		$exp = new DateTimeImmutable($req['verify_expires']);
-		if ($exp < new DateTimeImmutable('now')) {
-			provision_error('Code expiré', 410);
-		}
-	}
-
-	if (!provision_verify_code_match($code, $req['verify_code_hash'])) {
-		provision_error('Code incorrect', 401);
-	}
-
-	$resolved = provision_resolve_extension_after_verify($db, $email);
-	provision_mark_verified($db, $email, $resolved['extension'], $resolved['status']);
+	$resolved = provision_execute_verify($db, $email, $code);
 
 	$response = [
 		'message' => 'E-mail vérifié',
@@ -49,12 +32,17 @@ try {
 		'policy' => provision_policy(),
 	];
 
-	if ($resolved['send_qr'] && $resolved['extension'] !== null) {
-		$tokenData = provision_send_qr_email($db, $email, $resolved['extension']);
+	if (!empty($resolved['qr_resent'])) {
+		$response['message'] = 'Vos identifiants ont été renvoyés par e-mail.';
+		$response['extension'] = $resolved['extension'];
+		$response['qr_sent'] = true;
+		$response['qr_resent'] = true;
+		$response['expires'] = $resolved['token']['expires'] ?? null;
+	} elseif ($resolved['send_qr'] && $resolved['extension'] !== null) {
 		$response['message'] = 'E-mail vérifié. Vos identifiants ont été envoyés.';
 		$response['extension'] = $resolved['extension'];
 		$response['qr_sent'] = true;
-		$response['expires'] = $tokenData['expires'];
+		$response['expires'] = $resolved['token']['expires'] ?? null;
 	} elseif ($resolved['status'] === 'pending_admin') {
 		$response['message'] = 'E-mail vérifié. Un administrateur validera votre extension.';
 		$response['qr_sent'] = false;
@@ -63,7 +51,16 @@ try {
 	provision_ok($response);
 } catch (Throwable $e) {
 	provision_log_error('verify', $e);
-	provision_error($e->getMessage(), 400);
+	$msg = $e->getMessage();
+	$code = 400;
+	if ($msg === 'Code incorrect') {
+		$code = 401;
+	} elseif ($msg === 'Code expiré') {
+		$code = 410;
+	} elseif (str_contains($msg, 'introuvable') || str_contains($msg, 'déjà vérifiée')) {
+		$code = 404;
+	}
+	provision_error($msg, $code);
 }
 
 function provision_log_error(string $endpoint, Throwable $e): void {

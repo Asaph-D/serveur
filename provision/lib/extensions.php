@@ -67,7 +67,21 @@ function provision_get_extension_owner(PDO $db, string $extension): ?array {
 	return $row ?: null;
 }
 
-/** QR envoyé mais pas encore authentifié — n'empêche pas la réattribution du pool. */
+/** Compte actif ou en attente sur cette extension (verified / pending_admin / provisioned). */
+function provision_get_extension_holder(PDO $db, string $extension): ?array {
+	$sth = $db->prepare(
+		"SELECT email, status, email_verified, updated_at FROM provision_requests
+		 WHERE extension = ? AND extension IS NOT NULL AND extension != ''
+		 AND status IN ('verified', 'pending_admin', 'provisioned')
+		 ORDER BY FIELD(status, 'provisioned', 'verified', 'pending_admin'), updated_at DESC
+		 LIMIT 1"
+	);
+	$sth->execute([$extension]);
+	$row = $sth->fetch();
+	return $row ?: null;
+}
+
+/** QR envoyé mais pas encore authentifié. */
 function provision_get_extension_pending(PDO $db, string $extension): ?array {
 	$sth = $db->prepare(
 		"SELECT email, status, email_verified, updated_at FROM provision_requests
@@ -104,9 +118,10 @@ function provision_extension_status(PDO $db, string $extension, ?string $forEmai
 	$inPool = in_array($extension, provision_ext_pool(), true);
 	$exists = provision_extension_exists($db, $extension);
 	$owner = provision_get_extension_owner($db, $extension);
+	$holder = provision_get_extension_holder($db, $extension);
 	$pending = provision_get_extension_pending($db, $extension);
 
-	$free = $exists && $inPool && $owner === null;
+	$free = $exists && $inPool && $holder === null;
 	$available = false;
 	$reason = 'unknown';
 
@@ -114,10 +129,10 @@ function provision_extension_status(PDO $db, string $extension, ?string $forEmai
 		$reason = 'not_in_freepbx';
 	} elseif (!$inPool) {
 		$reason = 'outside_pool';
-	} elseif ($owner === null) {
+	} elseif ($holder === null) {
 		$available = true;
 		$reason = 'free';
-	} elseif ($forEmail !== null && $owner['email'] === $forEmail) {
+	} elseif ($forEmail !== null && $holder['email'] === $forEmail) {
 		$available = false;
 		$reason = 'authenticated_as_you';
 	} else {
@@ -131,9 +146,9 @@ function provision_extension_status(PDO $db, string $extension, ?string $forEmai
 		'in_pool' => $inPool,
 		'free' => $free,
 		'available' => $available,
-		'taken' => $owner !== null,
-		'associated_email' => $owner['email'] ?? null,
-		'associated_status' => $owner['status'] ?? null,
+		'taken' => $holder !== null,
+		'associated_email' => $holder['email'] ?? null,
+		'associated_status' => $holder['status'] ?? null,
 		'pending_email' => $pending['email'] ?? null,
 		'pending_status' => $pending['status'] ?? null,
 		'reason' => $reason,
@@ -163,9 +178,9 @@ function provision_pool_status(PDO $db, ?string $forEmail = null): array {
 	];
 }
 
-function provision_assign_next_extension(PDO $db): ?string {
+function provision_assign_next_extension(PDO $db, ?string $forEmail = null): ?string {
 	foreach (provision_ext_pool() as $ext) {
-		if (provision_is_extension_available($db, $ext)) {
+		if (provision_is_extension_available($db, $ext, $forEmail)) {
 			return $ext;
 		}
 	}
@@ -184,6 +199,15 @@ function provision_find_preprovisioned_extension(PDO $db, string $email): ?strin
 	return is_string($ext) && $ext !== '' ? $ext : null;
 }
 
+function provision_vm_access_code(string $extension): string {
+	$prefix = provision_env('PROVISION_VM_CODE_PREFIX', '*81');
+	return $prefix . substr($extension, 1);
+}
+
+function provision_vm_pin(string $extension): string {
+	return substr(str_pad($extension, 4, '0', STR_PAD_LEFT), -4);
+}
+
 function provision_credentials_payload(PDO $db, string $extension, string $jti): array {
 	$secret = provision_get_extension_secret($db, $extension);
 	if ($secret === null) {
@@ -199,6 +223,8 @@ function provision_credentials_payload(PDO $db, string $extension, string $jti):
 		'secret' => $secret,
 		'codecs' => provision_codecs(),
 		'webrtc' => true,
+		'vm_code' => provision_vm_access_code($extension),
+		'vm_pin' => provision_vm_pin($extension),
 		'iat' => $now,
 		'exp' => $now + provision_qr_ttl(),
 		'jti' => $jti,

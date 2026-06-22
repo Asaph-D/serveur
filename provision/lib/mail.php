@@ -51,8 +51,6 @@ function provision_mail_headers(array $id, string $to, string $subject): array {
 		'Subject: ' . $subject,
 		'X-Mailer: Asaphone-Provision/1.0',
 		'X-Priority: 3',
-		'Precedence: bulk',
-		'Auto-Submitted: auto-generated',
 	];
 }
 
@@ -242,6 +240,16 @@ function provision_mail_verify_code(string $to, string $code, int $ttlMinutes): 
 		. "Lien : $verifyUrl\n";
 
 	provision_smtp_send($to, $subject, $html, $text);
+	provision_log_mail_sent('verify_code', $to);
+}
+
+function provision_log_mail_sent(string $kind, string $to): void {
+	$dir = '/var/log/provision';
+	if (!is_dir($dir)) {
+		@mkdir($dir, 0750, true);
+	}
+	$line = date('c') . " [mail:$kind] sent to $to\n";
+	@file_put_contents($dir . '/mail.log', $line, FILE_APPEND | LOCK_EX);
 }
 
 function provision_mail_credentials(string $to, string $extension, string $qrPath, string $claimUrl): void {
@@ -251,6 +259,10 @@ function provision_mail_credentials(string $to, string $extension, string $qrPat
 	$extEsc = htmlspecialchars($extension, ENT_QUOTES, 'UTF-8');
 	$srvEsc = htmlspecialchars($server, ENT_QUOTES, 'UTF-8');
 	$urlEsc = htmlspecialchars($claimUrl, ENT_QUOTES, 'UTF-8');
+	$vmCode = provision_vm_access_code($extension);
+	$vmPin = provision_vm_pin($extension);
+	$vmCodeEsc = htmlspecialchars($vmCode, ENT_QUOTES, 'UTF-8');
+	$vmPinEsc = htmlspecialchars($vmPin, ENT_QUOTES, 'UTF-8');
 
 	$body = '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#374151;">Bonjour,</p>';
 	$body .= '<p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#374151;">'
@@ -266,7 +278,9 @@ function provision_mail_credentials(string $to, string $extension, string $qrPat
 	$body .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:6px;margin-bottom:16px;">'
 		. '<tr><td style="padding:16px;font-size:14px;color:#374151;">'
 		. '<strong>Extension :</strong> ' . $extEsc . '<br>'
-		. '<strong>Serveur :</strong> ' . $srvEsc
+		. '<strong>Serveur :</strong> ' . $srvEsc . '<br>'
+		. '<strong>Messagerie vocale :</strong> composez <strong>' . $vmCodeEsc . '</strong>'
+		. ' (depuis votre poste, sans PIN ; sinon PIN&nbsp;: ' . $vmPinEsc . ')'
 		. '</td></tr></table>';
 	$body .= '<p style="margin:0;font-size:13px;color:#6b7280;">'
 		. 'Lien alternatif : <a href="' . $urlEsc . '" style="color:#1a56db;word-break:break-all;">' . $urlEsc . '</a></p>';
@@ -275,4 +289,5 @@ function provision_mail_credentials(string $to, string $extension, string $qrPat
 
 	$html = provision_mail_layout('Vos identifiants téléphoniques', $body, 'Ne transférez pas ce message — il contient vos accès personnels.');
 	provision_smtp_send_with_image($to, $subject, $html, $qrPath, 'qr-code');
+	provision_log_mail_sent('credentials', $to);
 }

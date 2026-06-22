@@ -42,6 +42,14 @@ function provision_normalize_email(string $email): string {
 	return strtolower(trim($email));
 }
 
+function provision_normalize_phone(?string $phone): ?string {
+	if ($phone === null) {
+		return null;
+	}
+	$p = preg_replace('/[^\d+]/', '', trim($phone));
+	return $p !== '' ? $p : null;
+}
+
 function provision_valid_email(string $email): bool {
 	return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
 }

@@ -362,7 +362,9 @@ sudo bash scripts/apply-trunks.sh
 | **8000** | Sonnerie groupe (1001–1010) | `extensions_custom.conf` |
 | **7000** | Routage horaire → IVR ou fermeture | `extensions_custom.conf` |
 | **7010** | IVR intelligent (AGI Python) | `extensions_custom.conf` |
-| **7020** | File d’attente `phase3-support` | `extensions_custom.conf` + `queues_custom.conf` |
+| **7020** | File d’attente `phase3-support` (1001–1010) | `queues-ivr.conf` + `apply-ivr-queues.sh` |
+| **7101–7110** | File IVR par extension (`ivr-ext-1001` … `ivr-ext-1010`) | idem |
+| **7010** | IVR AGI + saisie extension → queue dédiée | idem |
 | **8001** | Conférence (PIN 1234) | `extensions_custom.conf` |
 
 ### Interface vs custom
@@ -382,6 +384,46 @@ sudo fwconsole reload
 ---
 
 ## 10. Messagerie vocale et e-mail
+
+### Pas de menu « Voicemail » au premier niveau
+
+FreePBX 16 n’affiche **pas** un menu global « Voicemail » dans la barre latérale (contrairement à d’anciennes versions). La messagerie se gère **par extension** :
+
+**Applications → Extensions → [extension] → onglet Voicemail**
+
+Les messages enregistrés sont aussi visibles dans **Reports → CDR** (durée) et sur disque sous `/var/spool/asterisk/voicemail/default/<ext>/INBOX/`.
+
+### Codes d’accès téléphone (recommandé)
+
+| Extension | Code direct | PIN (autre poste) |
+|-----------|-------------|-------------------|
+| 1001 | `*81001` | `1001` |
+| 1003 | `*81003` | `1003` |
+| … | `*81` + 3 derniers chiffres | idem |
+
+Depuis **son propre poste** : composer le code → accès direct aux messages (sans tutoriel initial).
+
+**Empilement** : plusieurs messages (même appelant ou non) s’accumulent dans la **même boîte** ; le code ne change pas. À l’écoute, Asterisk annonce « vous avez X nouveaux messages ».
+
+**Notification** : **aucun e-mail avec WAV**. À chaque nouveau message, le PBX envoie un **SIP MESSAGE** sur le même flux que le chat Asaphone (`from-message`), avec un JSON :
+
+```json
+{"type":"voicemail","vm_code":"*81003","caller":"1001","text":"Nouveau message vocal…","deeplink":"asaphone://voicemail?code=*81003&ext=1003"}
+```
+
+Installation : `sudo bash scripts/apply-voicemail-codes.sh` + `sudo bash scripts/apply-message-dialplan.sh` + `sudo php scripts/apply-voicemail-policy.php`
+
+**Récupération côté Asaphone** :
+- **À la reconnexion** (poste était offline) : `GET https://pbx.local/provision/api/v1/voicemail/pending.php?ext=1003` + header `X-Provision-Jti: <jti>` → notifications en attente + liens écoute
+- Deep link : `asaphone://voicemail?code=*81003&ext=1003`
+- Liste complète : `GET .../voicemail/open.php?ext=1003` + `X-Provision-Jti`
+- Écoute audio : `GET .../voicemail/listen.php?ext=1003&jti=<jti>&msg=msg0010`
+
+Le **fichier audio** est toujours sur le serveur (`/var/spool/asterisk/voicemail/...`) même si le destinataire est déconnecté.
+
+**Messages chat texte** : chaque MESSAGE est enregistré en base (`provision_chat_messages`). Si le SIP instantané échoue (offline), récupération à la reconnexion :
+
+`GET https://pbx.local/provision/api/v1/chat/pending.php?ext=1001` + header `X-Provision-Jti: <jti>`
 
 ### Interface
 
