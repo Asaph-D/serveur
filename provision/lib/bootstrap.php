@@ -22,6 +22,7 @@ require_once __DIR__ . '/extensions.php';
 require_once __DIR__ . '/voicemail.php';
 require_once __DIR__ . '/vm-notify.php';
 require_once __DIR__ . '/chat-messages.php';
+require_once __DIR__ . '/vpn-peers.php';
 require_once __DIR__ . '/tokens.php';
 require_once __DIR__ . '/requests.php';
 require_once __DIR__ . '/ratelimit.php';

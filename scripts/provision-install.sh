@@ -6,7 +6,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SECRETS="/etc/provision/provision-secrets.env"
 LEGACY_SECRETS="/root/provision-secrets.env"
-MASTER_KEY="/root/provision-master.key"
+MASTER_KEY="/etc/provision/master.key"
+LEGACY_MASTER_KEY="/root/provision-master.key"
 WWW="/var/www/provision"
 ETC="/etc/provision"
 LOG="/var/log/provision"
@@ -46,9 +47,14 @@ chmod 640 "$SECRETS"
 
 echo "==> Clé maître provisionnement"
 if [[ ! -f "$MASTER_KEY" ]]; then
-	openssl rand -hex 32 > "$MASTER_KEY"
-	chmod 600 "$MASTER_KEY"
+	if [[ -f "$LEGACY_MASTER_KEY" ]]; then
+		cp "$LEGACY_MASTER_KEY" "$MASTER_KEY"
+	else
+		openssl rand -hex 32 > "$MASTER_KEY"
+	fi
 fi
+chown root:www-data "$MASTER_KEY"
+chmod 640 "$MASTER_KEY"
 
 echo "==> Config provision.env"
 cp "$ROOT/network/provision.env" "$ETC/provision.env"
@@ -81,6 +87,7 @@ if [[ -r /etc/freepbx.conf ]]; then
 		mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-voicemail.sql" || true
 	}
 	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-chat.sql" 2>/dev/null || true
+	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-vpn.sql" 2>/dev/null || true
 else
 	mysql asterisk < "$ROOT/scripts/provision-schema.sql"
 fi
@@ -119,6 +126,9 @@ install -m 0440 "$ROOT/scripts/asaphone-chat-ingest.sudoers" /etc/sudoers.d/asap
 visudo -c -f /etc/sudoers.d/asaphone-chat-ingest
 install -m 0440 "$ROOT/scripts/asaphone-vm-notify.sudoers" /etc/sudoers.d/asaphone-vm-notify
 visudo -c -f /etc/sudoers.d/asaphone-vm-notify
+install -m 0755 "$ROOT/scripts/asaphone-vpn-peer.sh" /usr/local/bin/asaphone-vpn-peer
+install -m 0440 "$ROOT/scripts/asaphone-vpn-peer.sudoers" /etc/sudoers.d/asaphone-vpn-peer
+visudo -c -f /etc/sudoers.d/asaphone-vpn-peer
 
 echo "==> Scripts CLI exécutables"
 chmod +x "$ROOT/scripts/provision-assign-ext.php"

@@ -56,3 +56,6 @@ mysql -u asteriskuser -p asterisk -e "UPDATE provision_requests SET email_verifi
 ```
 
 (puis tape **`1234`** quand il le demande)
+
+
+curl -sk -X POST 'https://pbx.local/provision/api/v1/vpn/enroll.php' -H 'Content-Type: application/json' -H 'X-Provision-Jti: b4b24f6c-03bd-4cc8-b9ca-8dcd201ca441' -d '{"ext":"1004","jti":"b4b24f6c-03bd-4cc8-b9ca-8dcd201ca441"}' 2>&1; echo; TOKEN=$(mysql -u asteriskuser -p1234 asterisk -N -e "SELECT claim_token FROM provision_vpn_peers WHERE email=(SELECT email FROM provision_tokens WHERE jti='b4b24f6c-03bd-4cc8-b9ca-8dcd201ca441');"); echo "token=$TOKEN"; curl -sk -X POST "https://pbx.local/provision/api/v1/vpn/claim.php" -H 'Content-Type: application/json' -d "{\"token\":\"$TOKEN\"}" 2>&1 | head -c 500; echo

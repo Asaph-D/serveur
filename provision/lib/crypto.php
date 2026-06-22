@@ -40,6 +40,44 @@ function provision_encrypt_payload(array $payload): ?string {
 	return rtrim(strtr(base64_encode($iv . $tag . $ciphertext), '+/', '-_'), '=');
 }
 
+function provision_decrypt_payload(string $encoded): ?array {
+	$keyHex = provision_master_key();
+	if ($keyHex === '' || strlen($keyHex) !== 64) {
+		return null;
+	}
+	$key = hex2bin($keyHex);
+	$pad = strlen($encoded) % 4;
+	if ($pad > 0) {
+		$encoded .= str_repeat('=', 4 - $pad);
+	}
+	$raw = base64_decode(strtr($encoded, '-_', '+/'), true);
+	if ($raw === false || strlen($raw) < 28) {
+		return null;
+	}
+	$iv = substr($raw, 0, 12);
+	$tag = substr($raw, 12, 16);
+	$ciphertext = substr($raw, 28);
+	$plaintext = openssl_decrypt($ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+	if ($plaintext === false) {
+		return null;
+	}
+	$data = json_decode($plaintext, true);
+	return is_array($data) ? $data : null;
+}
+
+function provision_encrypt_secret(string $secret): ?string {
+	return provision_encrypt_payload(['secret' => $secret]);
+}
+
+function provision_decrypt_secret(?string $encoded): ?string {
+	if ($encoded === null || $encoded === '') {
+		return null;
+	}
+	$data = provision_decrypt_payload($encoded);
+	$val = $data['secret'] ?? null;
+	return is_string($val) && $val !== '' ? $val : null;
+}
+
 function provision_build_claim_url(string $claimToken): string {
 	return provision_base_url() . '/api/v1/claim.php?token=' . rawurlencode($claimToken);
 }
