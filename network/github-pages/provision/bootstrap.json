@@ -21,6 +21,7 @@
     "register": "/api/v1/register.php",
     "verify": "/api/v1/verify.php",
     "claim": "/api/v1/claim.php",
+    "reconnect": "/api/v1/reconnect.php",
     "vpn_register": "/api/v1/vpn/register.php",
     "vpn_verify": "/api/v1/vpn/verify.php",
     "vpn_claim": "/api/v1/vpn/claim.php",
