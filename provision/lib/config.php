@@ -57,6 +57,41 @@ function provision_base_url(): string {
 	return rtrim(provision_env('PROVISION_BASE_URL', 'https://pbx.local/provision'), '/');
 }
 
+/** URL discovery statique (GitHub Pages) — joignable avant tout contact PBX. */
+function provision_discovery_url(): string {
+	return trim(provision_env('PROVISION_DISCOVERY_URL', ''));
+}
+
+/** API HTTPS joignable depuis Internet (claim / QR / enroll avant tunnel VPN). */
+function provision_public_base_url(): string {
+	$pub = trim(provision_env('PROVISION_PUBLIC_BASE_URL', ''));
+	if ($pub !== '') {
+		return rtrim($pub, '/');
+	}
+	$host = trim(provision_env('PROVISION_PUBLIC_HOST', ''));
+	if ($host !== '') {
+		return 'https://' . $host . '/provision';
+	}
+	return provision_base_url();
+}
+
+function provision_public_host(): string {
+	$host = trim(provision_env('PROVISION_PUBLIC_HOST', ''));
+	if ($host !== '') {
+		return $host;
+	}
+	$url = provision_public_base_url();
+	if (preg_match('#^https?://([^/:]+)#', $url, $m)) {
+		return $m[1];
+	}
+	return '';
+}
+
+/** Liens one-shot envoyés aux apps distantes (toujours via IP/domaine public). */
+function provision_bootstrap_url(): string {
+	return provision_public_base_url();
+}
+
 function provision_verify_ttl(): int {
 	return (int) provision_env('PROVISION_VERIFY_TTL', '900');
 }

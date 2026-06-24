@@ -154,7 +154,7 @@ function provision_vpn_build_client_conf(string $privateKey, string $tunnelIp, ?
 }
 
 function provision_vpn_build_claim_url(string $claimToken): string {
-	return provision_base_url() . '/api/v1/vpn/claim.php?token=' . rawurlencode($claimToken);
+	return provision_bootstrap_url() . '/api/v1/vpn/claim.php?token=' . rawurlencode($claimToken);
 }
 
 function provision_vpn_build_deeplink(string $claimToken): string {

@@ -79,7 +79,7 @@ function provision_decrypt_secret(?string $encoded): ?string {
 }
 
 function provision_build_claim_url(string $claimToken): string {
-	return provision_base_url() . '/api/v1/claim.php?token=' . rawurlencode($claimToken);
+	return provision_bootstrap_url() . '/api/v1/claim.php?token=' . rawurlencode($claimToken);
 }
 
 function provision_build_qr_content(string $claimToken): string {

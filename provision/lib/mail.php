@@ -217,7 +217,7 @@ function provision_smtp_expect($fp, array $codes): void {
 
 function provision_mail_verify_code(string $to, string $code, int $ttlMinutes): void {
 	$subject = provision_env('PROVISION_MAIL_VERIFY_SUBJECT', 'Votre code de vérification — Asaphone');
-	$verifyUrl = provision_base_url() . '/verify/?email=' . rawurlencode($to) . '&code=' . rawurlencode($code);
+	$verifyUrl = provision_bootstrap_url() . '/verify/?email=' . rawurlencode($to) . '&code=' . rawurlencode($code);
 	$codeEsc = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
 	$urlEsc = htmlspecialchars($verifyUrl, ENT_QUOTES, 'UTF-8');
 

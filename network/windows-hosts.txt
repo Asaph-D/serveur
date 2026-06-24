@@ -1,4 +1,4 @@
 # Copier dans le fichier hosts Windows (en admin) :
 #   C:\Windows\System32\drivers\etc\hosts
 # Mise à jour quand l’IP change de routeur.
-192.168.137.240  pbx.local  pbx
+192.168.1.80  pbx.local  pbx
