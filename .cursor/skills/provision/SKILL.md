@@ -14,8 +14,8 @@ description: >-
 |--------|-----|------|
 | Discovery | `https://asaph-d.github.io/Portfolio/provision/bootstrap.json` | Toujours joignable ; indique où est l’API |
 | API LAN | `https://pbx.local/provision` | Register, verify, claim, VPN |
-| API remote | `https://143.105.152.123/provision` | Même API ; requiert forward **TCP 443** |
-| VPN | UDP `143.105.152.123:51820` | Tunnel après réception du `.conf` |
+| API remote | Cloudflare Tunnel `https://*.trycloudflare.com/provision` | Même API PBX via reverse proxy sortant (pas de box) |
+| VPN | UDP `143.105.152.123:51820` | Tunnel WG après réception du `.conf` |
 
 GitHub Pages = **fichier JSON statique** uniquement. L’API PHP reste sur le PBX.
 
@@ -70,14 +70,18 @@ curl -sk --max-time 15 'https://143.105.152.123/provision/'
 - Déployer : `sudo bash scripts/provision-install.sh`
 - Schéma VPN : `scripts/provision-schema-vpn.sql`
 
-## Port forward box (obligatoire pour remote)
+## Reverse proxy (sans box)
 
-| Port | Protocole | Destination |
-|------|-----------|-------------|
-| 443 | TCP | `192.168.137.240` |
-| 51820 | UDP | `192.168.137.240` |
+```bash
+sudo bash scripts/install-provision-tunnel.sh
+```
 
-Sans 443 : discovery GitHub OK, mais claim/API remote échoue.
+Cloudflare Tunnel → Apache local. URL dans `/etc/provision/tunnel.env`.
+
+## Port forward box
+
+**Non requis** pour l’API provision (tunnel Cloudflare).  
+VPN WireGuard UDP **51820** reste nécessaire pour le tunnel WG (sauf si autre solution).
 
 ## Modifier le dépôt serveur
 
