@@ -5,14 +5,17 @@
   "api_lan": "https://pbx.local/provision",
   "api_remote": "https://advance-associates-brakes-reducing.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
-  "pbx_lan_ip": "192.168.137.240",
+  "pbx_lan_ip": "192.168.1.80",
+  "sip_server": "192.168.1.80",
+  "api_lan_ip": "https://192.168.1.80/provision",
   "wss_port": 8089,
-  "wss_url_lan": "wss://pbx.local:8089/ws",
+  "wss_url": "wss://192.168.1.80:8089/ws",
+  "wss_url_lan": "wss://192.168.1.80:8089/ws",
   "vpn": {
     "enable": true,
-    "endpoint_remote": "143.105.152.123:51820",
-    "endpoint_lan": "192.168.137.240:51820",
-    "allowed_ips": "192.168.137.0/24,10.10.10.0/24,10.200.0.0/24"
+    "endpoint_remote": "143.105.152.186:51820",
+    "endpoint_lan": "192.168.1.80:51820",
+    "allowed_ips": "192.168.1.0/24,10.10.10.0/24,10.200.0.0/24"
   },
   "endpoints": {
     "register": "/api/v1/register.php",
@@ -25,5 +28,5 @@
     "vpn_status": "/api/v1/vpn/status.php"
   },
   "deeplink_scheme": "asaphone",
-  "notes": "Hors LAN : fetch ce fichier puis api_remote (Cloudflare Tunnel, pas de port-forward)."
+  "notes": "sip_server / wss_url / api_lan_ip = IP DHCP sur VPN_LAN_IFACE. pbx_host = mDNS optionnel."
 }
