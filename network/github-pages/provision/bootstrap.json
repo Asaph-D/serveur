@@ -5,29 +5,51 @@
   "api_lan": "https://pbx.local/provision",
   "api_remote": "https://advance-associates-brakes-reducing.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
-  "pbx_lan_ip": "192.168.1.80",
-  "sip_server": "192.168.1.80",
-  "api_lan_ip": "https://192.168.1.80/provision",
+  "pbx_lan_ip": "10.139.129.61",
+  "sip_server": "10.139.129.61",
+  "api_lan_ip": "https://10.139.129.61/provision",
   "wss_port": 8089,
-  "wss_url": "wss://192.168.1.80:8089/ws",
-  "wss_url_lan": "wss://192.168.1.80:8089/ws",
+  "wss_url": "wss://10.139.129.61:8089/ws",
+  "wss_url_lan": "wss://10.139.129.61:8089/ws",
+  "video_codecs": [
+    "vp8",
+    "h264"
+  ],
+  "ice_servers": [
+    {
+      "urls": [
+        "stun:10.139.129.61:3478"
+      ]
+    }
+  ],
   "vpn": {
     "enable": true,
-    "endpoint_remote": "143.105.152.186:51820",
-    "endpoint_lan": "192.168.1.80:51820",
-    "allowed_ips": "192.168.1.0/24,10.10.10.0/24,10.200.0.0/24"
+    "wireguard_remote_available": true,
+    "endpoint_remote": "41.202.207.151:51820",
+    "endpoint_lan": "10.139.129.61:51820",
+    "allowed_ips": "10.139.129.0/24,10.10.10.0/24,10.200.0.0/24"
+  },
+  "remote_access": {
+    "mode": "wss-relay",
+    "wss_relay": {
+      "tunnel_wss": "wss://theater-yale-checked-surf.trycloudflare.com",
+      "wireguard_endpoint": "127.0.0.1:51820",
+      "hint": "Relay WSS intégré Asaphone — pas d app externe"
+    }
   },
   "endpoints": {
     "register": "/api/v1/register.php",
     "verify": "/api/v1/verify.php",
     "claim": "/api/v1/claim.php",
     "reconnect": "/api/v1/reconnect.php",
+    "session": "/api/v1/session.php",
     "vpn_register": "/api/v1/vpn/register.php",
     "vpn_verify": "/api/v1/vpn/verify.php",
     "vpn_claim": "/api/v1/vpn/claim.php",
     "vpn_enroll": "/api/v1/vpn/enroll.php",
+    "vpn_revoke": "/api/v1/vpn/revoke.php",
     "vpn_status": "/api/v1/vpn/status.php"
   },
   "deeplink_scheme": "asaphone",
-  "notes": "sip_server / wss_url / api_lan_ip = IP DHCP sur VPN_LAN_IFACE. pbx_host = mDNS optionnel."
+  "notes": "4G/Starlink : relay WSS intégré Asaphone (pas UDP direct). Wi-Fi site : endpoint_lan ou LAN direct."
 }
