@@ -25,7 +25,7 @@
   "vpn": {
     "enable": true,
     "wireguard_remote_available": true,
-    "endpoint_remote": "102.244.41.155:51820",
+    "endpoint_remote": "102.244.41.39:51820",
     "endpoint_lan": "192.168.43.114:51820",
     "allowed_ips": "192.168.43.0/24,10.10.10.0/24,10.200.0.0/24"
   },
