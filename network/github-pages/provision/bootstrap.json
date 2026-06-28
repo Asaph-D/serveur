@@ -25,7 +25,7 @@
   "vpn": {
     "enable": true,
     "wireguard_remote_available": true,
-    "endpoint_remote": "129.0.103.5:51820",
+    "endpoint_remote": "129.0.80.210:51820",
     "endpoint_lan": "172.20.10.2:51820",
     "allowed_ips": "172.20.10.0/28,10.10.10.0/24,10.200.0.0/24"
   },
@@ -48,7 +48,16 @@
     "vpn_claim": "/api/v1/vpn/claim.php",
     "vpn_enroll": "/api/v1/vpn/enroll.php",
     "vpn_revoke": "/api/v1/vpn/revoke.php",
-    "vpn_status": "/api/v1/vpn/status.php"
+    "vpn_status": "/api/v1/vpn/status.php",
+    "groups_sync": "/api/v1/groups/sync.php",
+    "groups_list": "/api/v1/groups/list.php",
+    "conference_invite": "/api/v1/conference/invite.php"
+  },
+  "conference": {
+    "default_call_uri": "6000",
+    "default_room": "6000",
+    "room_prefix": "asaphone-grp-",
+    "dial_mode": "extension"
   },
   "deeplink_scheme": "asaphone",
   "notes": "4G/Starlink : relay WSS intégré Asaphone (pas UDP direct). Wi-Fi site : endpoint_lan ou LAN direct."
