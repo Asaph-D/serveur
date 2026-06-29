@@ -5,12 +5,12 @@
   "api_lan": "https://pbx.local/provision",
   "api_remote": "https://advance-associates-brakes-reducing.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
-  "pbx_lan_ip": "172.20.10.2",
-  "sip_server": "172.20.10.2",
-  "api_lan_ip": "https://172.20.10.2/provision",
+  "pbx_lan_ip": "192.168.43.114",
+  "sip_server": "192.168.43.114",
+  "api_lan_ip": "https://192.168.43.114/provision",
   "wss_port": 8089,
-  "wss_url": "wss://172.20.10.2:8089/ws",
-  "wss_url_lan": "wss://172.20.10.2:8089/ws",
+  "wss_url": "wss://192.168.43.114:8089/ws",
+  "wss_url_lan": "wss://192.168.43.114:8089/ws",
   "video_codecs": [
     "vp8",
     "h264"
@@ -18,16 +18,16 @@
   "ice_servers": [
     {
       "urls": [
-        "stun:172.20.10.2:3478"
+        "stun:192.168.43.114:3478"
       ]
     }
   ],
   "vpn": {
     "enable": true,
     "wireguard_remote_available": true,
-    "endpoint_remote": "129.0.80.210:51820",
-    "endpoint_lan": "172.20.10.2:51820",
-    "allowed_ips": "172.20.10.0/28,10.10.10.0/24,10.200.0.0/24"
+    "endpoint_remote": "102.244.41.211:51820",
+    "endpoint_lan": "192.168.43.114:51820",
+    "allowed_ips": "192.168.43.0/24,10.10.10.0/24,10.200.0.0/24"
   },
   "remote_access": {
     "mode": "wss-relay",
