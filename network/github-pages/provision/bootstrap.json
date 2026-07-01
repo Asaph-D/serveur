@@ -3,7 +3,7 @@
   "service": "asaphone-provision",
   "discovery_url": "https://asaph-d.github.io/Portfolio/provision/bootstrap.json",
   "api_lan": "https://pbx.local/provision",
-  "api_remote": "https://bee-vast-operating-dpi.trycloudflare.com/provision",
+  "api_remote": "https://tex-its-blue-loop.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
   "pbx_lan_ip": "192.168.0.105",
   "sip_server": "192.168.0.105",
@@ -32,7 +32,7 @@
   "remote_access": {
     "mode": "wss-relay",
     "wss_relay": {
-      "tunnel_wss": "wss://clearing-laws-controversial-legislation.trycloudflare.com",
+      "tunnel_wss": "wss://basically-thank-lean-chief.trycloudflare.com",
       "wireguard_endpoint": "127.0.0.1:51820",
       "hint": "Relay WSS intégré Asaphone — pas d app externe"
     }
