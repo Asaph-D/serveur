@@ -3,7 +3,7 @@
   "service": "asaphone-provision",
   "discovery_url": "https://asaph-d.github.io/Portfolio/provision/bootstrap.json",
   "api_lan": "https://pbx.local/provision",
-  "api_remote": "https://imaging-unlock-attract-uni.trycloudflare.com/provision",
+  "api_remote": "https://activated-muscles-rhode-moderators.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
   "pbx_lan_ip": "192.168.0.105",
   "sip_server": "192.168.0.105",
@@ -25,14 +25,14 @@
   "vpn": {
     "enable": true,
     "wireguard_remote_available": true,
-    "endpoint_remote": "143.105.152.82:51820",
+    "endpoint_remote": "143.105.152.43:51820",
     "endpoint_lan": "192.168.0.105:51820",
     "allowed_ips": "192.168.0.0/24,10.10.10.0/24,10.200.0.0/24"
   },
   "remote_access": {
     "mode": "wss-relay",
     "wss_relay": {
-      "tunnel_wss": "wss://theater-yale-checked-surf.trycloudflare.com",
+      "tunnel_wss": "wss://meditation-eagle-ate-complement.trycloudflare.com",
       "wireguard_endpoint": "127.0.0.1:51820",
       "hint": "Relay WSS intégré Asaphone — pas d app externe"
     }
