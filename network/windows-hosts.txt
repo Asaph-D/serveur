@@ -1,4 +1,3 @@
-# Copier dans le fichier hosts Windows (en admin) :
-#   C:\Windows\System32\drivers\etc\hosts
-# Mise à jour quand l’IP change de routeur.
-192.168.1.80  pbx.local  pbx
+# Copier dans C:\Windows\System32\drivers\etc\hosts (admin)
+# Généré par sync-global-config.sh — réseau 192.168.100.0/24
+192.168.100.104  pbx.local  pbx

@@ -1,0 +1,2 @@
+www-data ALL=(root) NOPASSWD: /usr/local/bin/asaphone-conf-invite
+www-data ALL=(root) NOPASSWD: /usr/bin/php /var/www/provision/bin/conf-invite.php *

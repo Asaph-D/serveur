@@ -118,6 +118,11 @@ if ($webrtc) {
   upsert($db, $ext, "media_encryption_optimistic", "no");
   upsert($db, $ext, "dtls_verify", "fingerprint");
   upsert($db, $ext, "dtls_auto_generate_cert", "yes");
+  upsert($db, $ext, "max_video_streams", "1");
+  upsert($db, $ext, "codec_prefs_incoming_answer", "prefer:ulaw, operation:intersect, keep:all, transcode:allow");
+  upsert($db, $ext, "codec_prefs_outgoing_offer", "prefer:ulaw, operation:intersect, keep:all, transcode:allow");
+  // WSS : le contact est sip:…@IP:port_ws — qualify UDP échoue (surtout avec VPN actif).
+  upsert($db, $ext, "qualifyfreq", "0");
 } else {
   upsert($db, $ext, "webrtc", "no");
   upsert($db, $ext, "ice_support", "no");
@@ -125,6 +130,7 @@ if ($webrtc) {
   upsert($db, $ext, "rtcp_mux", "no");
   upsert($db, $ext, "media_encryption", "no");
   upsert($db, $ext, "media_encryption_optimistic", "no");
+  upsert($db, $ext, "qualifyfreq", "60");
 }
 
 echo "DB OK\n";

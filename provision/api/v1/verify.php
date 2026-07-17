@@ -48,6 +48,23 @@ try {
 		$response['qr_sent'] = false;
 	}
 
+	$sessionLinks = null;
+	if (!empty($resolved['token']['claim_token'])) {
+		$ct = (string) $resolved['token']['claim_token'];
+		$sessionLinks = [
+			'session_token' => $ct,
+			'session_url' => provision_build_session_url($ct),
+			'session_deeplink' => provision_build_session_deeplink($ct),
+			'claim_url' => provision_build_claim_url($ct),
+			'qr_content' => provision_build_qr_content($ct),
+			'extension' => $resolved['extension'] ?? null,
+			'expires' => $resolved['token']['expires'] ?? null,
+		];
+	} elseif (!empty($resolved['extension'])) {
+		$sessionLinks = provision_issue_session_links_for_email($db, $email);
+	}
+	$response = array_merge($response, provision_session_links_payload($sessionLinks));
+
 	provision_ok($response);
 } catch (Throwable $e) {
 	provision_log_error('verify', $e);

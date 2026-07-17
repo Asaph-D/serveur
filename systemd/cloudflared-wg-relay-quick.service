@@ -1,0 +1,15 @@
+[Unit]
+Description=Cloudflare Tunnel éphémère — relais WG WebSocket (wstunnel :8081)
+After=network-online.target wg-wss-relay.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/cloudflared tunnel --no-autoupdate --url http://127.0.0.1:8081
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/var/log/provision/cloudflared-wg-relay.log
+StandardError=append:/var/log/provision/cloudflared-wg-relay.log
+
+[Install]
+WantedBy=multi-user.target

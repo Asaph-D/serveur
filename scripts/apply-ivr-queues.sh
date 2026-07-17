@@ -79,7 +79,7 @@ else
 	fi
 fi
 
-chown asterisk:asterisk "$EXT_CUSTOM" 2>/dev/null || true
+chown www-data:asterisk "$EXT_CUSTOM" 2>/dev/null || chown asterisk:asterisk "$EXT_CUSTOM" 2>/dev/null || true
 
 echo "==> Reload FreePBX"
 if command -v fwconsole >/dev/null 2>&1; then

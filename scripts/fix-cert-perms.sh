@@ -12,15 +12,23 @@ set -euo pipefail
 
 KEYDIR="/etc/asterisk/keys"
 KEY_MODE="${KEY_MODE:-0640}" # 0640 (groupe) recommandé ici. Alternative plus stricte: 0600
+# FreePBX Certman (PKCS) : propriétaire www-data. Groupe asterisk pour que le démon
+# (-U asterisk -G asterisk) lise les *.key en 0640 sans dépendre des groupes supplémentaires.
+CERT_OWNER="${CERT_OWNER:-www-data}"
+CERT_GROUP="${CERT_GROUP:-asterisk}"
+AST_USER="${FREEPBX_AST_USER:-asterisk}"
 [[ $(id -u) -eq 0 ]] || { echo "Root requis." >&2; exit 1; }
+
+usermod -aG "$CERT_GROUP" "$CERT_OWNER" 2>/dev/null || true
+usermod -aG "$CERT_GROUP" "$AST_USER" 2>/dev/null || true
 
 if [[ ! -d "$KEYDIR" ]]; then
   echo "Dossier introuvable: $KEYDIR" >&2
   exit 1
 fi
 
-# Ownership attendu (Asterisk tourne en user asterisk)
-chown -R asterisk:asterisk "$KEYDIR"
+# Ownership attendu (FreePBX / Certman)
+chown -R "${CERT_OWNER}:${CERT_GROUP}" "$KEYDIR"
 
 # Certificats publics et chaînes : lecture OK
 find "$KEYDIR" -type f \( -name "*.crt" -o -name "*.pem" -o -name "*.csr" \) -print0 \

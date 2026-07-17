@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Onboarding VPN autonome (e-mail + code) — hors flux connexion Asaphone.
+ * L’app utilise : register/verify SIP → session_token → vpn/enroll → vpn/claim.
+ */
 require_once dirname(__DIR__, 3) . '/lib/bootstrap.php';
 
 try {
@@ -41,6 +45,9 @@ try {
 	if (!empty($result['resent'])) {
 		$response['resent'] = true;
 	}
+
+	$sessionLinks = provision_issue_session_links_for_email($db, $email);
+	$response = array_merge($response, provision_session_links_payload($sessionLinks));
 
 	provision_ok($response);
 } catch (Throwable $e) {

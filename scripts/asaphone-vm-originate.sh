@@ -3,4 +3,5 @@
 set -euo pipefail
 EXT="${1:?extension}"
 CALLER="${2:-pbx}"
-asterisk -rx "channel originate {VM_CALLER=${CALLER}}Local/${EXT}@vm-notify-out application NoOp vm-notify"
+# /n obligatoire sur Local ; __VM_CALLER hérité par le dialplan vm-notify-out
+asterisk -rx "channel originate {__VM_CALLER=${CALLER}}Local/${EXT}@vm-notify-out/n application NoOp notify"

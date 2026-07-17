@@ -60,6 +60,7 @@ exten => _X.,1,NoOp(Notification VM → \${EXTEN})
  same => n,Set(VM_NOTIFY_FILE=${NOTIFY_DIR}/vm-notify-\${EXTEN}.json)
  same => n,Set(VM_NOTIFY_BODY=\${SHELL(cat \${VM_NOTIFY_FILE} 2>/dev/null | tr -d '\\n')})
  same => n,GotoIf(\$["\${LEN(\${VM_NOTIFY_BODY})}" = "0"]?fail)
+ same => n,Set(VM_CALLER=\${IF(\$[\${LEN(\${VM_CALLER})} > 0]?\${VM_CALLER}:pbx)})
  same => n,Set(MESSAGE(from)=sip:\${VM_CALLER}@${PBX_DOMAIN})
  same => n,Set(MESSAGE(to)=sip:\${EXTEN}@${PBX_DOMAIN})
  same => n,Set(MESSAGE(body)=\${VM_NOTIFY_BODY})
@@ -73,7 +74,7 @@ DIAL
 )
 
 printf '%s\n' "$MSG_BLOCK" >> "$EXT_CUSTOM"
-chown asterisk:asterisk "$EXT_CUSTOM" 2>/dev/null || true
+chown www-data:asterisk "$EXT_CUSTOM" 2>/dev/null || chown asterisk:asterisk "$EXT_CUSTOM" 2>/dev/null || true
 
 echo "Dialplan MESSAGE : from-message + vm-notify-out (domaine ${PBX_DOMAIN})"
 if command -v fwconsole >/dev/null 2>&1; then

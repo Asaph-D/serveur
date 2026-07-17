@@ -1,7 +1,11 @@
 # Secrets provisionnement / trunks — ne jamais committer
 network/provision.secrets.env
 network/*.secrets.env
+/auth.txt
 /root/provision-secrets.env
 /root/trunks-secrets.env
 /root/phase2-pjsip-secrets.txt
 /root/provision-master.key
+/etc/provision/github-token
+/etc/cloudflared/
+network/cloudflared/credentials.json

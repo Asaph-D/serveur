@@ -9,6 +9,13 @@ CFG="$ROOT/network/site.env"
 [[ $(id -u) -eq 0 ]] || { echo "Root requis."; exit 1; }
 [[ -f "$CFG" ]] || { echo "Config introuvable: $CFG"; exit 1; }
 
+echo "=== 0) Détection réseau LAN (global-config) ==="
+SYNC_ARGS=()
+[[ $(id -u) -eq 0 ]] && SYNC_ARGS+=(--deploy)
+if ! bash "$ROOT/scripts/sync-global-config.sh" "${SYNC_ARGS[@]}"; then
+  echo "WARN: sync-global-config partiel — config précédente conservée (hors ligne ?)" >&2
+fi
+
 # shellcheck disable=SC1090
 source "$CFG"
 
@@ -53,6 +60,20 @@ $stmt->execute([":val" => $val]);
 echo "kvstore_Sipsettings.localnets mis à jour:\n$val\n";
 ' >/dev/null
 
+echo "=== 2b) FreePBX externip (ICE / RTP WebRTC) ==="
+if [[ -n "${PBX_LAN_IP:-}" ]]; then
+  php -r '
+include "/etc/freepbx.conf";
+$db = \FreePBX::Database();
+$ip = getenv("PBX_LAN_IP");
+$stmt = $db->prepare("UPDATE kvstore_Sipsettings SET val = :val WHERE `key` = \"externip\"");
+$stmt->execute([":val" => $ip]);
+$stmt = $db->prepare("UPDATE kvstore_Sipsettings SET val = :val WHERE `key` = \"externhost\"");
+$stmt->execute([":val" => $ip]);
+echo "externip/externhost = $ip\n";
+' >/dev/null
+fi
+
 echo "=== 3) UFW (SIP/RTP selon site.env) ==="
 ufw --force enable >/dev/null || true
 
@@ -72,6 +93,14 @@ allow_voice_cidr() {
     local wwp="${WEBRTC_WSS_PORT:-8089}"
     ufw allow from "${cidr}" to any port "${whp}" proto tcp comment "Asterisk HTTP WebRTC ${label}" >/dev/null || true
     ufw allow from "${cidr}" to any port "${wwp}" proto tcp comment "Asterisk WSS WebRTC ${label}" >/dev/null || true
+  fi
+  if [[ "${PROVISION_TURN_ENABLE:-no}" == "yes" ]]; then
+    local tp="${PROVISION_TURN_PORT:-3478}"
+    ufw allow from "${cidr}" to any port "${tp}" proto udp comment "STUN/TURN ${label}" >/dev/null || true
+    ufw allow from "${cidr}" to any port "${tp}" proto tcp comment "STUN/TURN TCP ${label}" >/dev/null || true
+    local rmin="${PROVISION_TURN_RELAY_MIN:-49160}"
+    local rmax="${PROVISION_TURN_RELAY_MAX:-49200}"
+    ufw allow from "${cidr}" to any port "${rmin}:${rmax}" proto udp comment "TURN relay ${label}" >/dev/null || true
   fi
 }
 
@@ -136,16 +165,8 @@ fwconsole reload >/dev/null
 echo "=== 6) Aide Windows (hosts) ==="
 # Windows ne résout pas toujours mDNS (.local) par défaut.
 # On génère une ligne prête à coller dans C:\Windows\System32\drivers\etc\hosts
-MGMT_IP="$(ip -4 -o addr show dev ens33 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | head -1 || true)"
-if [[ -n "${MGMT_IP}" && -n "${PBX_MDNS_NAME:-}" ]]; then
-  OUT="$ROOT/network/windows-hosts.txt"
-  {
-    echo "# Copier dans le fichier hosts Windows (en admin) :"
-    echo "#   C:\\Windows\\System32\\drivers\\etc\\hosts"
-    echo "# Mise à jour quand l’IP change de routeur."
-    echo "${MGMT_IP}  ${PBX_MDNS_NAME}.local  ${PBX_MDNS_NAME}"
-  } > "$OUT"
-  echo "Généré : $OUT"
+if [[ -n "${PBX_LAN_IP:-}" && -n "${PBX_MDNS_NAME:-}" ]]; then
+  echo "Généré : $ROOT/network/windows-hosts.txt (${PBX_LAN_IP} → ${PBX_MDNS_NAME}.local)"
 fi
 
 echo "OK."

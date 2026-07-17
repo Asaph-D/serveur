@@ -4,9 +4,10 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/lib/bootstrap.php';
 
 /**
- * Messages chat en attente (destinataire était offline).
- * GET  ?ext=1001 + X-Provision-Jti
- * POST {"ack":[1,2,3]}
+ * Messages chat en attente (SIP instantané non livré, destinataire offline).
+ * Exclut les messages déjà reçus en live (sip_delivered=1), même si non lus côté app.
+ * GET  ?ext=1001 + X-Provision-Jti — renvoie puis retire de la file (pas de re-envoi)
+ * POST {"ack":[1,2,3]} — accusé explicite (optionnel)
  */
 try {
 	if (!provision_enabled()) {
@@ -33,7 +34,7 @@ try {
 		provision_ok(['acknowledged' => provision_chat_ack($db, $ext, $ids)]);
 	}
 
-	$rows = provision_chat_list_pending($db, $ext);
+	$rows = provision_chat_fetch_pending($db, $ext);
 	$messages = [];
 	foreach ($rows as $row) {
 		$messages[] = [

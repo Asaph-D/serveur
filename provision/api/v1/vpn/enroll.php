@@ -4,9 +4,14 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/lib/bootstrap.php';
 
 /**
- * Enrôlement VPN rapide pour compte SIP déjà provisionné.
- * POST ?ext=1003&jti=<uuid>  + header X-Provision-Jti
- * ou JSON {"ext":"1003","jti":"..."}
+ * Connexion VPN — sans compte, sans e-mail, sans verify.
+ *
+ * Mode open (PROVISION_VPN_CONNECT_MODE=open) :
+ *   POST api_remote/vpn/enroll  { "device_id": "<uuid app stable>" }
+ *   ou POST {}  → device_id généré côté serveur (à persister côté app)
+ *   → claim_url → GET vpn/claim → tunnel
+ *
+ * Pas de register / verify / session_token dans ce flux.
  */
 try {
 	if (!provision_vpn_enabled()) {
@@ -18,38 +23,32 @@ try {
 	}
 
 	$body = provision_read_json_body();
-	$ext = trim((string) ($body['ext'] ?? $_GET['ext'] ?? ''));
-	$jti = trim((string) ($body['jti'] ?? $_SERVER['HTTP_X_PROVISION_JTI'] ?? $_GET['jti'] ?? ''));
-
-	if ($ext === '' || $jti === '') {
-		provision_error('ext et jti requis');
-	}
+	$ip = provision_client_ip();
+	provision_rate_limit('vpn_connect_ip', $ip, 30);
 
 	$db = provision_pdo();
-	$token = provision_get_token_by_jti($db, $jti);
-	if (!$token) {
-		provision_error('Token SIP introuvable', 404);
+	$mode = provision_env('PROVISION_VPN_CONNECT_MODE', 'open');
+
+	if ($mode === 'open') {
+		$deviceId = trim((string) ($body['device_id'] ?? ''));
+		$result = provision_vpn_enroll_connect($db, $deviceId);
+		provision_ok(array_merge([
+			'message' => 'VPN prêt — GET claim_url puis activez le tunnel.',
+			'flow' => [
+				'step' => 1,
+				'next' => 'GET claim_url (api_remote, avant tunnel)',
+				'then' => 'Activer WireGuard → accès LAN virtuel',
+			],
+		], $result));
 	}
-	$email = (string) $token['email'];
 
-	$result = provision_vpn_enroll_provisioned($db, $ext, $jti);
-
-	if (empty($result['resent'])) {
-		provision_mail_vpn_claim($email, $result['claim_url'], (string) $result['tunnel_ip']);
-	}
-
-	provision_ok([
-		'message' => 'VPN prêt. Récupérez la configuration via claim.',
-		'tunnel_ip' => $result['tunnel_ip'],
-		'claim_url' => $result['claim_url'],
-		'deeplink' => $result['deeplink'],
-		'expires' => $result['expires'],
-	]);
+	// Modes futurs (compte SIP) — désactivés tant que PROVISION_VPN_CONNECT_MODE ≠ open
+	provision_error('Connexion VPN par compte désactivée — utiliser enroll avec device_id (mode open)', 501);
 } catch (Throwable $e) {
 	$msg = $e->getMessage();
 	$status = 400;
-	if (str_contains($msg, 'Accès refusé')) {
-		$status = 403;
+	if (str_contains($msg, 'Trop de tentatives')) {
+		$status = 429;
 	} elseif (str_contains($msg, 'déjà actif')) {
 		$status = 409;
 	}

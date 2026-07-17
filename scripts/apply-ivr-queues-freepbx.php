@@ -134,9 +134,9 @@ file_put_contents($custom, <<<'CONF'
 
 CONF
 );
-chown($custom, 'asterisk');
+chown($custom, 'www-data');
 chgrp($custom, 'asterisk');
-chmod($custom, 0644);
+chmod($custom, 0664);
 
 echo "\nReload FreePBX...\n";
 passthru('fwconsole reload', $code);

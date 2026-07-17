@@ -1,19 +1,31 @@
 # Publier le bootstrap sur GitHub Pages
 
-Copier ce dossier dans le dépôt **Portfolio** :
+## Automatique (recommandé sans domaine propre)
+
+1. Créer un **Personal Access Token** GitHub (scope `repo` sur le dépôt Portfolio)
+2. Sur le PBX :
+   ```bash
+   echo "ghp_VOTRE_TOKEN" | sudo tee /etc/provision/github-token
+   sudo chmod 600 /etc/provision/github-token
+   ```
+3. Vérifier `GITHUB_BOOTSTRAP_PUBLISH="yes"` dans `network/global-config.env`
+
+À chaque boot, `serveur-startup.service` met à jour `api_remote` (tunnel trycloudflare) et pousse le fichier sur GitHub.
+
+Test manuel :
+```bash
+bash scripts/publish-bootstrap-github.sh
+curl -s 'https://asaph-d.github.io/Portfolio/provision/bootstrap.json' | jq .api_remote
+```
+
+## Manuel
+
+Copier `bootstrap.json` dans le dépôt **Portfolio** :
 
 ```
 Portfolio/
   provision/
-    bootstrap.json   ← ce fichier
+    bootstrap.json
 ```
 
-URL finale : `https://asaph-d.github.io/Portfolio/provision/bootstrap.json`
-
-Après `git push`, tester :
-
-```bash
-curl -s 'https://asaph-d.github.io/Portfolio/provision/bootstrap.json'
-```
-
-Mettre à jour `api_remote` et `vpn.endpoint_remote` quand l’IP publique change.
+URL : `https://asaph-d.github.io/Portfolio/provision/bootstrap.json`

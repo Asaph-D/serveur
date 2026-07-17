@@ -21,6 +21,7 @@ After=network.target
 [Service]
 Type=oneshot
 Environment=KEY_MODE=0640
+Environment=CERT_GROUP=asterisk
 ExecStart=/usr/local/sbin/fix-cert-perms.sh
 
 [Install]

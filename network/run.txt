@@ -7,3 +7,190 @@ sudo systemctl restart apache2 2>&1 && sudo systemctl --no-pager --full status a
 
 #codecs
 sudo bash /home/asaph/Documents/serveur/scripts/align-pjsip-site.sh
+
+sudo bash scripts/fix-wss-tls.sh
+
+## Principe général
+
+Il ne faut **pas** donner à `asterisk` et `www-data` « tous les droits sur tout le système » (`chmod -R 777`, `NOPASSWD: ALL`, etc.). C’est fragile et dangereux. Le modèle durable, c’est :
+
+- **un groupe partagé** (`asterisk`) ;
+- **des règles ciblées** par répertoire (config, clés TLS, `/var/run/asterisk`, spool VM) ;
+- **un service de boot** qui réapplique tout dans le bon ordre.
+
+C’est exactement ce que le dépôt met en place maintenant.
+
+---
+
+## 1. Permissions `asterisk` / `www-data` — de façon permanente
+
+### Modèle recommandé (déjà dans le repo)
+
+| Zone | Owner | Groupe | Mode | Pourquoi |
+|------|-------|--------|------|----------|
+| `/etc/asterisk` (config GUI) | `www-data` | `asterisk` | `2775` / `664` | FreePBX écrit, Asterisk lit |
+| `/etc/asterisk/keys/*.key` | `www-data` | **`asterisk`** | **`0640`** | Certman (PKCS) + démon `-G asterisk` |
+| `/var/run/asterisk` | `www-data` | `asterisk` | `2775` | `reload.lock` + socket ctl |
+| `/var/spool/asterisk/voicemail` | `asterisk` | `asterisk` | `2775` | lockfiles messagerie |
+
+Point critique découvert : les clés en `0600 www-data:www-data` ou `0600 www-data:asterisk` **cassent WSS**, car Asterisk ne tourne qu’avec le groupe primaire `asterisk`. La solution durable est **`www-data:asterisk` en `0640`**.
+
+### Les 4 couches de persistance
+
+**① `apache/freepbx_chown.conf`** (installé via `install-freepbx-chown-conf.sh`)  
+FreePBX exécute `fwconsole chown` à chaque `fwconsole start`. Ce fichier force les bonnes règles **après** le chown automatique (clés TLS, `/var/run/asterisk`, spool VM).
+
+**② Scripts idempotents** (réexécutables sans risque) :
+```bash
+sudo bash scripts/fix-freepbx-dashboard-perms.sh   # GUI + DB FreePBX
+sudo bash scripts/fix-cert-perms.sh                # clés TLS
+sudo bash scripts/fix-asterisk-run-perms.sh        # reload.lock + ctl
+sudo bash scripts/fix-wss-tls.sh                   # certs + port 8089
+```
+
+**③ `serveur-startup.service`** — au boot, dans le bon ordre :
+1. `chown.conf`
+2. perms GUI
+3. `fwconsole start`
+4. **`fix-wss-tls.sh`** ← évite que 8089 reste fermé
+5. `fix-asterisk-run-perms.sh`
+6. `net-apply-site.sh` (pare-feu)
+
+**④ `freepbx-cert-perms.service`** (optionnel mais utile) :
+```bash
+sudo bash scripts/install-cert-perms-service.sh
+```
+Réapplique les perms certificats au boot, avant ou en complément du startup.
+
+### Activation une fois pour toutes
+
+```bash
+# Services au boot
+sudo bash scripts/install-startup-service.sh
+sudo bash scripts/install-cert-perms-service.sh
+
+# Vérifier que les utilisateurs sont dans le bon groupe
+id www-data    # doit inclure asterisk
+id asterisk    # doit inclure asterisk (primaire) + éventuellement www-data
+```
+
+### Ce qu’il ne faut pas faire
+
+- `chown -R asterisk:asterisk /` ou `/etc`
+- `chmod 777` sur `/var/run/asterisk` ou les clés
+- Modifier à la main des fichiers générés par FreePBX sans passer par `http_custom.conf` / `freepbx_chown.conf`
+- Lancer `asterisk -rvvv` en parallèle de `fwconsole` (instance fantôme)
+
+### FreePBX GUI (valeurs à garder)
+
+Dans **Settings → Advanced Settings** :
+- `AMPASTERISKWEBUSER` = `www-data`
+- `AMPASTERISKWEBGROUP` = `asterisk`
+- `AMPASTERISKUSER` = `asterisk`
+- `AMPASTERISKGROUP` = `asterisk`
+
+`fix-freepbx-dashboard-perms.sh` les écrit déjà en base.
+
+---
+
+## 2. Ports importants — toujours ouverts
+
+Deux choses distinctes : **le pare-feu (UFW)** et **le service qui écoute (Asterisk/Apache)**.
+
+### Couche pare-feu (UFW)
+
+Géré par `scripts/net-apply-site.sh`, relancé à chaque `serveur-startup`.
+
+Dans `network/site.env` :
+```bash
+WEBRTC_ENABLE="yes"          # ouvre 8088 + 8089
+WEBRTC_HTTP_PORT="8088"
+WEBRTC_WSS_PORT="8089"
+```
+
+Les règles sont ajoutées pour :
+- le réseau de gestion (`MGMT_CIDR`)
+- chaque sous-réseau client (`LOCALNET_CIDRS` / profils dans `site.env`)
+
+Ports typiques Asaphone :
+
+| Port | Protocole | Service |
+|------|-----------|---------|
+| 5060 | UDP/TCP | SIP |
+| 5061 / 5161 | TCP | SIP TLS |
+| 8088 | TCP | HTTP Asterisk (WebRTC) |
+| **8089** | TCP | **WSS / TLS WebRTC** |
+| 10000–20000 | UDP | RTP audio |
+| 443 | TCP | Apache / FreePBX / provision |
+| 51820 | UDP | WireGuard VPN |
+
+Vérification :
+```bash
+sudo ufw status | grep -E '8089|5060|443'
+```
+
+UFW est **persistant** (`ufw enable` + règles stockées). `net-apply-site.sh` les **réapplique** si un réseau change ou si une règle manque.
+
+### Couche service (processus qui écoute)
+
+Le pare-feu ne suffit pas si Asterisk n’a pas bindé le port (c’était le cas avec les clés TLS illisibles).
+
+Contrôles après chaque boot ou changement :
+```bash
+ss -tlnp | grep -E '8088|8089|443'
+sudo asterisk -rx "http show status"    # doit afficher HTTPS … 8089
+sudo asterisk -rx "pjsip show transports"
+```
+
+Si 8089 manque :
+```bash
+sudo bash scripts/fix-wss-tls.sh
+```
+
+### Checklist « ça ne se reproduit plus »
+
+```bash
+# 1. Services activés au boot
+systemctl is-enabled serveur-startup.service
+systemctl is-enabled freepbx-cert-perms.service   # si installé
+
+# 2. Après reboot ou serveur-startup
+grep -E '8089|HTTPS' <(sudo asterisk -rx "http show status")
+ss -tlnp | grep 8089
+sudo -u www-data fwconsole reload   # Apply Config GUI
+
+# 3. Pare-feu
+sudo ufw status | grep 8089
+
+# 4. Log startup
+tail -50 /var/log/serveur-startup.log
+```
+
+---
+
+## Schéma du boot durable
+
+```mermaid
+flowchart TD
+  boot[Boot Linux] --> cert[freepbx-cert-perms.service]
+  boot --> startup[serveur-startup.service]
+  cert --> keys[fix-cert-perms: clés www-data:asterisk 0640]
+  startup --> chown[freepbx_chown.conf]
+  chown --> fwx[fwconsole start]
+  fwx --> wss[fix-wss-tls.sh → port 8089]
+  wss --> run[fix-asterisk-run-perms.sh]
+  run --> net[net-apply-site.sh → UFW]
+  net --> ok[Clients WSS + Apply Config OK]
+```
+
+---
+
+## En résumé
+
+| Question | Réponse courte |
+|----------|----------------|
+| Tous les droits partout ? | **Non** — groupe `asterisk` + règles ciblées + `freepbx_chown.conf` |
+| Persistance permissions ? | `serveur-startup.service` + `freepbx_chown.conf` + scripts `fix-*` |
+| Ports toujours ouverts ? | `WEBRTC_ENABLE=yes` + `net-apply-site.sh` au boot + vérifier qu’Asterisk bind bien (`fix-wss-tls.sh`) |
+
+Si tu veux, je peux ajouter un petit script `scripts/health-check-pbx.sh` qui enchaîne ces vérifications et affiche OK/KO en une commande — utile après chaque reboot.

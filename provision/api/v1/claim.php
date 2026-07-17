@@ -18,11 +18,13 @@ try {
 	}
 
 	$db = provision_pdo();
-	$result = provision_claim_credentials($db, $token);
+	$session = provision_open_session_from_claim($db, $token);
 
 	provision_ok([
-		'credentials' => $result['credentials'],
-		'jti' => $result['jti'],
+		'message' => 'Identifiants récupérés — configurez SIP puis POST /consume avec le jti',
+		'session' => $session,
+		'jti' => $session['jti'],
+		'credentials' => $session['credentials'],
 	]);
 } catch (Throwable $e) {
 	provision_error($e->getMessage(), 404);

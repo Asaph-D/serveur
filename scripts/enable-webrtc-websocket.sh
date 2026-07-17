@@ -50,10 +50,15 @@ merge_marked_block "$PJSIP_DST" "; BEGIN serveur-webrtc-pjsip-transport" "; END 
 
 CRT="/etc/asterisk/keys/default.crt"
 KEY="/etc/asterisk/keys/default.key"
+INT_CRT="/etc/asterisk/keys/integration/certificate.pem"
+INT_KEY="/etc/asterisk/keys/integration/webserver.key"
 if [[ ! -f "$CRT" || ! -f "$KEY" ]]; then
   echo "AVERTISSEMENT : certificat ou clé absent ($CRT / $KEY)." >&2
   echo "  FreePBX utilise souvent /etc/asterisk/keys/integration/ — sinon Certificate Manager." >&2
 fi
+
+echo "=== Permissions TLS (Certman PKCS = www-data:www-data, asterisk ∈ www-data) ==="
+bash "$ROOT/scripts/fix-cert-perms.sh"
 
 echo "=== FreePBX : activer HTTP et écouter sur le réseau ==="
 echo "    (sinon http_additional.conf laisse enabled=no et 127.0.0.1, WSS injoignable du LAN)"
@@ -80,4 +85,11 @@ fi
 echo "OK. Vérifications :"
 echo "  sudo asterisk -rx \"http show status\""
 echo "  sudo asterisk -rx \"pjsip show transports\""
+echo "  sudo asterisk -rx \"pjsip show contacts\""
+AST_COUNT="$(pgrep -c -x asterisk 2>/dev/null || echo 0)"
+if [[ "${AST_COUNT}" -gt 1 ]]; then
+  echo "AVERTISSEMENT : ${AST_COUNT} processus asterisk détectés." >&2
+  echo "  Ne pas lancer 'asterisk -rvvv' en parallèle de fwconsole (instance fantôme, CLI ≠ WebSocket)." >&2
+  echo "  Console : sudo asterisk -r   ou   sudo fwconsole console" >&2
+fi
 echo "Pare-feu : WEBRTC_ENABLE=yes dans network/site.env puis sudo bash scripts/net-apply-site.sh"

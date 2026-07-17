@@ -24,9 +24,14 @@ exten => _*810XX,1,NoOp(Messagerie directe ext 1${EXTEN:3})
  same => n,Set(VMEXT=1${EXTEN:3})
  same => n,GotoIf($[${VMEXT} < 1001 | ${VMEXT} > 1010]?invalid)
  same => n,GotoIf($["${CALLERID(num)}" = "${VMEXT}"]?vmskip)
- same => n,VoiceMailMain(${VMEXT}@default)
- same => n,Hangup()
- same => n(vmskip),VoiceMailMain(${VMEXT}@default,s)
+ same => n,Set(VMOPTS=)
+ same => n,Goto(vmcodecs)
+ same => n(vmskip),Set(VMOPTS=s)
+ same => n(vmcodecs),NoOp(VM WebRTC ext ${VMEXT})
+ same => n,Answer()
+ same => n,Wait(0.5)
+ same => n,Gosub(asaphone-force-ulaw,s,1)
+ same => n,VoiceMailMain(${VMEXT}@default,${VMOPTS})
  same => n,Hangup()
  same => n(invalid),Playback(invalid)
  same => n,Hangup()
@@ -48,7 +53,7 @@ else
 	printf '%s\n' "$VM_BLOCK" >> "$EXT_CUSTOM"
 fi
 
-chown asterisk:asterisk "$EXT_CUSTOM" 2>/dev/null || true
+chown www-data:asterisk "$EXT_CUSTOM" 2>/dev/null || chown asterisk:asterisk "$EXT_CUSTOM" 2>/dev/null || true
 
 echo "Codes messagerie : *81001 … *81010"
 if command -v fwconsole >/dev/null 2>&1; then

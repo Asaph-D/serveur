@@ -425,6 +425,8 @@ Le **fichier audio** est toujours sur le serveur (`/var/spool/asterisk/voicemail
 
 `GET https://pbx.local/provision/api/v1/chat/pending.php?ext=1001` + header `X-Provision-Jti: <jti>`
 
+Ne renvoie que les messages **non livrés en SIP** (`sip_delivered=0`). Un message déjà reçu en live n’est pas re-proposé. Chaque message renvoyé par le GET est **retiré de la file** immédiatement (pas de doublon à la reconnexion suivante).
+
 ### Interface
 
 **Applications → Extensions → [extension] → onglet Voicemail**

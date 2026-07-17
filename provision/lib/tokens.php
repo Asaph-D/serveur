@@ -155,3 +155,93 @@ function provision_resend_qr_email(PDO $db, string $email): array {
 	}
 	return provision_send_qr_email($db, $email, (string) $req['extension']);
 }
+
+function provision_get_active_token(PDO $db, string $email, string $extension): ?array {
+	$sth = $db->prepare(
+		'SELECT * FROM provision_tokens
+		 WHERE email = ? AND extension = ? AND used = 0 AND expires > NOW()
+		 ORDER BY id DESC LIMIT 1'
+	);
+	$sth->execute([$email, $extension]);
+	$row = $sth->fetch();
+	return $row ?: null;
+}
+
+function provision_verify_extension_secret(PDO $db, string $extension, string $secret): void {
+	if (!preg_match('/^\d{4}$/', $extension)) {
+		throw new RuntimeException('Identifiants invalides');
+	}
+	if (!provision_extension_exists($db, $extension)) {
+		throw new RuntimeException('Identifiants invalides');
+	}
+	$stored = provision_get_extension_secret($db, $extension);
+	if ($stored === null || $stored === '' || !hash_equals($stored, $secret)) {
+		throw new RuntimeException('Identifiants invalides');
+	}
+}
+
+function provision_resolve_email_for_extension(PDO $db, string $extension): ?string {
+	$owner = provision_get_extension_owner($db, $extension);
+	if ($owner && !empty($owner['email'])) {
+		return (string) $owner['email'];
+	}
+	$holder = provision_get_extension_holder($db, $extension);
+	if ($holder && !empty($holder['email'])
+		&& in_array($holder['status'], ['verified', 'pending_admin', 'provisioned'], true)) {
+		return (string) $holder['email'];
+	}
+	return null;
+}
+
+/**
+ * Redélivre le contenu du QR (jti + credentials) sans rescanner.
+ * - Première fois : jeton actif existant ou nouveau (comme claim).
+ * - Reconnexion (déjà provisioned) : nouveau jti consommé pour chat / messagerie.
+ */
+function provision_redeliver_session(PDO $db, string $extension, string $secret): array {
+	provision_verify_extension_secret($db, $extension, $secret);
+
+	$email = provision_resolve_email_for_extension($db, $extension);
+	if ($email === null) {
+		throw new RuntimeException('Extension non liée à un compte Asaphone — inscrivez-vous par e-mail');
+	}
+
+	$alreadyProvisioned = provision_get_extension_owner($db, $extension) !== null;
+
+	if ($alreadyProvisioned) {
+		$tokenData = provision_create_token($db, $email, $extension);
+		provision_consume_token($db, $tokenData['jti']);
+		$credentials = provision_credentials_payload($db, $extension, $tokenData['jti']);
+		return [
+			'reconnect' => true,
+			'jti' => $tokenData['jti'],
+			'credentials' => $credentials,
+			'expires' => $tokenData['expires'],
+		];
+	}
+
+	$active = provision_get_active_token($db, $email, $extension);
+	if ($active !== null) {
+		provision_validate_token_claim($db, $active);
+		$credentials = provision_credentials_payload($db, $extension, $active['jti']);
+		return [
+			'reconnect' => false,
+			'jti' => $active['jti'],
+			'credentials' => $credentials,
+			'claim_token' => $active['claim_token'],
+			'claim_url' => provision_build_claim_url($active['claim_token']),
+			'expires' => (new DateTimeImmutable($active['expires']))->format(DateTimeInterface::ATOM),
+		];
+	}
+
+	$tokenData = provision_create_token($db, $email, $extension);
+	$credentials = provision_credentials_payload($db, $extension, $tokenData['jti']);
+	return [
+		'reconnect' => false,
+		'jti' => $tokenData['jti'],
+		'credentials' => $credentials,
+		'claim_token' => $tokenData['claim_token'],
+		'claim_url' => $tokenData['claim_url'],
+		'expires' => $tokenData['expires'],
+	];
+}

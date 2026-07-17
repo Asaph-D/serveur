@@ -1,0 +1,12 @@
+# Template tunnel Cloudflare nommé — généré dans /etc/cloudflared/provision/config.yml
+# Ne pas éditer sur le serveur : réinstaller via scripts/install-provision-tunnel.sh
+
+tunnel: ${CLOUDFLARE_TUNNEL_NAME}
+credentials-file: /etc/cloudflared/provision/credentials.json
+
+ingress:
+  - hostname: ${PROVISION_PUBLIC_HOST}
+    service: http://127.0.0.1:80
+    originRequest:
+      httpHostHeader: pbx.local
+  - service: http_status:404

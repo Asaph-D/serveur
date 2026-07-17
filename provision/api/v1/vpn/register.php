@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Onboarding VPN autonome — hors flux connexion Asaphone (voir vpn/verify).
+ */
 require_once dirname(__DIR__, 3) . '/lib/bootstrap.php';
 
 try {

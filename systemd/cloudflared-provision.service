@@ -1,11 +1,11 @@
 [Unit]
-Description=Cloudflare Tunnel — reverse proxy provision Asaphone (sans port-forward)
+Description=Cloudflare Tunnel nommé — API provision Asaphone (domaine fixe)
 After=network-online.target apache2.service
 Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/cloudflared tunnel --no-autoupdate --url http://127.0.0.1:80 --http-host-header pbx.local
+ExecStart=/usr/local/bin/cloudflared tunnel --no-autoupdate --config /etc/cloudflared/provision/config.yml run
 Restart=on-failure
 RestartSec=10
 StandardOutput=append:/var/log/provision/cloudflared.log

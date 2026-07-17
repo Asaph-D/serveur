@@ -18,16 +18,19 @@ function provision_chat_store(PDO $db, string $toExt, string $fromExt, string $b
 
 function provision_chat_mark_sip_delivered(PDO $db, int $id): void {
 	$sth = $db->prepare(
-		'UPDATE provision_chat_messages SET sip_delivered = 1, delivered_at = NOW() WHERE id = ?'
+		'UPDATE provision_chat_messages
+		 SET sip_delivered = 1, delivered_at = NOW(), consumed = 1
+		 WHERE id = ?'
 	);
 	$sth->execute([$id]);
 }
 
+/** Messages jamais reçus en live (SIP MESSAGE échoué / offline). */
 function provision_chat_list_pending(PDO $db, string $toExt): array {
 	$sth = $db->prepare(
 		'SELECT id, from_ext, body, sip_delivered, created_at
 		 FROM provision_chat_messages
-		 WHERE to_ext = ? AND consumed = 0
+		 WHERE to_ext = ? AND consumed = 0 AND sip_delivered = 0
 		 ORDER BY id ASC'
 	);
 	$sth->execute([$toExt]);
@@ -41,10 +44,30 @@ function provision_chat_ack(PDO $db, string $toExt, array $ids): int {
 	$placeholders = implode(',', array_fill(0, count($ids), '?'));
 	$params = array_merge($ids, [$toExt]);
 	$sth = $db->prepare(
-		"UPDATE provision_chat_messages SET consumed = 1 WHERE id IN ($placeholders) AND to_ext = ?"
+		"UPDATE provision_chat_messages
+		 SET consumed = 1, sip_delivered = 1, delivered_at = COALESCE(delivered_at, NOW())
+		 WHERE id IN ($placeholders) AND to_ext = ?"
 	);
 	$sth->execute($params);
 	return $sth->rowCount();
+}
+
+/**
+ * Récupère la file pending puis la vide (un seul envoi HTTP par message).
+ */
+function provision_chat_fetch_pending(PDO $db, string $toExt): array {
+	$rows = provision_chat_list_pending($db, $toExt);
+	if ($rows === []) {
+		return [];
+	}
+	$ids = array_values(array_filter(
+		array_map(static fn (array $row): int => (int) $row['id'], $rows),
+		static fn (int $id): bool => $id > 0
+	));
+	if ($ids !== []) {
+		provision_chat_ack($db, $toExt, $ids);
+	}
+	return $rows;
 }
 
 /** Marque des messages pending comme lus (même persistance que ack). */

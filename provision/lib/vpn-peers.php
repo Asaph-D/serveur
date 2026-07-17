@@ -132,6 +132,17 @@ function provision_vpn_apply_peer(string $publicKey, string $tunnelIp): void {
 	}
 }
 
+function provision_vpn_remove_peer(string $publicKey): void {
+	$cmd = sprintf(
+		'sudo -n /usr/local/bin/asaphone-vpn-peer remove %s 2>&1',
+		escapeshellarg($publicKey)
+	);
+	exec($cmd, $out, $code);
+	if ($code !== 0) {
+		throw new RuntimeException('Retrait peer WireGuard échoué: ' . implode("\n", $out));
+	}
+}
+
 function provision_vpn_build_client_conf(string $privateKey, string $tunnelIp, ?string $endpoint = null): string {
 	$endpoint ??= provision_vpn_endpoint_remote();
 	$serverPub = provision_vpn_server_public_key();
@@ -166,16 +177,33 @@ function provision_vpn_build_deeplink(string $claimToken): string {
 function provision_vpn_config_payload(array $peer, string $privateKey, ?string $endpoint = null): array {
 	$endpointRemote = provision_vpn_endpoint_remote();
 	$endpointLan = provision_vpn_endpoint_lan();
-	$useEndpoint = $endpoint ?? $endpointRemote;
+	$relay = provision_vpn_tunnel_payload();
+	$localWgPort = (int) provision_env('PROVISION_VPN_PORT', '51820');
+	if ($localWgPort <= 0) {
+		$localWgPort = 51820;
+	}
+
+	if ($endpoint !== null) {
+		$useEndpoint = $endpoint;
+	} elseif ($relay !== []) {
+		$useEndpoint = $relay['wireguard_endpoint'];
+	} else {
+		$useEndpoint = $endpointRemote;
+	}
+
 	$conf = provision_vpn_build_client_conf($privateKey, (string) $peer['tunnel_ip'], $useEndpoint);
 
-	return [
+	$payload = [
 		'tunnel_ip' => $peer['tunnel_ip'],
 		'email' => $peer['email'],
 		'extension' => $peer['extension'],
-		'endpoint_remote' => $endpointRemote,
+		'pbx_lan_ip' => provision_pbx_lan_ip(),
+		'sip_server' => provision_sip_server(),
+		'wss_url' => provision_wss_url(),
+		'endpoint_remote' => provision_wg_remote_available() ? $endpointRemote : '',
 		'endpoint_lan' => $endpointLan,
 		'endpoint' => $useEndpoint,
+		'wireguard_remote_available' => provision_wg_remote_available(),
 		'allowed_ips' => provision_vpn_allowed_ips(),
 		'dns' => provision_env('PROVISION_VPN_DNS', '192.168.137.1'),
 		'server_public_key' => provision_vpn_server_public_key(),
@@ -192,6 +220,13 @@ function provision_vpn_config_payload(array $peer, string $privateKey, ?string $
 			'persistent_keepalive' => 25,
 		],
 	];
+
+	if ($relay !== []) {
+		$payload['tunnel'] = $relay;
+		$payload['remote_access'] = ['mode' => 'wss-relay'];
+	}
+
+	return $payload;
 }
 
 function provision_vpn_issue_peer(PDO $db, string $email, ?string $extension = null): array {
@@ -351,6 +386,148 @@ function provision_vpn_enroll_provisioned(PDO $db, string $extension, string $jt
 	}
 
 	return provision_vpn_issue_peer($db, $email, $extension);
+}
+
+/**
+ * Connexion VPN sans compte (MVP) — appareil identifié par device_id stable côté client.
+ * Pas de register, verify, e-mail ni session_token SIP.
+ */
+function provision_vpn_enroll_connect(PDO $db, string $deviceId = ''): array {
+	$deviceId = trim($deviceId);
+	if ($deviceId === '') {
+		$deviceId = provision_uuid();
+	}
+	if (!preg_match('/^[a-zA-Z0-9._-]{8,128}$/', $deviceId)) {
+		throw new RuntimeException('device_id invalide (8–128 caractères alphanumériques)');
+	}
+
+	$email = 'vpn+' . strtolower($deviceId) . '@connect.asaphone.local';
+	$peer = provision_vpn_get_peer_by_email($db, $email);
+
+	if ($peer && $peer['status'] === 'active') {
+		throw new RuntimeException('VPN déjà actif pour cet appareil — réimportez le profil ou révoquez côté serveur');
+	}
+
+	if ($peer && $peer['status'] === 'ready' && !empty($peer['claim_token'])) {
+		$exp = new DateTimeImmutable($peer['claim_expires']);
+		if ($exp > new DateTimeImmutable('now')) {
+			return [
+				'device_id' => $deviceId,
+				'claim_token' => $peer['claim_token'],
+				'claim_url' => provision_vpn_build_claim_url($peer['claim_token']),
+				'deeplink' => provision_vpn_build_deeplink($peer['claim_token']),
+				'tunnel_ip' => $peer['tunnel_ip'],
+				'expires' => $exp->format(DateTimeInterface::ATOM),
+				'resent' => true,
+			];
+		}
+	}
+
+	if (!$peer) {
+		$ip = provision_vpn_allocate_tunnel_ip($db);
+		$db->prepare(
+			'INSERT INTO provision_vpn_peers (email, tunnel_ip, extension, client_public_key, status)
+			 VALUES (?, ?, NULL, NULL, "pending")'
+		)->execute([$email, $ip]);
+	}
+
+	$out = provision_vpn_issue_peer($db, $email, null);
+	$out['device_id'] = $deviceId;
+	return $out;
+}
+
+/**
+ * Révoque un appareil (mode open) — retire le peer WG et supprime l'enregistrement.
+ */
+function provision_vpn_revoke_connect(PDO $db, string $deviceId): array {
+	$deviceId = trim($deviceId);
+	if ($deviceId === '') {
+		throw new RuntimeException('device_id requis');
+	}
+	if (!preg_match('/^[a-zA-Z0-9._-]{8,128}$/', $deviceId)) {
+		throw new RuntimeException('device_id invalide (8–128 caractères alphanumériques)');
+	}
+
+	$email = 'vpn+' . strtolower($deviceId) . '@connect.asaphone.local';
+	$peer = provision_vpn_get_peer_by_email($db, $email);
+	if (!$peer) {
+		throw new RuntimeException('Appareil VPN introuvable');
+	}
+
+	$pubkey = trim((string) ($peer['client_public_key'] ?? ''));
+	if ($pubkey !== '') {
+		provision_vpn_remove_peer($pubkey);
+	}
+
+	$db->prepare('DELETE FROM provision_vpn_peers WHERE email = ?')->execute([$email]);
+
+	return [
+		'device_id' => $deviceId,
+		'email' => $email,
+		'tunnel_ip' => $peer['tunnel_ip'],
+		'previous_status' => $peer['status'],
+		'revoked' => true,
+	];
+}
+
+/** Enrôlement VPN via token session SIP (sans ext+jti) — contexte 4G / VPN public. */
+function provision_vpn_enroll_from_session_token(PDO $db, string $sessionToken): array {
+	$sip = provision_get_token_by_claim($db, $sessionToken);
+	if (!$sip || !provision_token_valid($sip)) {
+		throw new RuntimeException('Token session SIP invalide ou expiré');
+	}
+	provision_validate_token_claim($db, $sip);
+
+	$email = (string) $sip['email'];
+	$extension = (string) $sip['extension'];
+
+	$peer = provision_vpn_get_peer_by_email($db, $email);
+	if ($peer && $peer['status'] === 'active') {
+		throw new RuntimeException('VPN déjà actif pour ce compte');
+	}
+
+	if ($peer && $peer['status'] === 'ready' && !empty($peer['claim_token'])) {
+		$exp = new DateTimeImmutable($peer['claim_expires']);
+		if ($exp > new DateTimeImmutable('now')) {
+			$out = [
+				'claim_token' => $peer['claim_token'],
+				'claim_url' => provision_vpn_build_claim_url($peer['claim_token']),
+				'deeplink' => provision_vpn_build_deeplink($peer['claim_token']),
+				'tunnel_ip' => $peer['tunnel_ip'],
+				'expires' => $exp->format(DateTimeInterface::ATOM),
+			];
+			return array_merge($out, provision_session_links_payload(
+				provision_issue_session_links_for_email($db, $email) ?? [
+					'session_token' => $sessionToken,
+					'session_url' => provision_build_session_url($sessionToken),
+					'session_deeplink' => provision_build_session_deeplink($sessionToken),
+					'claim_url' => provision_build_claim_url($sessionToken),
+					'extension' => $extension,
+					'expires' => null,
+				]
+			));
+		}
+	}
+
+	if (!$peer) {
+		$ip = provision_vpn_allocate_tunnel_ip($db);
+		$db->prepare(
+			'INSERT INTO provision_vpn_peers (email, extension, tunnel_ip, client_public_key, status)
+			 VALUES (?, ?, ?, NULL, "pending")'
+		)->execute([$email, $extension, $ip]);
+	}
+
+	$vpn = provision_vpn_issue_peer($db, $email, $extension);
+	return array_merge($vpn, provision_session_links_payload(
+		provision_issue_session_links_for_email($db, $email) ?? [
+			'session_token' => $sessionToken,
+			'session_url' => provision_build_session_url($sessionToken),
+			'session_deeplink' => provision_build_session_deeplink($sessionToken),
+			'claim_url' => provision_build_claim_url($sessionToken),
+			'extension' => $extension,
+			'expires' => null,
+		]
+	));
 }
 
 function provision_vpn_status(PDO $db, string $email): array {

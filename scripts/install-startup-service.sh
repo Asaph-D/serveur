@@ -16,5 +16,10 @@ systemctl daemon-reload
 systemctl enable --now serveur-startup.service
 
 echo "OK: service installé et démarré."
-echo "- Logs: journalctl -u serveur-startup.service -b --no-pager"
-echo "- Log fichier: /var/log/serveur-startup.log"
+echo ""
+echo "  Console interactive (bannière + barre de progression) :"
+echo "    bash scripts/start-startup.sh"
+echo "    bash scripts/restart-startup.sh"
+echo ""
+echo "  Boot automatique (silencieux, pas de sortie terminal) :"
+echo "    systemctl start serveur-startup.service"

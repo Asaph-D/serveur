@@ -56,10 +56,12 @@ fi
 chown root:www-data "$MASTER_KEY"
 chmod 640 "$MASTER_KEY"
 
-echo "==> Config provision.env"
+echo "==> Config global-config + provision.env"
+bash "$ROOT/scripts/sync-global-config.sh"
+cp "$ROOT/network/global-config.env" "$ETC/global-config.env"
 cp "$ROOT/network/provision.env" "$ETC/provision.env"
-chown root:www-data "$ETC/provision.env"
-chmod 640 "$ETC/provision.env"
+chown root:www-data "$ETC/global-config.env" "$ETC/provision.env"
+chmod 640 "$ETC/global-config.env" "$ETC/provision.env"
 
 echo "==> Déploiement /var/www/provision"
 rsync -a --delete \
@@ -87,6 +89,7 @@ if [[ -r /etc/freepbx.conf ]]; then
 		mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-voicemail.sql" || true
 	}
 	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-chat.sql" 2>/dev/null || true
+	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-groups.sql" 2>/dev/null || true
 	mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$ROOT/scripts/provision-schema-vpn.sql" 2>/dev/null || true
 else
 	mysql asterisk < "$ROOT/scripts/provision-schema.sql"
@@ -94,19 +97,7 @@ fi
 
 echo "==> Apache alias /provision"
 APACHE_SNIP="/etc/apache2/conf-available/provision.conf"
-cat > "$APACHE_SNIP" <<'APACHE'
-# Mini-API provisionnement Asaphone
-Alias /provision /var/www/provision
-
-<Directory /var/www/provision>
-    Options -Indexes +FollowSymLinks
-    AllowOverride None
-    Require all granted
-    <FilesMatch "\.php$">
-        SetHandler application/x-httpd-php
-    </FilesMatch>
-</Directory>
-APACHE
+install -m 0644 "$ROOT/apache/provision.conf" "$APACHE_SNIP"
 
 a2enconf provision 2>/dev/null || true
 
@@ -126,6 +117,9 @@ install -m 0440 "$ROOT/scripts/asaphone-chat-ingest.sudoers" /etc/sudoers.d/asap
 visudo -c -f /etc/sudoers.d/asaphone-chat-ingest
 install -m 0440 "$ROOT/scripts/asaphone-vm-notify.sudoers" /etc/sudoers.d/asaphone-vm-notify
 visudo -c -f /etc/sudoers.d/asaphone-vm-notify
+install -m 0755 "$ROOT/scripts/asaphone-conf-invite.sh" /usr/local/bin/asaphone-conf-invite
+install -m 0440 "$ROOT/scripts/asaphone-conf-invite.sudoers" /etc/sudoers.d/asaphone-conf-invite
+visudo -c -f /etc/sudoers.d/asaphone-conf-invite
 install -m 0755 "$ROOT/scripts/asaphone-vpn-peer.sh" /usr/local/bin/asaphone-vpn-peer
 install -m 0440 "$ROOT/scripts/asaphone-vpn-peer.sudoers" /etc/sudoers.d/asaphone-vpn-peer
 visudo -c -f /etc/sudoers.d/asaphone-vpn-peer
@@ -136,6 +130,14 @@ chmod +x "$ROOT/scripts/provision-send-mail.php"
 chmod +x "$ROOT/scripts/provision-generate-qr.php"
 chmod +x "$WWW/bin/vm-notify.php" 2>/dev/null || true
 chmod +x "$WWW/bin/chat-ingest.php" 2>/dev/null || true
+chmod +x "$WWW/bin/conf-invite.php" 2>/dev/null || true
+
+	echo "==> ConfBridge groupes (dialplan)"
+	bash "$ROOT/scripts/apply-conference-dialplan.sh"
+
+echo "==> FreePBX chown.conf (spool VM)"
+bash "$ROOT/scripts/install-freepbx-chown-conf.sh"
+bash "$ROOT/scripts/fix-voicemail-spool-perms.sh"
 
 echo ""
 echo "Installation terminée."

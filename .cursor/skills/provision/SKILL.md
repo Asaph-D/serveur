@@ -14,7 +14,7 @@ description: >-
 |--------|-----|------|
 | Discovery | `https://asaph-d.github.io/Portfolio/provision/bootstrap.json` | Toujours joignable ; indique où est l’API |
 | API LAN | `https://pbx.local/provision` | Register, verify, claim, VPN |
-| API remote | Cloudflare Tunnel `https://*.trycloudflare.com/provision` | Même API PBX via reverse proxy sortant (pas de box) |
+| API remote | Cloudflare Tunnel trycloudflare (URL dans bootstrap GitHub) | PHP sur PBX ; bootstrap republié au boot |
 | VPN | UDP `143.105.152.123:51820` | Tunnel WG après réception du `.conf` |
 
 GitHub Pages = **fichier JSON statique** uniquement. L’API PHP reste sur le PBX.
@@ -30,26 +30,56 @@ GitHub Pages = **fichier JSON statique** uniquement. L’API PHP reste sur le PB
    ```
 4. Si IP publique change : éditer `api_remote` et `vpn.endpoint_remote` dans ce JSON.
 
-## Flux Asaphone (app)
+## Flux Asaphone — connexion VPN (MVP, sans compte)
 
-1. `GET discovery_url` → lire `api_lan` / `api_remote`
-2. Sur LAN : utiliser `api_lan` ; hors LAN : `api_remote` (si 443 forward OK)
-3. SIP : register → verify → claim
-4. VPN (optionnel, hors LAN) : vpn_register → vpn_verify → vpn_claim **ou** vpn_enroll (ext+jti)
-5. Activer tunnel WG → puis WSS `wss://pbx.local:8089/ws`
+**Pas de register, verify, e-mail ni session_token** pour la connexion VPN.
+
+```
+4G → api_remote
+ │
+ ├─► POST vpn/enroll  { "device_id": "<uuid stable app>" }
+ │       → claim_url, deeplink, tunnel_ip
+ │
+ ├─► GET  vpn/claim?token=…
+ │       → config WireGuard (+ sip_server / wss_url hints)
+ │
+ ▼
+tunnel actif  (= dans le réseau site)
+ │
+ └─► SIP / session : hors scope MVP connexion VPN
+```
+
+`PROVISION_VPN_CONNECT_MODE=open` dans `network/provision.env`.
+
+`vpn/register` et `vpn/verify` : **non utilisés** par l’app (admin / legacy).
+
+Compte SIP (register → verify → session) : **phase ultérieure**, pas mélangée au VPN pour l’instant.
+
+Sur LAN : `api_lan` ; hors LAN : **`api_remote`** (jamais `pbx.local` avant tunnel).
 
 ## Endpoints PBX (`provision/api/v1/`)
 
-| Fichier | Méthode | Corps |
-|---------|---------|-------|
-| `register.php` | POST | `{"email":"..."}` |
-| `verify.php` | POST | `{"email":"...","code":"123456"}` |
-| `claim.php` | POST | `{"token":"..."}` |
-| `vpn/register.php` | POST | `{"email":"..."}` |
-| `vpn/verify.php` | POST | `{"email":"...","code":"..."}` |
-| `vpn/claim.php` | POST | `{"token":"..."}` |
-| `vpn/enroll.php` | POST | `ext` + `jti` + header `X-Provision-Jti` |
-| `vpn/status.php` | GET | `?email=...` |
+| Fichier | Méthode | Corps | Flux app |
+|---------|---------|-------|----------|
+| `vpn/enroll.php` | POST | `{"device_id":"…"}` | **Connexion VPN** |
+| `vpn/revoke.php` | POST | `{"device_id":"…"}` | **Révoquer appareil** |
+| `vpn/claim.php` | GET | `?token=` | **Connexion VPN** |
+| `register.php` | POST | email | Compte (plus tard) |
+| `verify.php` | POST | email+code | Compte (plus tard) |
+| `session.php` | GET | `?token=` | SIP (plus tard) |
+| `groups/sync.php` | POST | `groups[]` | Sync messagerie → `call_uri` |
+| `groups/list.php` | GET | `?ext=` + jti | Liste groupes |
+| `conference/invite.php` | POST | `room`, `extensions[]` | Inviter en cours d'appel |
+| `vpn/register.php` | POST | email | **Hors flux app** |
+| `vpn/verify.php` | POST | email+code | **Hors flux app** |
+
+## Appels de groupe (ConfBridge)
+
+Doc complète : `docs/asaphone-group-conference.md`
+
+- Client compose **`call_uri`** (ex. `asaphone-grp-…` ou `6000`) — **un seul appel SIP**
+- PBX : ConfBridge + originate vers membres
+- Sync : `POST groups/sync` avec `jti` ; session/reconnect inclut `groups[]` + `conference`
 
 ## curl de test
 
@@ -62,26 +92,54 @@ curl -sk 'https://pbx.local/provision/'
 
 # API distante (forward 443 requis)
 curl -sk --max-time 15 'https://143.105.152.123/provision/'
+
+# Révoquer un appareil (mode open) puis ré-enrôler
+API="$(jq -r .api_remote bootstrap.json)"
+DEVICE_ID="f4d4d618-5cca-44a2-9ae1-90498a6a1531"
+curl -sk -X POST "$API/api/v1/vpn/revoke.php" \
+  -H 'Content-Type: application/json' \
+  -d "{\"device_id\":\"$DEVICE_ID\"}"
+curl -sk -X POST "$API/api/v1/vpn/enroll.php" \
+  -H 'Content-Type: application/json' \
+  -d "{\"device_id\":\"$DEVICE_ID\"}"
 ```
 
 ## Config serveur
 
-- `network/provision.env` — `PROVISION_DISCOVERY_URL`, `PROVISION_PUBLIC_*`, VPN
+- `network/global-config.env` — **source unique** ; section `AUTO-GENERATED` = LAN + IP publique + tunnel Cloudflare
+- `bash scripts/sync-global-config.sh` — détecte IP sur `MGMT_IFACE` + lit `/etc/provision/tunnel.env`
+- Au boot : `serveur-startup.service` → `refresh-tunnel-url.sh` → `sync-global-config.sh --deploy`
+- `network/site.env` / `network/provision.env` — incluent global-config
 - Déployer : `sudo bash scripts/provision-install.sh`
 - Schéma VPN : `scripts/provision-schema-vpn.sql`
 
-## Reverse proxy (sans box)
+## Sans domaine propre
+
+GitHub Pages / Vercel = statique seulement. Tunnel **quick** + `publish-bootstrap-github.sh` au boot.
 
 ```bash
+echo "ghp_xxx" | sudo tee /etc/provision/github-token && sudo chmod 600 /etc/provision/github-token
 sudo bash scripts/install-provision-tunnel.sh
 ```
 
-Cloudflare Tunnel → Apache local. URL dans `/etc/provision/tunnel.env`.
+## Avec domaine (Cloudflare)
+
+```bash
+# PROVISION_PUBLIC_HOST + CLOUDFLARE_TUNNEL_MODE=named dans global-config.env
+sudo bash scripts/install-provision-tunnel.sh
+```
 
 ## Port forward box
 
-**Non requis** pour l’API provision (tunnel Cloudflare).  
-VPN WireGuard UDP **51820** reste nécessaire pour le tunnel WG (sauf si autre solution).
+**Starlink (CGNAT)** : pas de UDP entrant. Accès distant via **relay WSS intégré Asaphone** (pas d’app externe) :
+
+```bash
+sudo bash scripts/install-wg-wss-relay.sh
+```
+
+`claim` / bootstrap exposent `tunnel.wss_url` + `path_prefix` ; l’app ouvre le relay puis WireGuard vers `127.0.0.1:51820`.
+
+**Box classique** : forward UDP `51820` → IP LAN du PBX.
 
 ## Modifier le dépôt serveur
 
