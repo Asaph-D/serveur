@@ -99,7 +99,7 @@ def fig_install_prerequis():
         ("", T_FG),
         ("  ✓ Critère OK : apache2, mariadb, php, ufw, avahi, fail2ban installés", T_GREEN, "bold"),
     ]
-    render_terminal(L, "console-install-1-prerequis.png", "Installation — prérequis (INSTALLATION.md)")
+    render_terminal(L, "console-install-1-prerequis.png", "Installation 1/4 — prérequis système")
 
 
 def fig_install_asterisk_freepbx():
@@ -122,7 +122,7 @@ def fig_install_asterisk_freepbx():
         ("  ✓ Critère OK : asterisk -V → 20.x  ·  fwconsole -V → 17.x  ·  res_srtp chargé", T_GREEN, "bold"),
     ]
     render_terminal(L, "console-install-2-asterisk-freepbx.png",
-                    "Installation — Asterisk 20 + FreePBX 17")
+                    "Installation 2/4 — Asterisk 20 + FreePBX 17")
 
 
 def fig_install_docker_monitoring():
@@ -152,7 +152,7 @@ def fig_install_docker_monitoring():
         ("  ✓ Critère OK : Grafana http://pbx.local:3000 · InfluxDB http://pbx.local:8086", T_GREEN, "bold"),
     ]
     render_terminal(L, "console-install-3-docker-monitoring.png",
-                    "Installation — Docker + stack monitoring (docker-compose.yml)")
+                    "Installation 3/4 — Docker + stack monitoring")
 
 
 def fig_install_systemd():
@@ -178,7 +178,7 @@ def fig_install_systemd():
         ("  ✓ Critère OK : service enabled · log /var/log/serveur-startup.log alimenté", T_GREEN, "bold"),
     ]
     render_terminal(L, "console-install-4-systemd.png",
-                    "Installation — service systemd serveur-startup")
+                    "Installation 4/4 — service systemd serveur-startup")
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -205,7 +205,7 @@ def fig_monitoring_ps():
         ("  UFW : 3000/tcp et 8086/tcp ouverts uniquement depuis les LAN autorisés.", T_DIM),
     ]
     render_terminal(L, "console-monitoring-cli.png",
-                    "Monitoring CLI — docker compose (monitoring/README.md)")
+                    "Supervision — docker compose ps / logs")
 
 
 # ═════════════════════════════════════════════════════════════════════════

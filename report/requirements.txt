@@ -1,0 +1,5 @@
+# Pipeline rapport PDF (report/) — figures matplotlib + PDF reportlab
+# Versions testées : matplotlib 3.6.3, reportlab 4.1.0, Pillow 10.2.0
+matplotlib>=3.6
+reportlab>=4.0
+Pillow>=10.0

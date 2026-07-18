@@ -807,7 +807,7 @@ story.append(schema("fig-securite-couches.png",
                     "matrice des couches de sécurité L0–L7 (d'après security/cryptographic_implementation.md)",
                     max_h=125 * mm))
 story.append(h2("12.2  Signalisation et média"))
-story.append(bullets([
+story.extend(bullets([
     "<b>TLS 5061</b> : transport PJSIP TLS avec certificat du Certificate Manager — la clé FreePBX "
     "<font face='DVM'>pjsipcertid</font> doit pointer vers un certificat valide, sinon le transport TLS "
     "s'expose sans cert_file (script phase4-assign-pjsip-tls-cert.php ; contrôle "
@@ -1006,7 +1006,7 @@ story.append(table(
     widths=[64 * mm, 22 * mm, CONTENT_W - 86 * mm],
 ))
 story.append(h2("15.4  Sécurité du flux"))
-story.append(bullets([
+story.extend(bullets([
     "Rate-limit par IP et par e-mail (fenêtre glissante 1 h, table provision_rate_limits).",
     "Réponses génériques contre l'énumération d'e-mails ; codes hachés (bcrypt) en base.",
     "QR à usage unique : jti révoqué au premier scan/REGISTER ; expiration 24 h.",
@@ -1061,7 +1061,7 @@ story.append(PageBreak())
 # ═══ 17. Limites ═════════════════════════════════════════════════════════
 story.append(h1("17.  Limites et travaux futurs"))
 story.append(h2("17.1  Limites actuelles"))
-story.append(bullets([
+story.extend(bullets([
     "<b>Trunk VLAN 10 physique</b> : la config OS est prête, mais le trunk 802.1Q switch ↔ hyperviseur et le "
     "trust DSCP restent à raccorder côté infrastructure (Plan-adressage §8).",
     "<b>Trunks opérateur</b> : préconfigurés mais inactifs tant que les identifiants opérateur "
@@ -1078,7 +1078,7 @@ story.append(bullets([
     "<b>MFA admin FreePBX</b> et chiffrement disque : non déployés (cryptographic_implementation.md).",
 ]))
 story.append(h2("17.2  Pistes d'évolution"))
-story.append(bullets([
+story.extend(bullets([
     "Activer un trunk opérateur (TLS si disponible) + routes DID vers l'IVR 7000 déjà en place.",
     "Basculer le tunnel Cloudflare en mode nommé (domaine dédié) et certificat Let's Encrypt sur l'UI.",
     "Automatiser la rotation 90 j des secrets SIP (scripts fwconsole + calendrier).",
