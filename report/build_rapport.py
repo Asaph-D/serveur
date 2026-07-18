@@ -256,6 +256,17 @@ pre.term { background:#14181F; color:#D5DBE3; font-family:"Ubuntu Mono","DejaVu 
   white-space:pre-wrap; page-break-inside:avoid;}
 pre.term .c { color:#56C1D6; } pre.term .g { color:#5FD38D; } pre.term .d { color:#7B8794; }
 
+/* ── Cartes de concepts ─────────────────────────────────────────────── */
+.cptgrid { margin:4pt 0 6pt; }
+.cpt { display:inline-block; vertical-align:top; box-sizing:border-box;
+  width:48.4%; margin:0 1.2% 3mm 0;
+  background:#fff; border:.4pt solid #D8E2EA; border-left:2.8pt solid #148F77;
+  border-radius:1.8mm; padding:2.8mm 3.8mm; page-break-inside:avoid; }
+.cpt.alt { border-left-color:#7D3C98; }
+.cpt .t { display:block; color:#1B4F72; font-size:9.6pt; font-weight:700; margin-bottom:1.2mm; }
+.cpt .t small { color:#148F77; font-weight:600; font-size:7.4pt; }
+.cpt p { font-size:8.2pt; margin:0; color:#33475A; text-align:justify; line-height:1.48; }
+
 /* Divers */
 .pb { page-break-before:always; }
 .avoid { page-break-inside:avoid; }
@@ -347,6 +358,7 @@ A("""
 <h1>Sommaire</h1>
 <div class="grp">Partie I — Cadrage</div>
 <a href="#ch1"><span class="n">01</span>Introduction</a>
+<a href="#concepts"><span class="n">◆</span>Définition des concepts clés</a>
 <a href="#ch2"><span class="n">02</span>Problématique</a>
 <a href="#ch3"><span class="n">03</span>Contexte d'entreprise et approche retenue</a>
 <div class="grp">Partie II — Conception</div>
@@ -413,8 +425,87 @@ A(callout("info", "Conventions de lecture",
           "Les adresses IP montrées sont les valeurs d'exemple documentées (<code>pbx.local</code>, "
           "<code>10.10.10.10</code>, <code>192.168.1.80</code>…) — l'IP LAN réelle varie par site et vit "
           "dans la configuration du serveur. Aucun secret n'est reproduit."))
-A(nxt("La suite pose la question de départ : pourquoi ne pas simplement souscrire une offre cloud ? "
-      "Le chapitre 2 formule la problématique qui justifie chaque choix technique de ce rapport."))
+A(nxt("Avant d'entrer dans le vif, la section suivante fixe le vocabulaire : chaque concept manipulé "
+      "dans ce rapport y est défini en quelques lignes. Le chapitre 2 posera ensuite la problématique."))
+
+# ── Définition des concepts clés ─────────────────────────────────────────
+A('<h2 class="chap" id="concepts"><span class="chip">◆</span> Définition des concepts clés</h2>')
+A('<p class="lead">Douze notions suffisent à lire ce rapport sans être spécialiste en téléphonie — '
+  'les voici, définies dans le contexte du projet.</p>')
+
+def cpt(term, tag, definition, alt=False):
+    cls = "cpt alt" if alt else "cpt"
+    small = f' <small>· {tag}</small>' if tag else ""
+    return f'<div class="{cls}"><span class="t">{term}{small}</span><p>{definition}</p></div>'
+
+A('<h3>Le socle : transporter la voix sur un réseau de données</h3>')
+A('<div class="cptgrid">'
+  + cpt("VoIP — voix sur IP", "principe",
+        "Technique qui transforme la voix en paquets de données transportés sur un réseau IP "
+        "(LAN, Internet), au lieu d'une ligne téléphonique dédiée. Toute la plateforme repose "
+        "sur ce principe : un appel est un flux de paquets comme un autre — mais qui ne tolère "
+        "ni retard ni perte.")
+  + cpt("PBX / IPBX", "le cœur",
+        "Le « central téléphonique » de l'entreprise : il enregistre les postes, route les appels, "
+        "héberge les services (messagerie, conférences, files d'attente). Ici, le PBX est le logiciel "
+        "libre <b>Asterisk 20</b>, administré par l'interface web <b>FreePBX 17</b>.")
+  + cpt("SIP — la signalisation", "protocole",
+        "Protocole qui gère la « conversation administrative » d'un appel : s'enregistrer "
+        "(REGISTER), inviter un correspondant (INVITE), raccrocher (BYE). Le SIP transporte "
+        "la sonnette et le carnet d'adresses — jamais la voix elle-même.")
+  + cpt("RTP / SRTP — le média", "protocole",
+        "Une fois l'appel accepté, la voix et la vidéo circulent en <b>RTP</b>, un flux continu de "
+        "paquets UDP (ports 10000–20000 ici). <b>SRTP</b> en est la version chiffrée : indispensable "
+        "pour qu'une capture réseau ne permette pas de réécouter la conversation.")
+  + cpt("Codec", "compression",
+        "Algorithme qui compresse la voix avant transport : <b>G.711</b> (qualité téléphone, simple), "
+        "<b>Opus</b> (qualité supérieure, robuste aux réseaux mobiles — le choix de WebRTC), "
+        "<b>VP8/H.264</b> pour la vidéo. Deux postes doivent en partager au moins un — sinon le PBX transcode.")
+  + cpt("Extension / softphone", "les postes",
+        "L'<b>extension</b> est l'identité téléphonique interne d'un utilisateur (ici 1001 à 1010) ; "
+        "le <b>softphone</b> est le téléphone logiciel qui la porte — application mobile ou de bureau "
+        "(Asaphone, Zoiper) plutôt que combiné physique.")
+  + '</div>')
+
+A('<h3>Les technologies différenciantes du projet</h3>')
+A('<div class="cptgrid">'
+  + cpt("WebRTC", "temps réel", 
+        "Norme de communication temps réel née du web : signalisation via <b>WebSocket sécurisé "
+        "(WSS)</b>, média chiffré en <b>DTLS-SRTP</b>, négociation de chemin réseau par <b>ICE</b>. "
+        "C'est la pile utilisée par Asaphone — elle traverse bien les réseaux mobiles et n'exige "
+        "aucune configuration du poste client.", alt=True)
+  + cpt("B2BUA — back-to-back user agent", "architecture",
+        "Mode de fonctionnement d'Asterisk : chaque appel est <i>terminé</i> sur le PBX puis "
+        "<i>ré-émis</i> vers l'autre poste, en deux jambes indépendantes. C'est ce qui permet à un "
+        "téléphone SIP classique de converser avec un client WebRTC — le PBX traduit au milieu.", alt=True)
+  + cpt("VLAN & QoS (DSCP)", "réseau",
+        "Le <b>VLAN</b> découpe un réseau physique en segments étanches — ici le VLAN 10 est réservé "
+        "à la voix. La <b>QoS</b> marque chaque paquet voix d'une étiquette de priorité "
+        "(<b>DSCP EF</b>, « expedited forwarding ») que les équipements servent en premier : "
+        "l'appel reste fluide même si le réseau est chargé.", alt=True)
+  + cpt("VPN WireGuard / NAT & CGNAT", "accès distant",
+        "Le <b>VPN</b> crée un tunnel chiffré qui donne à un poste distant une adresse du réseau de "
+        "l'entreprise — comme s'il était au bureau. Le <b>NAT</b> (et son extension opérateur, le "
+        "<b>CGNAT</b> des connexions 4G/Starlink) masque les adresses et bloque les connexions "
+        "entrantes : c'est l'obstacle que le VPN — et son relais WebSocket — contourne.", alt=True)
+  + cpt("Provisionnement & bootstrap", "onboarding",
+        "Le <b>provisionnement</b> est la configuration automatique d'un poste : l'utilisateur "
+        "scanne un QR, l'application reçoit identifiants et réglages. Le <b>bootstrap</b> est le "
+        "fichier de découverte publié par le serveur qui indique au client où se trouvent l'API, "
+        "le WSS et le VPN — le client ne connaît rien d'avance.", alt=True)
+  + cpt("IVR, file ACD & ConfBridge", "services",
+        "L'<b>IVR</b> est le serveur vocal interactif (« tapez 1 pour… ») ; la <b>file ACD</b> met "
+        "les appelants en attente et les distribue aux agents disponibles ; <b>ConfBridge</b> est la "
+        "salle de conférence d'Asterisk, qui mixe l'audio de tous les participants côté serveur.", alt=True)
+  + '</div>')
+
+A(callout("info", "Et la supervision ?",
+          "Observer la plateforme (appels actifs, canaux, attaques bloquées) repose sur un trio "
+          "standard : un <b>collecteur</b> (Telegraf) interroge le PBX, une <b>base de séries "
+          "temporelles</b> (InfluxDB) archive les mesures, un <b>tableau de bord</b> (Grafana) les "
+          "affiche. Le chapitre 14 lui est consacré."))
+A(nxt("Le vocabulaire est posé. Le chapitre 2 formule la question de départ : pourquoi construire "
+      "cette plateforme plutôt que louer un service cloud ?"))
 
 # ── 2. Problématique ─────────────────────────────────────────────────────
 A(chap("02", "ch2", "Problématique",
