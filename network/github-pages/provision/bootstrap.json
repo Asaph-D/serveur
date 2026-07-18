@@ -3,7 +3,7 @@
   "service": "asaphone-provision",
   "discovery_url": "https://asaph-d.github.io/Portfolio/provision/bootstrap.json",
   "api_lan": "https://pbx.local/provision",
-  "api_remote": "https://moon-garcia-exterior-pos.trycloudflare.com/provision",
+  "api_remote": "https://gauge-mia-organisations-rather.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
   "pbx_lan_ip": "192.168.1.80",
   "sip_server": "192.168.1.80",
@@ -32,7 +32,7 @@
   "remote_access": {
     "mode": "wss-relay",
     "wss_relay": {
-      "tunnel_wss": "wss://constitution-spread-gdp-pools.trycloudflare.com",
+      "tunnel_wss": "wss://timely-chip-fabrics-patent.trycloudflare.com",
       "wireguard_endpoint": "127.0.0.1:51820",
       "hint": "Relay WSS intégré Asaphone — pas d app externe"
     }
