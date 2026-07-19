@@ -3,14 +3,14 @@
   "service": "asaphone-provision",
   "discovery_url": "https://asaph-d.github.io/Portfolio/provision/bootstrap.json",
   "api_lan": "https://pbx.local/provision",
-  "api_remote": "https://gauge-mia-organisations-rather.trycloudflare.com/provision",
+  "api_remote": "https://satisfy-contract-situated-nice.trycloudflare.com/provision",
   "pbx_host": "pbx.local",
-  "pbx_lan_ip": "192.168.1.80",
-  "sip_server": "192.168.1.80",
-  "api_lan_ip": "https://192.168.1.80/provision",
+  "pbx_lan_ip": "192.168.137.169",
+  "sip_server": "192.168.137.169",
+  "api_lan_ip": "https://192.168.137.169/provision",
   "wss_port": 8089,
-  "wss_url": "wss://192.168.1.80:8089/ws",
-  "wss_url_lan": "wss://192.168.1.80:8089/ws",
+  "wss_url": "wss://192.168.137.169:8089/ws",
+  "wss_url_lan": "wss://192.168.137.169:8089/ws",
   "video_codecs": [
     "vp8",
     "h264"
@@ -18,21 +18,21 @@
   "ice_servers": [
     {
       "urls": [
-        "stun:192.168.1.80:3478"
+        "stun:192.168.137.169:3478"
       ]
     }
   ],
   "vpn": {
     "enable": true,
-    "wireguard_remote_available": false,
-    "endpoint_remote": "",
-    "endpoint_lan": "192.168.1.80:51820",
-    "allowed_ips": "192.168.1.0/24,10.10.10.0/24,10.200.0.0/24"
+    "wireguard_remote_available": true,
+    "endpoint_remote": "102.244.125.13:51820",
+    "endpoint_lan": "192.168.137.169:51820",
+    "allowed_ips": "192.168.137.0/24,10.10.10.0/24,10.200.0.0/24"
   },
   "remote_access": {
     "mode": "wss-relay",
     "wss_relay": {
-      "tunnel_wss": "wss://timely-chip-fabrics-patent.trycloudflare.com",
+      "tunnel_wss": "wss://charge-glucose-colours-flat.trycloudflare.com",
       "wireguard_endpoint": "127.0.0.1:51820",
       "hint": "Relay WSS intégré Asaphone — pas d app externe"
     }
