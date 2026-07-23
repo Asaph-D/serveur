@@ -170,7 +170,7 @@ function provision_get_active_token(PDO $db, string $email, string $extension): 
 }
 
 function provision_verify_extension_secret(PDO $db, string $extension, string $secret): void {
-	if (!preg_match('/^\d{4}$/', $extension)) {
+	if (!preg_match('/^\d{4,5}$/', $extension)) {
 		throw new RuntimeException('Identifiants invalides');
 	}
 	if (!provision_extension_exists($db, $extension)) {
@@ -180,6 +180,15 @@ function provision_verify_extension_secret(PDO $db, string $extension, string $s
 	if ($stored === null || $stored === '' || !hash_equals($stored, $secret)) {
 		throw new RuntimeException('Identifiants invalides');
 	}
+}
+
+/** E-mail technique pour login SIP manuel (sans compte / QR). */
+function provision_sip_local_email(string $extension): string {
+	return 'sip-' . $extension . '@local.asaphone';
+}
+
+function provision_is_sip_local_email(string $email): bool {
+	return (bool) preg_match('/^sip-\d{4,5}@local\.asaphone$/', $email);
 }
 
 function provision_resolve_email_for_extension(PDO $db, string $extension): ?string {
@@ -196,21 +205,24 @@ function provision_resolve_email_for_extension(PDO $db, string $extension): ?str
 }
 
 /**
- * Redélivre le contenu du QR (jti + credentials) sans rescanner.
- * - Première fois : jeton actif existant ou nouveau (comme claim).
- * - Reconnexion (déjà provisioned) : nouveau jti consommé pour chat / messagerie.
+ * Redélivre jti + credentials.
+ * - QR / compte e-mail : inchangé
+ * - REGISTER manuel (ext+secret SIP connu) : jti local sans exiger d’e-mail
+ * Le QR n’est qu’un moyen simplifié ; le secret SIP prouve l’accès.
  */
 function provision_redeliver_session(PDO $db, string $extension, string $secret): array {
 	provision_verify_extension_secret($db, $extension, $secret);
 
 	$email = provision_resolve_email_for_extension($db, $extension);
-	if ($email === null) {
-		throw new RuntimeException('Extension non liée à un compte Asaphone — inscrivez-vous par e-mail');
+	$sipOnly = ($email === null);
+	if ($sipOnly) {
+		$email = provision_sip_local_email($extension);
 	}
 
-	$alreadyProvisioned = provision_get_extension_owner($db, $extension) !== null;
+	$alreadyProvisioned = !$sipOnly && provision_get_extension_owner($db, $extension) !== null;
 
-	if ($alreadyProvisioned) {
+	// Compte déjà provisionné OU login SIP manuel → jti consommé (chat / pending / read)
+	if ($alreadyProvisioned || $sipOnly) {
 		$tokenData = provision_create_token($db, $email, $extension);
 		provision_consume_token($db, $tokenData['jti']);
 		$credentials = provision_credentials_payload($db, $extension, $tokenData['jti']);
@@ -219,6 +231,7 @@ function provision_redeliver_session(PDO $db, string $extension, string $secret)
 			'jti' => $tokenData['jti'],
 			'credentials' => $credentials,
 			'expires' => $tokenData['expires'],
+			'auth_mode' => $sipOnly ? 'sip_secret' : 'account',
 		];
 	}
 
@@ -233,6 +246,7 @@ function provision_redeliver_session(PDO $db, string $extension, string $secret)
 			'claim_token' => $active['claim_token'],
 			'claim_url' => provision_build_claim_url($active['claim_token']),
 			'expires' => (new DateTimeImmutable($active['expires']))->format(DateTimeInterface::ATOM),
+			'auth_mode' => 'claim',
 		];
 	}
 
@@ -245,5 +259,6 @@ function provision_redeliver_session(PDO $db, string $extension, string $secret)
 		'claim_token' => $tokenData['claim_token'],
 		'claim_url' => $tokenData['claim_url'],
 		'expires' => $tokenData['expires'],
+		'auth_mode' => 'claim',
 	];
 }

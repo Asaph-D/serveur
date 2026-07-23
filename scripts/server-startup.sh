@@ -58,6 +58,9 @@ startup_ok "Sessions PHP"
 
 startup_run_critical "Apache (restart)" systemctl restart apache2
 
+startup_run_optional "API provision → /var/www/provision" \
+  bash -c "rsync -a --delete --exclude='*.swp' '${ROOT_SRV}/provision/' /var/www/provision/ && chown -R www-data:www-data /var/www/provision && find /var/www/provision -type f -name '*.php' -exec chmod 640 {} \; && find /var/www/provision -type d -exec chmod 750 {} \;"
+
 startup_step "Profil réseau site (UFW, mDNS, localnets)"
 # shellcheck disable=SC1091
 source "${ROOT_SRV}/network/global-config.env" 2>/dev/null || true

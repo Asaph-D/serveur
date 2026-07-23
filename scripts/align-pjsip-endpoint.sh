@@ -153,6 +153,10 @@ if ($webrtc) {
   upsert($db, $ext, "codec_prefs_outgoing_offer", "prefer:ulaw, operation:intersect, keep:all, transcode:allow");
   // WSS : contact sip@IP:port_ws — qualify UDP echoue (surtout avec VPN actif).
   upsert($db, $ext, "qualifyfreq", "0");
+  // Un seul Contact : au changement de hotspot/Wi‑Fi, l’ancien Contact (autre subnet)
+  // ne doit plus être composé en parallèle (Dial A&B → sonnerie morte / ICE confus).
+  upsert($db, $ext, "max_contacts", "1");
+  upsert($db, $ext, "remove_existing", "yes");
 } else {
   upsert($db, $ext, "webrtc", "no");
   upsert($db, $ext, "bundle", "no");

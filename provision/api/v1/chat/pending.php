@@ -5,8 +5,8 @@ require_once dirname(__DIR__, 3) . '/lib/bootstrap.php';
 
 /**
  * Messages chat en attente (SIP instantané non livré, destinataire offline).
- * Exclut les messages déjà reçus en live (sip_delivered=1), même si non lus côté app.
- * GET  ?ext=1001 + X-Provision-Jti — renvoie puis retire de la file (pas de re-envoi)
+ * Auth : ext + jti (QR/reconnect) OU ext + secret SIP (REGISTER manuel).
+ * GET  ?ext=1001 — renvoie puis retire de la file
  * POST {"ack":[1,2,3]} — accusé explicite (optionnel)
  */
 try {
@@ -15,17 +15,10 @@ try {
 	}
 
 	$db = provision_pdo();
-	$ext = trim((string) ($_GET['ext'] ?? ''));
-	$jti = trim((string) ($_SERVER['HTTP_X_PROVISION_JTI'] ?? $_GET['jti'] ?? ''));
-	if ($ext === '' || $jti === '') {
-		provision_error('ext et jti requis');
-	}
-	if (!provision_chat_validate_jti($db, $jti, $ext)) {
-		provision_error('Accès refusé', 403);
-	}
+	$body = ($_SERVER['REQUEST_METHOD'] === 'POST') ? provision_read_json_body() : [];
+	$ext = provision_chat_require_ext($db, $body !== [] ? $body : null);
 
 	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-		$body = provision_read_json_body();
 		$ack = $body['ack'] ?? [];
 		if (!is_array($ack)) {
 			provision_error('ack doit être un tableau');
@@ -41,6 +34,7 @@ try {
 			'id' => (int) $row['id'],
 			'from' => $row['from_ext'],
 			'body' => $row['body'],
+			'client_id' => $row['client_id'] ?? null,
 			'sip_delivered' => (bool) $row['sip_delivered'],
 			'created_at' => $row['created_at'],
 		];
@@ -50,8 +44,18 @@ try {
 		'extension' => $ext,
 		'messages' => $messages,
 		'count' => count($messages),
+		'statuses' => provision_chat_recent_outbound_statuses($db, $ext),
 		'poll_hint' => 'Appeler à chaque reconnexion WSS si le SIP MESSAGE instantané a pu échouer',
 	]);
 } catch (Throwable $e) {
-	provision_error($e->getMessage(), 403);
+	$msg = $e->getMessage();
+	$code = 403;
+	if (str_contains($msg, 'Trop de tentatives')) {
+		$code = 429;
+	} elseif (str_contains($msg, 'Identifiants invalides')) {
+		$code = 401;
+	} elseif (str_contains($msg, 'Authentification requise') || str_contains($msg, 'ext requis')) {
+		$code = 401;
+	}
+	provision_error($msg, $code);
 }

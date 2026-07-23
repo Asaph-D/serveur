@@ -13,6 +13,8 @@ function provision_api_paths(): array {
 		'voicemail_pending' => '/api/v1/voicemail/pending.php',
 		'voicemail_listen' => '/api/v1/voicemail/listen.php',
 		'chat_pending' => '/api/v1/chat/pending.php',
+		'chat_outbound' => '/api/v1/chat/outbound.php',
+		'chat_status' => '/api/v1/chat/status.php',
 		'chat_read' => '/api/v1/chat/read.php',
 		'groups_sync' => '/api/v1/groups/sync.php',
 		'groups_list' => '/api/v1/groups/list.php',
@@ -22,16 +24,16 @@ function provision_api_paths(): array {
 	];
 }
 
-/** Base URL API joignable par le client (Host de la requête ou IP LAN). */
+/** Base URL API — préférer l’IP LAN (Android ne résout souvent pas pbx.local). */
 function provision_request_api_base(): string {
+	$ip = provision_pbx_lan_ip();
+	if ($ip !== '') {
+		return "https://{$ip}/provision";
+	}
 	$host = $_SERVER['HTTP_HOST'] ?? '';
 	if ($host !== '' && !str_contains($host, 'pbx.local')) {
 		$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 		return rtrim("{$scheme}://{$host}/provision", '/');
-	}
-	$ip = provision_pbx_lan_ip();
-	if ($ip !== '') {
-		return "https://{$ip}/provision";
 	}
 	return provision_public_base_url();
 }
@@ -74,6 +76,7 @@ function provision_format_session(array $redeliver): array {
 
 	return [
 		'reconnect' => (bool) ($redeliver['reconnect'] ?? false),
+		'auth_mode' => (string) ($redeliver['auth_mode'] ?? 'account'),
 		'jti' => $redeliver['jti'],
 		'expires' => $redeliver['expires'] ?? null,
 		'credentials' => $credentials,

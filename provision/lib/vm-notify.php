@@ -73,7 +73,9 @@ function provision_vm_build_sip_payload(
 }
 
 /**
- * Notification messagerie via SIP MESSAGE (même flux que le chat Asaphone).
+ * Notification messagerie / chat via SIP MESSAGE (vm-notify-out).
+ * Fichier unique par envoi (token) pour éviter les courses concurrentes
+ * (delivered + read simultanés → body vide).
  */
 function provision_vm_send_sip_message(string $extension, string $callerId, string $body): bool {
 	$caller = provision_vm_extract_caller_extension($callerId);
@@ -82,7 +84,8 @@ function provision_vm_send_sip_message(string $extension, string $callerId, stri
 		@mkdir($tmpDir, 01777, true);
 	}
 
-	$payloadFile = "$tmpDir/vm-notify-$extension.json";
+	$token = bin2hex(random_bytes(8));
+	$payloadFile = "$tmpDir/vm-notify-$extension-$token.json";
 	if (@file_put_contents($payloadFile, $body) === false) {
 		error_log("vm-notify: impossible d'écrire $payloadFile");
 		return false;
@@ -90,13 +93,15 @@ function provision_vm_send_sip_message(string $extension, string $callerId, stri
 	@chmod($payloadFile, 0666);
 
 	$cmd = sprintf(
-		'sudo -n /usr/local/bin/asaphone-vm-originate %s %s 2>&1',
+		'sudo -n /usr/local/bin/asaphone-vm-originate %s %s %s 2>&1',
 		escapeshellarg($extension),
-		escapeshellarg($caller)
+		escapeshellarg($caller),
+		escapeshellarg($token)
 	);
 	exec($cmd, $output, $code);
 
 	if ($code !== 0) {
+		@unlink($payloadFile);
 		error_log('vm-notify originate: ' . implode("\n", $output));
 		return false;
 	}

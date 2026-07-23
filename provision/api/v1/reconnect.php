@@ -29,11 +29,14 @@ try {
 	$session = provision_open_session($db, $ext, $secret);
 
 	provision_ok([
-		'message' => $session['reconnect']
-			? 'Reconnexion — identifiants redélivrés'
-			: 'Première connexion — identifiants redélivrés',
+		'message' => ($session['auth_mode'] ?? '') === 'sip_secret'
+			? 'Connexion SIP — jti délivré (REGISTER manuel, sans QR)'
+			: ($session['reconnect']
+				? 'Reconnexion — identifiants redélivrés'
+				: 'Première connexion — identifiants redélivrés'),
 		'session' => $session,
 		'reconnect' => $session['reconnect'],
+		'auth_mode' => $session['auth_mode'] ?? null,
 		'jti' => $session['jti'],
 		'credentials' => $session['credentials'],
 		'expires' => $session['expires'],

@@ -27,7 +27,7 @@ for ($ext = 1001; $ext <= 1010; $ext++) {
 		'name'         => "Poste $ext",
 		'outboundcid'  => '',
 		'secret'       => $secret,
-		'max_contacts' => 3,
+		'max_contacts' => 1,
 	];
 	$r = $core->processQuickCreate('pjsip', (string) $ext, $data);
 	if (empty($r['status'])) {

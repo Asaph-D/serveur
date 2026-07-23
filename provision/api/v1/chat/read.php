@@ -5,9 +5,9 @@ require_once dirname(__DIR__, 3) . '/lib/bootstrap.php';
 
 /**
  * Accusés de lecture chat Asaphone.
- * POST /provision/api/v1/chat/read.php?ext=1003&jti=<uuid>
- * Header: X-Provision-Jti: <uuid>
- * Body: {"read":[4,5,6],"peer":"1004"}
+ * Auth : jti OU secret SIP (REGISTER manuel).
+ * POST ?ext=1003
+ * Body: {"read":[4,5,6],"peer":"1004","client_ids":["m-…"]}
  */
 try {
 	if (!provision_enabled()) {
@@ -19,16 +19,9 @@ try {
 	}
 
 	$db = provision_pdo();
-	$ext = trim((string) ($_GET['ext'] ?? ''));
-	$jti = trim((string) ($_SERVER['HTTP_X_PROVISION_JTI'] ?? $_GET['jti'] ?? ''));
-	if ($ext === '' || $jti === '') {
-		provision_chat_read_error('ext et jti requis');
-	}
-	if (!provision_chat_validate_jti($db, $jti, $ext)) {
-		provision_chat_read_error('Accès refusé', 403);
-	}
-
 	$body = provision_read_json_body();
+	$ext = provision_chat_require_ext($db, $body);
+
 	$read = $body['read'] ?? [];
 	if (!is_array($read)) {
 		provision_chat_read_error('read doit être un tableau');
@@ -44,16 +37,34 @@ try {
 		provision_chat_read_error('read ou peer requis');
 	}
 
-	if ($ids !== []) {
-		provision_chat_mark_read($db, $ext, $ids);
+	$clientIds = $body['client_ids'] ?? [];
+	if (!is_array($clientIds)) {
+		provision_chat_read_error('client_ids doit être un tableau');
 	}
-	if ($peer !== '') {
-		provision_chat_notify_peer_read($ext, $peer);
+	$clientIds = array_values(array_filter(array_map(
+		static fn ($v): string => trim((string) $v),
+		$clientIds
+	), static fn (string $v): bool => $v !== ''));
+
+	$marked = 0;
+	if ($ids !== []) {
+		$marked = provision_chat_mark_read($db, $ext, $ids);
+		provision_chat_notify_senders_read($db, $ext, $ids, $clientIds);
+	} elseif ($peer !== '' && $clientIds !== []) {
+		// peer + client_ids sans ids serveur
+		provision_chat_notify_peer_read($ext, $peer, [], $clientIds);
 	}
 
-	provision_ok();
+	provision_ok(['marked' => $marked]);
 } catch (Throwable $e) {
-	provision_chat_read_error($e->getMessage(), 400);
+	$msg = $e->getMessage();
+	$code = 400;
+	if (str_contains($msg, 'Trop de tentatives')) {
+		$code = 429;
+	} elseif (str_contains($msg, 'Identifiants invalides') || str_contains($msg, 'Authentification')) {
+		$code = 401;
+	}
+	provision_chat_read_error($msg, $code);
 }
 
 function provision_chat_read_error(string $message, int $status = 400): void {

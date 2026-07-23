@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 declare(strict_types=1);
 
@@ -24,6 +23,7 @@ if ($cmd === 'store') {
 	}
 	$body = (string) file_get_contents($bodyFile);
 	$fromExt = provision_chat_parse_from_ext($fromSip);
+	// 0 = payload contrôle (chat_delivered/read) — dialplan n’appelle pas « delivered »
 	echo provision_chat_store($db, $toExt, $fromExt, $body);
 	exit(0);
 }
@@ -31,7 +31,8 @@ if ($cmd === 'store') {
 if ($cmd === 'delivered') {
 	$id = (int) ($argv[2] ?? 0);
 	if ($id > 0) {
-		provision_chat_mark_sip_delivered($db, $id);
+		// MessageSend SUCCESS → DB + SIP chat_delivered vers l’émetteur
+		provision_chat_mark_sip_delivered($db, $id, true);
 	}
 	exit(0);
 }
