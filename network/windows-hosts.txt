@@ -1,3 +1,3 @@
 # Copier dans C:\Windows\System32\drivers\etc\hosts (admin)
-# Généré par sync-global-config.sh — réseau 192.168.1.0/24
-192.168.1.80  pbx.local  pbx
+# Généré par sync-global-config.sh — réseau 192.168.10.0/24
+192.168.10.7  pbx.local  pbx

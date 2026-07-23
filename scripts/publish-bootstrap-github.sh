@@ -48,6 +48,8 @@ LOCAL_HASH="$(sha256sum "$BOOTSTRAP" | awk '{print $1}')"
 FORCE=0
 [[ "${1:-}" == "--force" ]] && FORCE=1
 
+CURL_GH=(curl -fsS --connect-timeout 5 --max-time 20)
+
 github_put_bootstrap() {
 	local repo="$1"
 	local branch="$2"
@@ -57,7 +59,7 @@ github_put_bootstrap() {
 	local sha="" remote_hash=""
 	local api_get="https://api.github.com/repos/${repo}/contents/${remote_path}?ref=${branch}"
 	local existing
-	existing="$(curl -fsS -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+	existing="$("${CURL_GH[@]}" -H "Authorization: Bearer ${GITHUB_TOKEN}" \
 		-H "Accept: application/vnd.github+json" "$api_get" 2>/dev/null || true)"
 
 	if [[ -n "$existing" ]]; then
@@ -87,7 +89,7 @@ print(json.dumps({
 " "$msg" "$ENCODED" "$branch" "$sha")"
 
 	local http
-	http="$(curl -fsS -o /tmp/bootstrap-publish.json -w '%{http_code}' \
+	http="$("${CURL_GH[@]}" -o /tmp/bootstrap-publish.json -w '%{http_code}' \
 		-X PUT \
 		-H "Authorization: Bearer ${GITHUB_TOKEN}" \
 		-H "Accept: application/vnd.github+json" \

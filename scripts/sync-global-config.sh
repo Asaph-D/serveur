@@ -338,4 +338,18 @@ if [[ "$DEPLOY" -eq 1 && "$(id -u)" -eq 0 && -f /etc/provision/provision.env ]];
 	fi
 fi
 
+# RTP/ICE Asterisk doit suivre le DHCP (hotspot IP variable) — sinon ice_host reste sur l ancienne IP.
+if [[ "$(id -u)" -eq 0 && -n "${PBX_LAN_IP:-}" && -x "$ROOT/scripts/apply-rtp-relaxed.sh" ]]; then
+	if asterisk -rx "core show version" >/dev/null 2>&1; then
+		echo "==> RTP/ICE → ${PBX_LAN_IP} (ice_host_candidates + media_address)"
+		bash "$ROOT/scripts/apply-rtp-relaxed.sh" --quick || echo "WARN: apply-rtp-relaxed --quick a echoue" >&2
+	fi
+fi
+
+# coturn relay-ip / external-ip doivent suivre le meme DHCP (sinon RTP → 127.0.0.1 / ancienne IP)
+if [[ "$(id -u)" -eq 0 && "${PROVISION_TURN_ENABLE:-no}" == "yes" && -x "$ROOT/scripts/install-coturn.sh" ]]; then
+	echo "==> coturn → relay-ip=${PBX_LAN_IP}"
+	bash "$ROOT/scripts/install-coturn.sh" || echo "WARN: install-coturn a echoue" >&2
+fi
+
 echo "OK — publier bootstrap.json sur GitHub Pages si api_remote ou pbx_lan_ip ont changé."

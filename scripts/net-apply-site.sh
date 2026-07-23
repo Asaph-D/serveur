@@ -18,6 +18,10 @@ fi
 
 # shellcheck disable=SC1090
 source "$CFG"
+# TURN / IP courante : global-config (mis a jour par sync juste au-dessus)
+# shellcheck disable=SC1091
+source "$ROOT/network/global-config.env" 2>/dev/null || true
+[[ -f /etc/provision/provision.env ]] && source /etc/provision/provision.env 2>/dev/null || true
 
 if [[ -z "${MGMT_CIDR:-}" || -z "${VOICE_CIDR:-}" ]]; then
   echo "MGMT_CIDR et VOICE_CIDR doivent être définis dans $CFG" >&2
@@ -66,10 +70,17 @@ if [[ -n "${PBX_LAN_IP:-}" ]]; then
 include "/etc/freepbx.conf";
 $db = \FreePBX::Database();
 $ip = getenv("PBX_LAN_IP");
-$stmt = $db->prepare("UPDATE kvstore_Sipsettings SET val = :val WHERE `key` = \"externip\"");
-$stmt->execute([":val" => $ip]);
-$stmt = $db->prepare("UPDATE kvstore_Sipsettings SET val = :val WHERE `key` = \"externhost\"");
-$stmt->execute([":val" => $ip]);
+foreach (["externip", "externhost"] as $key) {
+  $stmt = $db->prepare("SELECT COUNT(*) FROM kvstore_Sipsettings WHERE `key` = :k");
+  $stmt->execute([":k" => $key]);
+  if ((int)$stmt->fetchColumn() > 0) {
+    $u = $db->prepare("UPDATE kvstore_Sipsettings SET val = :val WHERE `key` = :k");
+    $u->execute([":val" => $ip, ":k" => $key]);
+  } else {
+    $i = $db->prepare("INSERT INTO kvstore_Sipsettings (`key`, val) VALUES (:k, :val)");
+    $i->execute([":k" => $key, ":val" => $ip]);
+  }
+}
 echo "externip/externhost = $ip\n";
 ' >/dev/null
 fi
@@ -127,6 +138,25 @@ if [[ "${WEBRTC_ENABLE:-no}" == "yes" ]]; then
       ufw allow from "${c}" to any port "${WHP}" proto tcp comment "Asterisk HTTP WebRTC EXTRA" >/dev/null || true
       ufw allow from "${c}" to any port "${WWP}" proto tcp comment "Asterisk WSS WebRTC EXTRA" >/dev/null || true
       ufw allow from "${c}" to any port 10000:20000 proto udp comment "RTP WebRTC/softphone EXTRA" >/dev/null || true
+    done
+  fi
+  # STUN/TURN doit etre ouvert sur le LAN DHCP courant (hotspot IP variable), pas seulement VLAN voix
+  if [[ "${PROVISION_TURN_ENABLE:-no}" == "yes" ]]; then
+    _stun_cidrs=("${MGMT_CIDR}")
+    if [[ -n "${EXTRA_LAN_CIDRS:-}" ]]; then
+      # shellcheck disable=SC2206
+      _stun_cidrs+=(${EXTRA_LAN_CIDRS})
+    fi
+    tp="${PROVISION_TURN_PORT:-3478}"
+    rmin="${PROVISION_TURN_RELAY_MIN:-49160}"
+    rmax="${PROVISION_TURN_RELAY_MAX:-49200}"
+    declare -A _stun_seen=()
+    for c in "${_stun_cidrs[@]}"; do
+      [[ -z "$c" || -n "${_stun_seen[$c]:-}" ]] && continue
+      _stun_seen[$c]=1
+      ufw allow from "${c}" to any port "${tp}" proto udp comment "STUN/TURN MGMT" >/dev/null || true
+      ufw allow from "${c}" to any port "${tp}" proto tcp comment "STUN/TURN TCP MGMT" >/dev/null || true
+      ufw allow from "${c}" to any port "${rmin}:${rmax}" proto udp comment "TURN relay MGMT" >/dev/null || true
     done
   fi
 fi

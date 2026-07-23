@@ -133,6 +133,8 @@ function provision_has_active_token(PDO $db, string $email): bool {
 
 function provision_send_qr_email(PDO $db, string $email, string $extension): array {
 	provision_init_voicemail_mailbox($extension, $email);
+	require_once __DIR__ . '/pjsip-align.php';
+	provision_ensure_pjsip_profile($extension);
 	$tokenData = provision_create_token($db, $email, $extension);
 	$qrPath = tempnam(sys_get_temp_dir(), 'asaphone_qr_') . '.png';
 	try {

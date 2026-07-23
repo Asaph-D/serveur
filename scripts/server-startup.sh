@@ -43,6 +43,7 @@ if command -v fwconsole >/dev/null 2>&1; then
     bash "${ROOT_SRV}/scripts/fix-wss-tls.sh"
   startup_run_optional "Permissions /var/run/asterisk (reload.lock + ctl)" \
     bash "${ROOT_SRV}/scripts/fix-asterisk-run-perms.sh"
+  # align PJSIP APRES sync IP (net-apply) — sinon media_address reste sur ancienne IP hotspot
   startup_run_optional "Permissions spool messagerie" \
     bash "${ROOT_SRV}/scripts/fix-voicemail-spool-perms.sh"
 else
@@ -71,32 +72,56 @@ fi
 if command -v fwconsole >/dev/null 2>&1; then
   startup_run_optional "Permissions /var/run/asterisk (post-réseau)" \
     bash "${ROOT_SRV}/scripts/fix-asterisk-run-perms.sh"
+  startup_run_optional "Profils PJSIP WebRTC (align après IP DHCP)" \
+    bash "${ROOT_SRV}/scripts/align-pjsip-site.sh"
 fi
 
 	if command -v tailscale >/dev/null 2>&1 && systemctl is-enabled tailscaled &>/dev/null; then
   startup_skip "Tailscale (désactivé — utiliser wg-wss-relay)"
 fi
 
+# shellcheck source=scripts/lib/detect-internet.sh
+source "${ROOT_SRV}/scripts/lib/detect-internet.sh"
+STARTUP_OFFLINE=0
+if ! has_internet; then
+  STARTUP_OFFLINE=1
+  OFFLINE_HINT=1
+  startup_warn "Pas d'accès Internet — tunnels Cloudflare et GitHub ignorés (LAN OK)"
+fi
+
 if [[ -x "${ROOT_SRV}/scripts/install-wg-wss-relay.sh" ]]; then
   startup_run_optional "Relais WG/WebSocket (Starlink 4G)" \
     bash "${ROOT_SRV}/scripts/install-wg-wss-relay.sh"
-  startup_run_optional "URL tunnel WG relay (trycloudflare)" \
-    bash "${ROOT_SRV}/scripts/refresh-wg-relay-tunnel-url.sh" --restart
+  if [[ "$STARTUP_OFFLINE" -eq 0 ]]; then
+    startup_run_optional "URL tunnel WG relay (trycloudflare)" \
+      bash "${ROOT_SRV}/scripts/refresh-wg-relay-tunnel-url.sh" --restart
+  else
+    startup_run_optional "URL tunnel WG relay (cache local)" \
+      bash "${ROOT_SRV}/scripts/refresh-wg-relay-tunnel-url.sh" || true
+  fi
 fi
 
 # ── Internet optionnel ───────────────────────────────────────────────────
+# Ordre strict (sinon api_remote / WSS périmés → 530 ou « hôte inconnu » côté app) :
+#   1. restart cloudflared (nouvelle URL trycloudflare)
+#   2. lire UNIQUEMENT l'URL post-restart + attendre edge prêt
+#   3. sync bootstrap.json
+#   4. publier GitHub Pages
+# Un seul restart ici — pas de start puis --restart (double URL).
 
-if systemctl is-enabled cloudflared-provision.service &>/dev/null; then
-  startup_step "Cloudflare tunnel (provision API distante)"
-  systemctl start cloudflared-provision.service 2>/dev/null \
-    || systemctl restart cloudflared-provision.service 2>/dev/null \
-    || startup_skip "cloudflared ne démarre pas"
+if [[ "$STARTUP_OFFLINE" -eq 0 ]] && systemctl is-enabled cloudflared-provision.service &>/dev/null; then
   if [[ "${CLOUDFLARE_TUNNEL_MODE:-quick}" == "quick" ]]; then
-    startup_run_optional "URL trycloudflare (refresh-tunnel-url)" \
+    startup_run_optional "Cloudflare tunnel + URL trycloudflare" \
       bash "${ROOT_SRV}/scripts/refresh-tunnel-url.sh" --restart
   else
+    startup_step "Cloudflare tunnel (provision API distante)"
+    systemctl start cloudflared-provision.service 2>/dev/null \
+      || systemctl restart cloudflared-provision.service 2>/dev/null \
+      || startup_skip "cloudflared ne démarre pas"
     startup_info "Tunnel nommé — pas de refresh trycloudflare"
   fi
+elif [[ "$STARTUP_OFFLINE" -eq 1 ]]; then
+  startup_skip "Cloudflare tunnel (hors ligne — api_remote = cache tunnel.env)"
 else
   startup_skip "Cloudflare tunnel (service non activé)"
 fi
@@ -105,9 +130,11 @@ fi
 startup_run_optional "Sync bootstrap (api_remote + relay WSS)" \
   bash "${ROOT_SRV}/scripts/sync-global-config.sh" --deploy
 
-if [[ "${GITHUB_BOOTSTRAP_PUBLISH:-no}" == "yes" ]]; then
+if [[ "${GITHUB_BOOTSTRAP_PUBLISH:-no}" == "yes" && "$STARTUP_OFFLINE" -eq 0 ]]; then
   startup_run_optional "Publication bootstrap → GitHub Pages" \
     bash "${ROOT_SRV}/scripts/publish-bootstrap-github.sh"
+elif [[ "$STARTUP_OFFLINE" -eq 1 ]]; then
+  startup_skip "Publication GitHub (hors ligne)"
 else
   startup_skip "Publication GitHub (GITHUB_BOOTSTRAP_PUBLISH≠yes)"
 fi

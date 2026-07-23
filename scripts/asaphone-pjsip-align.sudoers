@@ -1,0 +1,5 @@
+# Alignement PJSIP WebRTC + hooks Apply Config (www-data → root).
+www-data ALL=(root) NOPASSWD: /home/asaph/Documents/serveur/scripts/ensure-pjsip-extension.sh
+www-data ALL=(root) NOPASSWD: /home/asaph/Documents/serveur/scripts/fix-cert-perms.sh
+www-data ALL=(root) NOPASSWD: /home/asaph/Documents/serveur/scripts/fix-asterisk-run-perms.sh
+www-data ALL=(root) NOPASSWD: /home/asaph/Documents/serveur/scripts/align-pjsip-site.sh

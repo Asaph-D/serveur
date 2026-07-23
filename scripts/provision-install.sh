@@ -123,6 +123,8 @@ visudo -c -f /etc/sudoers.d/asaphone-conf-invite
 install -m 0755 "$ROOT/scripts/asaphone-vpn-peer.sh" /usr/local/bin/asaphone-vpn-peer
 install -m 0440 "$ROOT/scripts/asaphone-vpn-peer.sudoers" /etc/sudoers.d/asaphone-vpn-peer
 visudo -c -f /etc/sudoers.d/asaphone-vpn-peer
+install -m 0440 "$ROOT/scripts/asaphone-pjsip-align.sudoers" /etc/sudoers.d/asaphone-pjsip-align
+visudo -c -f /etc/sudoers.d/asaphone-pjsip-align
 
 echo "==> Scripts CLI exécutables"
 chmod +x "$ROOT/scripts/provision-assign-ext.php"

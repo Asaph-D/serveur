@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # coturn STUN/TURN pour WebRTC (vidéo + audio derrière NAT).
+# Suit l'IP DHCP courante (LAN maison ou hotspot) — ne pas laisser relay-ip sur une ancienne IP.
+#
 # Usage : sudo bash scripts/install-coturn.sh
 set -euo pipefail
 
@@ -10,8 +12,21 @@ SECRETS="/etc/provision/provision-secrets.env"
 [[ $(id -u) -eq 0 ]] || { echo "Root requis." >&2; exit 1; }
 # shellcheck disable=SC1091
 source "$GCFG"
+# shellcheck source=scripts/lib/detect-mgmt-network.sh
+source "$ROOT/scripts/lib/detect-mgmt-network.sh"
 
-LAN_IP="${PBX_LAN_IP:?PBX_LAN_IP requis}"
+LAN_IP=""
+if [[ -n "${MGMT_IFACE:-}" ]] && detect_mgmt_network "$MGMT_IFACE"; then
+	LAN_IP="$PBX_LAN_IP"
+fi
+# shellcheck disable=SC1091
+source "$GCFG" 2>/dev/null || true
+LAN_IP="${LAN_IP:-${PBX_LAN_IP:-}}"
+if [[ -z "$LAN_IP" || ! "$LAN_IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+	echo "ERREUR: PBX_LAN_IP introuvable" >&2
+	exit 1
+fi
+
 TURN_PORT="${PROVISION_TURN_PORT:-3478}"
 RELAY_MIN="${PROVISION_TURN_RELAY_MIN:-49160}"
 RELAY_MAX="${PROVISION_TURN_RELAY_MAX:-49200}"
@@ -41,13 +56,19 @@ fi
 source "$SECRETS"
 TURN_SECRET="${PROVISION_TURN_SECRET:?PROVISION_TURN_SECRET manquant}"
 
+# external-ip public uniquement si l'IP publique est connue ET distincte du LAN.
+# Sur hotspot hors ligne, ne PAS garder une ancienne IP publique / ancien LAN (→ ICE 127.0.0.1).
 EXTERNAL_LINE=""
-if [[ -n "$PUBLIC" && "$PUBLIC" != "$LAN_IP" ]]; then
-	EXTERNAL_LINE="external-ip=${PUBLIC}/${LAN_IP}"
+if [[ -n "$PUBLIC" && "$PUBLIC" != "$LAN_IP" && "$PUBLIC" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+	# Verifier que l IP publique a encore un sens (best-effort, ne bloque pas)
+	if ip -4 route get "$PUBLIC" >/dev/null 2>&1; then
+		EXTERNAL_LINE="external-ip=${PUBLIC}/${LAN_IP}"
+	fi
 fi
 
 cat >/etc/turnserver.conf <<EOF
-# Généré par install-coturn.sh — Asaphone WebRTC
+# Généré par install-coturn.sh — Asaphone WebRTC ($(date -Is))
+# relay-ip = IP DHCP courante (${LAN_IP})
 listening-port=${TURN_PORT}
 listening-ip=0.0.0.0
 relay-ip=${LAN_IP}
@@ -68,4 +89,4 @@ systemctl enable coturn >/dev/null 2>&1 || true
 systemctl restart coturn
 systemctl is-active coturn
 
-echo "OK coturn — STUN/TURN ${LAN_IP}:${TURN_PORT} (relay ${RELAY_MIN}-${RELAY_MAX})"
+echo "OK coturn — STUN/TURN ${LAN_IP}:${TURN_PORT} relay-ip=${LAN_IP} ${EXTERNAL_LINE:-no-external-ip}"

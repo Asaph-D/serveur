@@ -8,6 +8,11 @@ sudo systemctl restart apache2 2>&1 && sudo systemctl --no-pager --full status a
 #codecs
 sudo bash /home/asaph/Documents/serveur/scripts/align-pjsip-site.sh
 
+#codec individuelle
+sudo bash scripts/align-pjsip-endpoint.sh --webrtc 1005
+# ou toute la plage :
+sudo bash scripts/align-pjsip-site.sh
+
 sudo bash scripts/fix-wss-tls.sh
 
 ## Principe général

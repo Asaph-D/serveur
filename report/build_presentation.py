@@ -24,55 +24,47 @@ def wm(fill, opacity):
     return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
 
 
-WM_INK = wm("#1B4F72", "0.045")
 WM_WHITE = wm("#FFFFFF", "0.05")
 
 CSS = """
 @page { size: 297mm 167mm; margin: 0; }
 * { box-sizing: border-box; }
-body { font-family:"Ubuntu","DejaVu Sans",sans-serif; color:#22313F; margin:0; }
+body { font-family:"Ubuntu","DejaVu Sans",sans-serif; color:#fff; margin:0; }
 
+/* Fond unique sur TOUTES les diapositives (titre, contenu, conclusion) */
 .sl { width:297mm; height:167mm; page-break-after:always; position:relative;
-  padding:16mm 20mm 14mm; overflow:hidden;
-  background:url("__WM_INK__") no-repeat center center / 297mm 167mm, #FBFCFD; }
-.sl.dark { color:#fff;
+  padding:16mm 20mm 14mm; overflow:hidden; color:#fff;
   background:url("__WM_WHITE__") no-repeat center center / 297mm 167mm,
              linear-gradient(135deg,#071B2C 0%,#0E3050 45%,#1B4F72 75%,#12695C 100%); }
 
 /* bandes décoratives */
 .sl::after { content:""; position:absolute; left:0; top:0; bottom:0; width:2.4mm;
-  background:linear-gradient(180deg,#1B4F72,#148F77); }
-.sl.dark::after { background:linear-gradient(180deg,#2EC4A5,#7D3C98); }
+  background:linear-gradient(180deg,#2EC4A5,#7D3C98); }
 
 .kick { font-size:10pt; font-weight:700; letter-spacing:.30em; text-transform:uppercase;
-  color:#148F77; margin:0 0 3mm; }
-.dark .kick { color:#7FD4C3; }
-h1.t { font-size:24pt; font-weight:700; color:#132F45; margin:0 0 2.5mm;
+  color:#7FD4C3; margin:0 0 3mm; }
+h1.t { font-size:24pt; font-weight:700; color:#fff; margin:0 0 2.5mm;
   letter-spacing:-.01em; line-height:1.15; }
-.dark h1.t { color:#fff; }
-p.sub { font-size:11pt; color:#5B7183; margin:0 0 7mm; }
-.dark p.sub { color:#A8C6DA; }
+p.sub { font-size:11pt; color:#A8C6DA; margin:0 0 7mm; }
 
 .foot { position:absolute; bottom:7mm; left:20mm; right:20mm; display:flex;
-  justify-content:space-between; font-size:7.5pt; color:#9AAAB8;
-  border-top:.4pt solid #DCE4EA; padding-top:2.2mm; }
-.dark .foot { color:#7E9DB2; border-top-color:rgba(255,255,255,.2); }
+  justify-content:space-between; font-size:7.5pt; color:#7E9DB2;
+  border-top:.4pt solid rgba(255,255,255,.2); padding-top:2.2mm; }
 
 .row { display:flex; gap:8mm; }
 .col { flex:1; min-width:0; }
 
-ul.big { margin:0; padding-left:5.5mm; font-size:11.5pt; line-height:1.55; }
+ul.big { margin:0; padding-left:5.5mm; font-size:11.5pt; line-height:1.55; color:#DCE9F2; }
 ul.big li { margin-bottom:3.5mm; }
-ul.big li b { color:#1B4F72; }
-.dark ul.big li b { color:#7FD4C3; }
+ul.big li b { color:#7FD4C3; }
 
 .imgbox { text-align:center; }
-.imgbox img { max-width:100%; border:.4pt solid #D5DEE6; border-radius:2mm;
+.imgbox img { max-width:100%; border:.4pt solid rgba(255,255,255,.25); border-radius:2mm;
   background:#fff; }
-.imgcap { font-size:8pt; color:#8296A6; font-style:italic; margin-top:2mm; text-align:center;}
+.imgcap { font-size:8pt; color:#A8C6DA; font-style:italic; margin-top:2mm; text-align:center;}
 
-.kard { background:#fff; border:.4pt solid #D8E2EA; border-left:2.8pt solid #148F77;
-  border-radius:2mm; padding:4.5mm 5.5mm; margin-bottom:4.5mm; }
+.kard { background:rgba(255,255,255,.96); border:.4pt solid rgba(255,255,255,.3);
+  border-left:2.8pt solid #148F77; border-radius:2mm; padding:4.5mm 5.5mm; margin-bottom:4.5mm; }
 .kard.p { border-left-color:#7D3C98; }
 .kard.r { border-left-color:#C0392B; }
 .kard.b { border-left-color:#1B4F72; }
@@ -86,23 +78,24 @@ ul.big li b { color:#1B4F72; }
 .stat span { font-size:8pt; color:#C4D9E6; text-transform:uppercase; letter-spacing:.07em;
   line-height:1.3; display:block; margin-top:1.2mm; }
 
-table.tb { width:100%; border-collapse:collapse; font-size:9.5pt; }
+table.tb { width:100%; border-collapse:collapse; font-size:9.5pt;
+  background:rgba(255,255,255,.96); border-radius:2mm; overflow:hidden; }
 .tb th { background:#1B4F72; color:#fff; text-align:left; padding:2.6mm 3mm; font-size:8.8pt; }
-.tb td { padding:2.4mm 3mm; border-bottom:.4pt solid #DCE4EA; vertical-align:top; }
+.tb td { padding:2.4mm 3mm; border-bottom:.4pt solid #DCE4EA; vertical-align:top; color:#22313F; }
 .tb tr:nth-child(even) td { background:#F2F6F9; }
 
 .agitem { display:flex; align-items:baseline; gap:4mm; padding:3.2mm 0;
-  border-bottom:.35pt solid #DCE4EA; font-size:12pt; }
-.agitem .n { color:#148F77; font-weight:700; font-size:11pt; width:9mm; }
+  border-bottom:.35pt solid rgba(255,255,255,.2); font-size:12pt; color:#DCE9F2; }
+.agitem .n { color:#7FD4C3; font-weight:700; font-size:11pt; width:9mm; }
 
-.pill { display:inline-block; background:#EAF7F3; color:#0E6B58; font-weight:700;
+.pill { display:inline-block; background:rgba(234,247,243,.95); color:#0E6B58; font-weight:700;
   font-size:8.4pt; border-radius:5mm; padding:1mm 3.6mm; margin:0 1.5mm 1.5mm 0; }
-.pill.p { background:#F3EBF8; color:#6A2F84; }
-.pill.b { background:#EAF2F9; color:#1B4F72; }
+.pill.p { background:rgba(243,235,248,.95); color:#6A2F84; }
+.pill.b { background:rgba(234,242,249,.95); color:#1B4F72; }
 
 .punch { position:absolute; bottom:16mm; left:20mm; right:20mm; text-align:center;
-  font-size:12.5pt; color:#1B4F72; font-weight:600; }
-.punch em { color:#148F77; font-style:normal; }
+  font-size:12.5pt; color:#DCE9F2; font-weight:600; }
+.punch em { color:#7FD4C3; font-style:normal; }
 
 .qm { font-size:15pt; line-height:1.6; color:#DCE9F2; font-weight:300; max-width:230mm; }
 .qm b { color:#7FD4C3; font-weight:700; }
@@ -112,9 +105,9 @@ S = []
 
 
 def slide(kick, title, sub, body, num, total, dark=False):
-    cls = "sl dark" if dark else "sl"
+    # dark conservé pour compatibilité d'appel ; le fond est désormais unique sur toutes les slides
     S.append(
-        f'<div class="{cls}">'
+        f'<div class="sl">'
         + (f'<div class="kick">{kick}</div>' if kick else "")
         + (f'<h1 class="t">{title}</h1>' if title else "")
         + (f'<p class="sub">{sub}</p>' if sub else "")
@@ -128,7 +121,7 @@ TOTAL = 18
 
 # ── 1. Titre ──────────────────────────────────────────────────────────────
 S.append(f"""
-<div class="sl dark" style="padding-top:26mm">
+<div class="sl" style="padding-top:26mm">
   <div class="kick" style="letter-spacing:.5em">A S A P H O N E</div>
   <h1 class="t" style="font-size:34pt; margin-top:6mm">La téléphonie d'entreprise,<br/>
   <span style="font-weight:300;color:#BFD8E8">reconstruite de bout en bout.</span></h1>
@@ -147,11 +140,11 @@ S.append(f"""
 # ── 2. Accroche ───────────────────────────────────────────────────────────
 slide("Entrée de jeu", "Deux minutes, un QR code, un appel.", "",
       """
-<div class="qm" style="margin-top:8mm; color:#33475A; font-size:14pt">
+<div class="qm" style="margin-top:8mm; font-size:14pt">
 « Lundi, 8 h 47. Une nouvelle collaboratrice ouvre Asaphone. Elle n'a ni compte, ni identifiants :
 elle saisit son e-mail, tape le code à six chiffres reçu, scanne le QR qui arrive dans la foulée.<br/><br/>
-À 8 h 49, son poste <b style="color:#148F77">1007</b> est enregistré sur le PBX en WebSocket sécurisé ;
-elle compose <b style="color:#148F77">1001</b> — son premier appel, chiffré, traverse le VLAN voix
+À 8 h 49, son poste <b>1007</b> est enregistré sur le PBX en WebSocket sécurisé ;
+elle compose <b>1001</b> — son premier appel, chiffré, traverse le VLAN voix
 avec la priorité d'un paquet marqué or. »</div>
 <div class="punch">Cette présentation montre comment cette simplicité apparente est <em>fabriquée</em>.</div>
 """, 2, TOTAL)
@@ -438,7 +431,7 @@ auto-réparante — sans cloud, et sans qu'aucun utilisateur n'ait jamais à sav
 
 html = ('<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">'
         '<title>ASAPHONE — Présentation</title>'
-        f'<style>{CSS.replace("__WM_INK__", WM_INK).replace("__WM_WHITE__", WM_WHITE)}</style>'
+        f'<style>{CSS.replace("__WM_WHITE__", WM_WHITE)}</style>'
         "</head><body>" + "".join(S) + "</body></html>")
 
 HTML(string=html, base_url=ROOT).write_pdf(OUT)

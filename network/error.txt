@@ -1,0 +1,768 @@
+Executing [state-available@sub-presencestate-display:2] Return("PJSIP/1005-00000002", "") in new stack
+    -- Executing [s@macro-dial-one:47] Set("PJSIP/1005-00000002", "CONNECTEDLINE(name,i)=Poste 1003 (Available)") in new stack
+    -- Executing [s@macro-dial-one:48] Set("PJSIP/1005-00000002", "CONNECTEDLINE(num)=1003") in new stack
+    -- Executing [s@macro-dial-one:49] Set("PJSIP/1005-00000002", "D_OPTIONS=HhTtr") in new stack
+    -- Executing [s@macro-dial-one:50] Macro("PJSIP/1005-00000002", "dialout-one-predial-hook,") in new stack
+    -- Executing [s@macro-dialout-one-predial-hook:1] 
+MacroExit("PJSIP/1005-00000002", "") in new stack
+    -- Executing [s@macro-dial-one:51] ExecIf("PJSIP/1005-00000002", "0?Set(D_OPTIONS=HhtrI)") in new stack
+    -- Executing [s@macro-dial-one:52] ExecIf("PJSIP/1005-00000002", "0?Set(CWRING=r(callwaiting)):Set(CWRING=)") in new stack
+    -- Executing [s@macro-dial-one:53] NoOp("PJSIP/1005-00000002", "") in new stack
+    -- Executing [s@macro-dial-one:54] ExecIf("PJSIP/1005-00000002", "0?Set(D_OPTIONS=Hhtr)") in new stack
+    -- Executing [s@macro-dial-one:55] Dial("PJSIP/1005-00000002", "PJSIP/1003/sip:u4l2vohx@192.168.43.160:55546;transport=ws;x-ast-orig-host=0elrcqfhgihn.invalid:0,15,HhTtrb(func-apply-sipheaders^s^1)") in new stack
+    -- PJSIP/1003-00000003 Internal Gosub(func-apply-sipheaders,s,1) start
+    -- Executing [s@func-apply-sipheaders:1] NoOp("PJSIP/1003-00000003", "Applying SIP Headers to channel PJSIP/1003-00000003") in new stack
+    -- Executing [s@func-apply-sipheaders:2] Set("PJSIP/1003-00000003", "TECH=PJSIP") in new stack
+    -- Executing [s@func-apply-sipheaders:3] Set("PJSIP/1003-00000003", "SIPHEADERKEYS=") in new stack
+    -- Executing [s@func-apply-sipheaders:4] While("PJSIP/1003-00000003", "0") in new stack
+    -- Jumping to priority 10
+    -- Executing [s@func-apply-sipheaders:11] Return("PJSIP/1003-00000003", "") in new stack
+  == Spawn extension (from-internal, 1003, 1) exited non-zero on 'PJSIP/1003-00000003'
+    -- PJSIP/1003-00000003 Internal Gosub(func-apply-sipheaders,s,1) complete GOSUB_RETVAL=
+  == Using SIP RTP Audio TOS bits 184
+  == Using SIP RTP Audio TOS bits 184 in TCLASS field.
+  == Using SIP RTP Audio CoS mark 5
+    -- Called PJSIP/1003/sip:u4l2vohx@192.168.43.160:55546;transport=ws;x-ast-orig-host=0elrcqfhgihn.invalid:0
+    -- PJSIP/1003-00000003 is ringing
+    -- PJSIP/1003-00000003 answered PJSIP/1005-00000002
+    -- Channel PJSIP/1003-00000003 joined 'simple_bridge' basic-bridge <9d40f991-9de5-425c-ba9c-0a6d4c2cfc76>
+    -- Channel PJSIP/1005-00000002 joined 'simple_bridge' basic-bridge <9d40f991-9de5-425c-ba9c-0a6d4c2cfc76>
+[2026-07-23 09:32:34] WARNING[24923][C-00000002]: res_rtp_asterisk.c:3294 __rtp_recvfrom: 1784795552.3: DTLS packet from 192.168.43.160:59436 dropped. ICE not completed yet.
+pbx*CLI> 
+
+
+log de l'un de client
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 401 Unauthorized
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK1557731490
+I/flutter (15010): Call-ID: 25f22977p048724yx11jik
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=979y176n04        
+I/flutter (15010): To: <sip:1005@pbx.local>;tag=z9hG4bK1557731490
+I/flutter (15010): CSeq: 1 REGISTER
+I/flutter (15010): WWW-Authenticate: Digest realm="asterisk",nonce="1784795531/0e5586651064ad12e1291855d150fd54",opaque="564512e8085f6b95",algorithm=MD5,qop="auth"
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:17.17] Level.debug digest_authentication.dart:177 ::: authenticate() | using qop=auth [a2:REGISTER:sip:192.168.1.80]
+I/flutter (15010): [2026-07-23 09:34:17.32] Level.debug digest_authentication.dart:204 ::: authenticate() | response generated
+I/flutter (15010): [2026-07-23 09:34:17.56] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:17.70] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:17.89] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010): 
+I/flutter (15010): REGISTER sip:192.168.1.80 SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK1546107576
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1005@pbx.local>
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=979y176n04        
+I/flutter (15010): Call-ID: 25f22977p048724yx11jik
+I/flutter (15010): CSeq: 2 REGISTER
+I/flutter (15010): Authorization: Digest algorithm=MD5, username="1005", realm="asterisk", nonce="1784795531/0e5586651064ad12e1291855d150fd54", uri="sip:192.168.1.80", response="6cd98d3aadce51f2041398e4fd199b27", opaque="564512e8085f6b95", qop=auth, cnonce="ye3pdshvmke1", nc=00000001
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=wss>;+sip.ice;reg-id=1;+sip.instance="<urn:uuid:f55748b8-346b-4639-a735-c52c36fc482a>";expires=600
+I/flutter (15010): Expires: 600
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: path,gruu,outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:17.122] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:17.132] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK1546107576
+I/flutter (15010): Call-ID: 25f22977p048724yx11jik
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=979y176n04        
+I/flutter (15010): To: <sip:1005@pbx.local>;tag=z9hG4bK1546107576
+I/flutter (15010): CSeq: 2 REGISTER
+I/flutter (15010): Date: Thu, 23 Jul 2026 08:32:11 GMT
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=ws>;expires=599
+I/flutter (15010): Expires: 600
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:17.184] Level.debug sip_ua_helper.dart:318 ::: registered => Code: [200], Cause: registered, Reason: OK
+I/flutter (15010): [Asaphone][SIP-REGISTER][INFO] Ligne enregistrée sur le PBX. [success]
+I/flutter (15010): [2026-07-23 09:34:17.535] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:17.544] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): NOTIFY sip:5v6a41u8@192.168.43.1:44264;transport=ws SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS 192.168.43.114:8089;rport;branch=z9hG4bKPjaa7ac6d8-909d-4fb3-8a72-14a72db157ff;alias
+I/flutter (15010): From: <sip:1005@pbx>;tag=e439d553-552e-4764-a989-16726eab0cc9
+I/flutter (15010): To: <sip:5v6a41u8@192.168.43.1>
+I/flutter (15010): Contact: <sip:1005@pbx:5060;transport=ws>
+I/flutter (15010): Call-ID: 21a54c23-c85f-43c1-99e6-0990d8923504
+I/flutter (15010): CSeq: 867 NOTIFY
+I/flutter (15010): Subscription-State: terminated
+I/flutter (15010): Event: message-summary
+I/flutter (15010): Allow-Events: presence, dialog, message-summary, refer  
+I/flutter (15010): Max-Forwards: 70
+I/flutter (15010): User-Agent: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Type: application/simple-message-summary        
+I/flutter (15010): Content-Length:    49
+I/flutter (15010):
+I/flutter (15010): Messages-Waiting: yes
+I/flutter (15010): Voice-Message: 2/0 (0/0)
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:17.680] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:17.690] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:17.716] Level.debug non_invite_server.dart:34 ::: Timer J expired for transaction z9hG4bKPjaa7ac6d8-909d-4fb3-8a72-14a72db157ff
+I/flutter (15010): [2026-07-23 09:34:17.720] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS 192.168.43.114:8089;rport;branch=z9hG4bKPjaa7ac6d8-909d-4fb3-8a72-14a72db157ff;alias
+I/flutter (15010): To: <sip:5v6a41u8@192.168.43.1>;tag=c03x0mx0h9
+I/flutter (15010): From: <sip:1005@pbx>;tag=e439d553-552e-4764-a989-16726eab0cc9
+I/flutter (15010): Call-ID: 21a54c23-c85f-43c1-99e6-0990d8923504
+I/flutter (15010): CSeq: 867 NOTIFY
+I/flutter (15010): Supported: outbound
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/flutter (15010): [Asaphone][PENDING-SYNC][INFO] sync ignorée : pas de couple ext/jti pour 1005 (provisionnez via QR, pas saisie manuelle seule)     
+I/zygote64(15010): Background concurrent copying GC freed 7756(542KB) AllocSpace objects, 6(112KB) LOS objects, 49% free, 2MB/4MB, paused 2.194ms total 110.459ms
+I/Perf    (15010): ACTION_DOWN
+I/Perf    (15010): ACTION_UP
+I/flutter (15010): [WebRTC] prepareForLanCall bind Wi‑Fi → false
+I/flutter (15010): [asaphone] LAN (sortie) settingsHost=192.168.1.80 localIp=— ice=1
+I/flutter (15010): [2026-07-23 09:34:34.640] Level.debug ua.dart:243 ::: call()
+I/flutter (15010): [2026-07-23 09:34:34.648] Level.debug rtc_session.dart:67 ::: new
+I/flutter (15010): [2026-07-23 09:34:34.662] Level.debug rtc_session.dart:252 ::: connect()
+I/FlutterWebRTCPlugin(15010): getUserMedia(audio): mandatory: [], optional: [googNoiseSuppression: true, googEchoCancellation: true, echoCancellation: true, googEchoCancellation2: true, googDAEchoCancellation: true]
+D/FlutterWebRTCPlugin(15010): MediaStream id: 35146063-aed0-4713-860a-e9c0db67bca0
+W/VideoCapabilities(15010): Unrecognized profile 2130706433 for video/avc
+W/VideoCapabilities(15010): Unrecognized profile 2130706434 for video/avc
+W/VideoCapabilities(15010): Unrecognized profile 2130706433 for video/avc  
+W/VideoCapabilities(15010): Unrecognized profile 2130706434 for video/avc  
+I/flutter (15010): [2026-07-23 09:34:35.338] Level.debug rtc_session.dart:1893 ::: emit "peerconnection"
+I/flutter (15010): [2026-07-23 09:34:35.379] Level.debug rtc_session.dart:3644 ::: newRTCSession()
+I/flutter (15010): [2026-07-23 09:34:35.391] Level.debug sip_ua_helper.dart:340 ::: newRTCSession => Instance of 'EventNewRTCSession'
+I/flutter (15010): [2026-07-23 09:34:35.502] Level.debug rtc_session.dart:3649 ::: session connecting
+I/flutter (15010): [2026-07-23 09:34:35.504] Level.debug rtc_session.dart:3650 ::: emit "connecting"
+I/flutter (15010): [2026-07-23 09:34:35.508] Level.debug sip_ua_helper.dart:383 ::: call connecting
+I/flutter (15010): [2026-07-23 09:34:35.517] Level.debug rtc_session.dart:2032 ::: createLocalDescription()
+I/org.webrtc.Logging(15010): NetworkMonitor: Start monitoring with native observer 484189414336 fieldTrialsString:
+W/org.webrtc.Logging(15010): NetworkMonitorAutoDetect: Unable to obtain permission to request a cellular network.
+D/FlutterWebRTCPlugin(15010): onIceGatheringChangeGATHERING
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+I/flutter (15010): [2026-07-23 09:34:36.503] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:36.518] Level.debug web_socket.dart:224 ::: Received and ignored empty packet
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+V/MediaPlayer(15010): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer(15010): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+D/AudioManager(15010): dispatching onAudioFocusChange(-1) to android.media.AudioManager@43e50bfcom.cloudwebrtc.webrtc.audio.AudioSwitchManager$$ExternalSyntheticLambda4@4dc1ad5
+I/flutter (15010): [2026-07-23 09:34:37.540] Level.debug rtc_session.dart:2092 ::: emit "sdp"
+I/flutter (15010): [2026-07-23 09:34:37.578] Level.debug rtc_session.dart:2772 ::: emit "sending" [request]
+I/flutter (15010): [2026-07-23 09:34:37.593] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:37.601] Level.debug sip_message.dart:276 ::: Outgoing Message: SipMethod.INVITE body: v=0
+I/flutter (15010): o=- 6694969605088763193 2 IN IP4 127.0.0.1
+I/flutter (15010): s=-
+I/flutter (15010): t=0 0
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): a=extmap-allow-mixed
+I/flutter (15010): a=msid-semantic: WMS 35146063-aed0-4713-860a-e9c0db67bca0
+I/flutter (15010): m=audio 53767 UDP/TLS/RTP/SAVPF 111 63 9 102 0 8 13 110 126
+I/flutter (15010): c=IN IP4 127.0.0.1
+I/flutter (15010): a=rtcp:9 IN IP4 0.0.0.0
+I/flutter (15010): a=candidate:3384586081 1 udp 2122194687 127.0.0.1 53767 typ host generation 0 network-id 1
+I/flutter (15010): a=candidate:3836050362 1 udp 2122267903 ::1 42821 typ host generation 0 network-id 2
+I/flutter (15010): a=candidate:3077787129 1 tcp 1518214911 127.0.0.1 49990 typ host tcptype passive generation 0 network-id 1
+I/flutter (15010): a=candidate:2590677282 1 tcp 1518288127 ::1 42222 typ host tcptype passive generation 0 network-id 2
+I/flutter (15010): a=ice-ufrag:RMMT
+I/flutter (15010): a=ice-pwd:qL2aGXOaZoWexcQFs5CqdTqF
+I/flutter (15010): a=ice-options:trickle renomination
+I/flutter (15010): a=fingerprint:sha-256 CF:5D:8F:11:FF:60:0B:8E:08:F7:28:1E:31:4E:ED:DF:57:04:6B:06:D6:A5:22:22:45:B6:48:19:2E:D2:42:F5
+I/flutter (15010): a=setup:actpass
+I/flutter (15010): a=mid:0
+I/flutter (15010): a=extmap:1 urn:ietf:params:rtp
+I/flutter (15010): [2026-07-23 09:34:37.608] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:37.623] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): INVITE sip:1003@192.168.1.80 SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK14514201260000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5913 INVITE
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=WSS;ob>
+I/flutter (15010): Content-Type: application/sdp
+I/flutter (15010): Session-Expires: 120
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: timer,ice,replaces,outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 1714
+I/flutter (15010):
+I/flutter (15010): v=0
+I/flutter (15010): o=- 6694969605088763193 2 IN IP4 127.0.0.1
+I/flutter (15010): s=-
+I/flutter (15010): t=0 0
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): a=extmap-allow-mixed
+I/flutter (15010): a=msid-semantic: WMS 35146063-aed0-4713-860a-e9c0db67bca0
+I/flutter (15010): m=audio 53767 UDP/TLS/RTP/SAVPF 111 63 9 102 0 8 13 110 126
+I/flutter (15010): c=IN IP4 127.0.0.1
+I/flutter (15010): a=rtcp:9 IN IP4 0.0.0.0
+I/flutter (15010): a=candidate:3384586081 1 udp 2122194687 127.0.0.1 53767 typ host generation 0 network-id 1
+I/flutter (15010): a=candidate:3836050362 1 udp 2122267903 ::1
+I/flutter (15010): [2026-07-23 09:34:37.649] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:37.660] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 401 Unauthorized
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK14514201260000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=z9hG4bK14514201260000000
+I/flutter (15010): CSeq: 5913 INVITE
+I/flutter (15010): WWW-Authenticate: Digest realm="asterisk",nonce="1784795552/1416085db92dd13beeddd0d9983b9200",opaque="0ac883925936caaa",algorithm=MD5,qop="auth"
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:37.716] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:37.727] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:37.742] Level.debug digest_authentication.dart:177 ::: authenticate() | using qop=auth [a2:INVITE:sip:1003@192.168.1.80]
+I/flutter (15010): [2026-07-23 09:34:37.758] Level.debug digest_authentication.dart:204 ::: authenticate() | response generated
+I/flutter (15010): [2026-07-23 09:34:37.775] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:37.788] Level.debug sip_message.dart:276 ::: Outgoing Message: SipMethod.INVITE body: v=0
+I/flutter (15010): o=- 6694969605088763193 2 IN IP4 127.0.0.1
+I/flutter (15010): s=-
+I/flutter (15010): t=0 0
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): a=extmap-allow-mixed
+I/flutter (15010): a=msid-semantic: WMS 35146063-aed0-4713-860a-e9c0db67bca0
+I/flutter (15010): m=audio 53767 UDP/TLS/RTP/SAVPF 111 63 9 102 0 8 13 110 126
+I/flutter (15010): c=IN IP4 127.0.0.1
+I/flutter (15010): a=rtcp:9 IN IP4 0.0.0.0
+I/flutter (15010): a=candidate:3384586081 1 udp 2122194687 127.0.0.1 53767 typ host generation 0 network-id 1
+I/flutter (15010): a=candidate:3836050362 1 udp 2122267903 ::1 42821 typ host generation 0 network-id 2
+I/flutter (15010): a=candidate:3077787129 1 tcp 1518214911 127.0.0.1 49990 typ host tcptype passive generation 0 network-id 1
+I/flutter (15010): a=candidate:2590677282 1 tcp 1518288127 ::1 42222 typ host tcptype passive generation 0 network-id 2
+I/flutter (15010): a=ice-ufrag:RMMT
+I/flutter (15010): a=ice-pwd:qL2aGXOaZoWexcQFs5CqdTqF
+I/flutter (15010): a=ice-options:trickle renomination
+I/flutter (15010): a=fingerprint:sha-256 CF:5D:8F:11:FF:60:0B:8E:08:F7:28:1E:31:4E:ED:DF:57:04:6B:06:D6:A5:22:22:45:B6:48:19:2E:D2:42:F5
+I/flutter (15010): a=setup:actpass
+I/flutter (15010): a=mid:0
+I/flutter (15010): a=extmap:1 urn:ietf:params:rtp
+I/flutter (15010): [2026-07-23 09:34:37.799] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:37.816] Level.debug invite_client.dart:90 ::: Timer D expired for transaction z9hG4bK14514201260000000
+I/flutter (15010): [2026-07-23 09:34:37.827] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): ACK sip:1003@192.168.1.80 SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK14514201260000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=z9hG4bK14514201260000000
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5913 ACK
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:37.835] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): INVITE sip:1003@192.168.1.80 SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK15189476740000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5914 INVITE
+I/flutter (15010): Authorization: Digest algorithm=MD5, username="1005", realm="asterisk", nonce="1784795552/1416085db92dd13beeddd0d9983b9200", uri="sip:1003@192.168.1.80", response="45310d4953d712b876d42a396583661d", opaque="0ac883925936caaa", qop=auth, cnonce="5661ft714293", nc=00000001
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=WSS;ob>
+I/flutter (15010): Content-Type: application/sdp
+I/flutter (15010): Session-Expires: 120
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: timer,ice,replaces,outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 1714
+I/flutter (15010):
+I/flutter (15010): v=0
+I/flutter (15010): o=- 6694969605088763193 2 IN IP4 127.0.0.1
+I/flutter (15010): s=-
+I/flutter (15010): t=0 0
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): a=extmap-allow-mixed
+I/flutter (15010): a=msid-semantic: WMS 35146063
+I/flutter (15010): [2026-07-23 09:34:37.867] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:37.877] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010): 
+I/flutter (15010): SIP/2.0 100 Trying
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK15189476740000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r
+I/flutter (15010): To: <sip:1003@192.168.1.80>
+I/flutter (15010): CSeq: 5914 INVITE
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:37.910] Level.debug rtc_session.dart:2792 ::: receiveInviteResponse()  current status: RtcSessionState.inviteSent
+
+I/flutter (15010): [2026-07-23 09:34:38.70] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:38.81] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 180 Ringing
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK15189476740000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5914 INVITE
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:38.120] Level.debug rtc_session.dart:2792 ::: receiveInviteResponse()  current status: RtcSessionState.provisionalResponse
+I/flutter (15010): [2026-07-23 09:34:38.146] Level.debug dialog.dart:90 ::: UAC dialog created with status EARLY
+I/flutter (15010): [2026-07-23 09:34:38.158] Level.debug rtc_session.dart:3655 ::: session progress
+I/flutter (15010): [2026-07-23 09:34:38.215] Level.debug rtc_session.dart:3656 ::: emit "progress"
+I/flutter (15010): [2026-07-23 09:34:38.235] Level.debug sip_ua_helper.dart:387 ::: call is in progress
+I/flutter (15010): [2026-07-23 09:34:38.362] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:38.371] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 180 Ringing
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK15189476740000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5914 INVITE
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:38.393] Level.debug rtc_session.dart:2792 ::: receiveInviteResponse()  current status: RtcSessionState.provisionalResponse
+I/flutter (15010): [2026-07-23 09:34:38.403] Level.debug rtc_session.dart:3655 ::: session progress
+I/flutter (15010): [2026-07-23 09:34:38.413] Level.debug rtc_session.dart:3656 ::: emit "progress"
+I/flutter (15010): [2026-07-23 09:34:38.422] Level.debug sip_ua_helper.dart:387 ::: call is in progress
+I/flutter (15010): [2026-07-23 09:34:40.162] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:40.175] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK15189476740000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5914 INVITE
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): Supported: 100rel, timer, replaces, norefersub
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Require: timer
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Content-Type: application/sdp
+I/flutter (15010): Content-Length:   958
+I/flutter (15010):
+I/flutter (15010): v=0
+I/flutter (15010): o=- 6694969605088763193 4 IN IP4 192.168.43.114
+I/flutter (15010): s=Asterisk
+I/flutter (15010): c=IN IP4 192.168.43.114
+I/flutter (15010): t=0 0
+I/flutter (15010): a=msid-semantic:WMS *
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): m=audio 16016 UDP/TLS/RTP/SAVPF 9 0 8 111 126 110       
+I/flutter (15010): a=connection:new
+I/flutter (15010): a=setup:active
+I/flutter (15010): a=fi
+I/flutter (15010): [2026-07-23 09:34:40.244] Level.debug rtc_session.dart:2792 ::: receiveInviteResponse()  current status: RtcSessionState.provisionalResponse
+I/flutter (15010): [2026-07-23 09:34:40.304] Level.debug dialog.dart:116 ::: dialog owuw26905gbektgrvpt882odrxhq4r8330b797-b5fd-41ef-b1c8-b6cc0ab11c63  changed to CONFIRMED state
+I/flutter (15010): [2026-07-23 09:34:40.315] Level.debug rtc_session.dart:2920 ::: emit "sdp"
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: initPlayout(sampleRate=48000, channels=1, bufferSizeFactor=1.0)
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: byteBuffer.capacity: 960
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: minBufferSizeInBytes: 7688
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: createAudioTrackOnOreoOrHigher
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: nativeOutputSampleRate: 48000
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: AudioTrack: session ID: 1537, channels: 1, sample rate: 48000, max gain: 1.0
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: AudioTrack: buffer size in frames: 3844
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: AudioTrack: buffer capacity in frames: 3844
+I/org.webrtc.Logging(15010): VolumeLogger: start@[name=worker_thread - 15799, id=6182]
+I/org.webrtc.Logging(15010): VolumeLogger: audio mode is: MODE_IN_COMMUNICATION
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: startPlayout        
+D/FlutterWebRTCPlugin(15010): onAddTrack
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: AudioTrackThread@[name=AudioTrackJavaThread, id=6221]
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: doAudioTrackStateCallback: 0
+I/org.webrtc.Logging(15010): VolumeLogger: VOICE_CALL stream volume: 3 (max=5)
+D/FlutterWebRTCPlugin(15010): onConnectionChangeCONNECTING
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 3844 to 3364
+I/flutter (15010): [2026-07-23 09:34:40.419] Level.debug rtc_session.dart:1849 ::: ICE Connection State Checking...
+I/flutter (15010): [2026-07-23 09:34:40.495] Level.debug rtc_session.dart:3668 ::: session accepted
+I/flutter (15010): [2026-07-23 09:34:40.499] Level.debug rtc_session.dart:3670 ::: emit "accepted"
+I/flutter (15010): [2026-07-23 09:34:40.504] Level.debug sip_ua_helper.dart:410 ::: call accepted
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 3364 to 2884
+I/flutter (15010): [2026-07-23 09:34:40.547] Level.debug rtc_session.dart:1361 ::: sendRequest()
+I/flutter (15010): [2026-07-23 09:34:40.563] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:40.567] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:40.571] Level.debug rtc_session.dart:3676 ::: session confirmed
+I/flutter (15010): [2026-07-23 09:34:40.573] Level.debug rtc_session.dart:3678 ::: emit "confirmed"
+I/flutter (15010): [2026-07-23 09:34:40.576] Level.debug sip_ua_helper.dart:414 ::: call confirmed
+I/flutter (15010): [2026-07-23 09:34:40.601] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): ACK sip:192.168.43.114:8089;transport=ws SIP/2.0        
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK7086975780000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5914 ACK
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 2884 to 2404
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 2404 to 1924
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 1924 to 1444
+I/flutter (15010): [2026-07-23 09:34:40.840] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:40.849] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK15189476740000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5914 INVITE
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): Supported: 100rel, timer, replaces, norefersub
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Require: timer
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Content-Type: application/sdp
+I/flutter (15010): Content-Length:   958
+I/flutter (15010):
+I/flutter (15010): v=0
+I/flutter (15010): o=- 6694969605088763193 4 IN IP4 192.168.43.114
+I/flutter (15010): s=Asterisk
+I/flutter (15010): c=IN IP4 192.168.43.114
+I/flutter (15010): t=0 0
+I/flutter (15010): a=msid-semantic:WMS *
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): m=audio 16016 UDP/TLS/RTP/SAVPF 9 0 8 111 126 110       
+I/flutter (15010): a=connection:new
+I/flutter (15010): a=setup:active
+I/flutter (15010): a=fi
+I/flutter (15010): [2026-07-23 09:34:40.881] Level.debug rtc_session.dart:2792 ::: receiveInviteResponse()  current status: RtcSessionState.confirmed 
+I/flutter (15010): [2026-07-23 09:34:40.903] Level.debug rtc_session.dart:1361 ::: sendRequest()
+I/flutter (15010): [2026-07-23 09:34:40.913] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:40.923] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:40.937] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): ACK sip:192.168.43.114:8089;transport=ws SIP/2.0        
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK7556135260000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5914 ACK
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 1444 to 964
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 964 to 484
+I/zygote64(15010): Do full code cache collection, code=249KB, data=189KB
+I/zygote64(15010): After code cache collection, code=234KB, data=139KB
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Lowering AudioTrack buffer size from 484 to 480
+D/AudioManager(15010): dispatching onAudioFocusChange(1) to android.media.AudioManager@43e50bfcom.cloudwebrtc.webrtc.audio.AudioSwitchManager$$ExternalSyntheticLambda4@4dc1ad5
+V/MediaPlayer(15010): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer(15010): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/MediaPlayer(15010): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer(15010): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+D/FlutterWebRTCPlugin(15010): onConnectionChangeFAILED
+I/flutter (15010): [2026-07-23 09:34:55.399] Level.error rtc_session.dart:1808 ::: ICE Connection State Failed — recovering, not terminating.
+I/flutter (15010): [2026-07-23 09:34:55.410] Level.info rtc_session.dart:1756 ::: Scheduling ICE recovery in 1s…
+I/flutter (15010): [2026-07-23 09:34:56.428] Level.info rtc_session.dart:1718 ::: ICE restart attempt 1/5
+I/flutter (15010): [2026-07-23 09:34:56.443] Level.debug rtc_session.dart:1222 ::: renegotiate()
+I/flutter (15010): [2026-07-23 09:34:56.465] Level.warning rtc_session.dart:3626 ::: Went to toggle mute video but local stream has no video tracks   
+I/flutter (15010): [2026-07-23 09:34:56.478] Level.debug rtc_session.dart:2952 ::: sendReinvite()
+I/flutter (15010): [2026-07-23 09:34:56.483] Level.debug rtc_session.dart:2032 ::: createLocalDescription()
+D/FlutterWebRTCPlugin(15010): onConnectionChangeCONNECTING
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+I/flutter (15010): [2026-07-23 09:34:56.522] Level.debug rtc_session.dart:2140 ::: emit "sdp"
+I/flutter (15010): [2026-07-23 09:34:56.528] Level.debug rtc_session.dart:3027 ::: emit "sdp"
+I/flutter (15010): [2026-07-23 09:34:56.534] Level.debug rtc_session.dart:1361 ::: sendRequest()
+I/flutter (15010): [2026-07-23 09:34:56.541] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:56.546] Level.debug sip_message.dart:276 ::: Outgoing Message: SipMethod.INVITE body: v=0
+I/flutter (15010): o=- 6694969605088763193 3 IN IP4 127.0.0.1
+I/flutter (15010): s=-
+I/flutter (15010): t=0 0
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): a=extmap-allow-mixed
+I/flutter (15010): a=msid-semantic: WMS 35146063-aed0-4713-860a-e9c0db67bca0
+I/flutter (15010): m=audio 51988 UDP/TLS/RTP/SAVPF 111 63 9 102 0 8 13 110 126
+I/flutter (15010): c=IN IP4 127.0.0.1
+I/flutter (15010): a=rtcp:9 IN IP4 0.0.0.0
+I/flutter (15010): a=candidate:3384586081 1 udp 2122194687 127.0.0.1 51988typ host generation 1 network-id 1
+I/flutter (15010): a=candidate:3836050362 1 udp 2122267903 ::1 50931 typ host generation 1 network-id 2
+I/flutter (15010): a=ice-ufrag:l9YD
+I/flutter (15010): a=ice-pwd:rGXISvfGRpOBo8VfBfk4voLy
+I/flutter (15010): a=ice-options:trickle renomination
+I/flutter (15010): a=fingerprint:sha-256 CF:5D:8F:11:FF:60:0B:8E:08:F7:28:1E:31:4E:ED:DF:57:04:6B:06:D6:A5:22:22:45:B6:48:19:2E:D2:42:F5
+I/flutter (15010): a=setup:actpass
+I/flutter (15010): a=mid:0
+I/flutter (15010): a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level  
+I/flutter (15010): a=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time
+I/flutter (15010): a=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+I/flutter (15010): a=extmap:4 urn:ietf:params:
+I/flutter (15010): [2026-07-23 09:34:56.551] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:56.559] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): INVITE sip:192.168.43.114:8089;transport=ws SIP/2.0     
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK12169149700000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5915 INVITE
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=WSS;ob>
+I/flutter (15010): Content-Type: application/sdp
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: timer,ice,replaces,outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 1504
+I/flutter (15010):
+I/flutter (15010): v=0
+I/flutter (15010): o=- 6694969605088763193 3 IN IP4 127.0.0.1
+I/flutter (15010): s=-
+I/flutter (15010): t=0 0
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): a=extmap-allow-mixed
+I/flutter (15010): a=msid-semantic: WMS 35146063-aed0-4713-860a-e9c0db67bca0
+I/flutter (15010): m=audio 51988 UDP/TLS/RTP/SAVPF 111 63 9 102 0 8 13 110 126
+I/flutter (15010): c=IN IP4 127.0.0.1
+I/flutter (15010): a=rtcp:9 IN IP4 0.0.0.0
+I/flutter (15010): a=candidate:3384586081 1 udp 2122194687 127.0.0.1 51988 typ host g
+I/flutter (15010): [2026-07-23 09:34:56.589] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:34:56.597] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK12169149700000000
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5915 INVITE
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Require: timer
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): Supported: 100rel, timer, replaces, norefersub
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Type: application/sdp
+I/flutter (15010): Content-Length:   958
+I/flutter (15010):
+I/flutter (15010): v=0
+I/flutter (15010): o=- 6694969605088763193 4 IN IP4 192.168.43.114
+I/flutter (15010): s=Asterisk
+I/flutter (15010): c=IN IP4 192.168.43.114
+I/flutter (15010): t=0 0
+I/flutter (15010): a=msid-semantic:WMS *
+I/flutter (15010): a=group:BUNDLE 0
+I/flutter (15010): m=audio 16016 UDP/TLS/RTP/SAVPF 9 0 8 111 126 110       
+I/flutter (15010): a=connection:new
+I/flutter (15010): a=setup:active
+I/flutter (15010): a=fi
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+D/FlutterWebRTCPlugin(15010): onIceCandidate
+I/flutter (15010): [2026-07-23 09:34:56.634] Level.debug rtc_session.dart:1361 ::: sendRequest()
+I/flutter (15010): [2026-07-23 09:34:56.645] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:34:56.660] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:34:56.681] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): ACK sip:192.168.43.114:8089;transport=ws SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK16132913600000000
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5915 ACK
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:34:57.320] Level.debug rtc_session.dart:2092 ::: emit "sdp"
+I/flutter (15010): [2026-07-23 09:35:09.779] Level.debug invite_client.dart:81 ::: Timer B expired for transaction z9hG4bK15189476740000000
+D/FlutterWebRTCPlugin(15010): onConnectionChangeFAILED
+I/flutter (15010): [2026-07-23 09:35:12.247] Level.debug invite_client.dart:70 ::: Timer M expired for transaction z9hG4bK15189476740000000
+I/flutter (15010): [2026-07-23 09:35:28.555] Level.debug invite_client.dart:81 ::: Timer B expired for transaction z9hG4bK12169149700000000
+I/flutter (15010): [2026-07-23 09:35:28.629] Level.debug invite_client.dart:70 ::: Timer M expired for transaction z9hG4bK12169149700000000
+D/FlutterWebRTCPlugin(15010): onIceGatheringChangeCOMPLETE
+I/flutter (15010): [2026-07-23 09:35:40.497] Level.debug rtc_session.dart:3574 ::: runSessionTimer() | sending session refresh request with expires=120, delayMs=60000
+I/flutter (15010): [2026-07-23 09:35:40.511] Level.debug rtc_session.dart:3241 ::: sendUpdate()
+I/flutter (15010): [2026-07-23 09:35:40.516] Level.debug rtc_session.dart:1361 ::: sendRequest()
+I/flutter (15010): [2026-07-23 09:35:40.525] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:35:40.531] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:35:40.541] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): UPDATE sip:192.168.43.114:8089;transport=ws SIP/2.0     
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK652012545
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5916 UPDATE
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=WSS;ob>
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: timer,ice,outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Underrun detected! Increasing AudioTrack buffer size from 480 to 960
+I/flutter (15010): [2026-07-23 09:35:40.572] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:35:40.582] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK652012545
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5916 UPDATE
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Require: timer
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): Supported: 100rel, timer, replaces, norefersub
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/org.webrtc.Logging(15010): LowLatencyAudioBufferManager: Underrun detected! Increasing AudioTrack buffer size from 960 to 1440
+I/flutter (15010): [2026-07-23 09:36:06.275] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:36:06.286] Level.debug web_socket.dart:224 ::: Received and ignored empty packet
+I/flutter (15010): [2026-07-23 09:36:40.623] Level.debug rtc_session.dart:3574 ::: runSessionTimer() | sending session refresh request with expires=120, delayMs=60000
+I/flutter (15010): [2026-07-23 09:36:40.629] Level.debug rtc_session.dart:3241 ::: sendUpdate()
+I/flutter (15010): [2026-07-23 09:36:40.635] Level.debug rtc_session.dart:1361 ::: sendRequest()
+I/flutter (15010): [2026-07-23 09:36:40.643] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:36:40.649] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:36:40.660] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): UPDATE sip:192.168.43.114:8089;transport=ws SIP/2.0     
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;branch=z9hG4bK1322653600
+I/flutter (15010): Max-Forwards: 69
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 5917 UPDATE
+I/flutter (15010): Contact: <sip:5v6a41u8@klvflmlyzj1b.invalid;transport=WSS;ob>
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Allow: INVITE,ACK,CANCEL,BYE,UPDATE,MESSAGE,OPTIONS,REFER,INFO,NOTIFY
+I/flutter (15010): Supported: timer,ice,outbound
+I/flutter (15010): User-Agent: Asaphone/1.0 (OBSCURA)
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:36:40.678] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:36:40.688] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS klvflmlyzj1b.invalid;rport=44264;received=192.168.43.1;branch=z9hG4bK1322653600
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): From: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r        
+I/flutter (15010): To: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): CSeq: 5917 UPDATE
+I/flutter (15010): Session-Expires: 120;refresher=uac
+I/flutter (15010): Require: timer
+I/flutter (15010): Contact: <sip:192.168.43.114:8089;transport=ws>
+I/flutter (15010): Allow: OPTIONS, REGISTER, SUBSCRIBE, NOTIFY, PUBLISH, INVITE, ACK, BYE, CANCEL, UPDATE, PRACK, MESSAGE, INFO, REFER
+I/flutter (15010): Supported: 100rel, timer, replaces, norefersub
+I/flutter (15010): P-Asserted-Identity: "Poste 1003" <sip:1003@192.168.1.80>
+I/flutter (15010): Server: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010):
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:36:49.673] Level.debug web_socket.dart:219 ::: Received WebSocket message
+I/flutter (15010): [2026-07-23 09:36:49.684] Level.debug socket_transport.dart:311 ::: received text message:
+I/flutter (15010):
+I/flutter (15010): BYE sip:5v6a41u8@192.168.43.1:44264;transport=ws;ob SIP/2.0
+I/flutter (15010): Via: SIP/2.0/WSS 192.168.43.114:8089;rport;branch=z9hG4bKPj16dc5865-0e21-4a6c-a8cf-7b5c82dc696e;alias
+I/flutter (15010): From: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): To: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 30650 BYE
+I/flutter (15010): Reason: Q.850;cause=16
+I/flutter (15010): Max-Forwards: 70
+I/flutter (15010): User-Agent: FPBX-16.0.45(20.18.2)
+I/flutter (15010): Content-Length:  0
+I/flutter (15010): 
+I/flutter (15010):
+I/flutter (15010): [2026-07-23 09:36:49.806] Level.debug rtc_session.dart:1370 ::: receiveRequest()
+I/flutter (15010): [2026-07-23 09:36:49.819] Level.debug socket_transport.dart:147 ::: Socket Transport send()
+I/flutter (15010): [2026-07-23 09:36:49.833] Level.debug web_socket.dart:172 ::: send()
+I/flutter (15010): [2026-07-23 09:36:49.898] Level.debug rtc_session.dart:3684 ::: session ended
+I/flutter (15010): [2026-07-23 09:36:49.905] Level.debug rtc_session.dart:1607 ::: close()
+I/flutter (15010): [2026-07-23 09:36:49.911] Level.debug rtc_session.dart:3687 ::: emit "ended"
+I/flutter (15010): [2026-07-23 09:36:49.916] Level.debug sip_ua_helper.dart:402 ::: call ended with cause: Code: [200], Cause: Terminated, Reason: BYE Received
+I/flutter (15010): [2026-07-23 09:36:49.979] Level.debug non_invite_server.dart:34 ::: Timer J expired for transaction z9hG4bKPj16dc5865-0e21-4a6c-a8cf-7b5c82dc696e
+I/flutter (15010): [2026-07-23 09:36:49.983] Level.debug websocket_dart_impl.dart:57 ::: send:
+I/flutter (15010):
+I/flutter (15010): SIP/2.0 200 OK
+I/flutter (15010): Via: SIP/2.0/WSS 192.168.43.114:8089;rport;branch=z9hG4bKPj16dc5865-0e21-4a6c-a8cf-7b5c82dc696e;alias
+I/flutter (15010): To: "1005" <sip:1005@pbx.local>;tag=82odrxhq4r
+I/flutter (15010): From: <sip:1003@192.168.1.80>;tag=8330b797-b5fd-41ef-b1c8-b6cc0ab11c63
+I/flutter (15010): Call-ID: owuw26905gbektgrvpt8
+I/flutter (15010): CSeq: 30650 BYE
+I/flutter (15010): Supported: outbound
+I/flutter (15010): Content-Length: 0
+I/flutter (15010):
+D/FlutterWebRTCPlugin(15010): onConnectionChangeCLOSED
+I/org.webrtc.Logging(15010): VolumeLogger: stop@[name=worker_thread - 15799, id=6182]
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: stopPlayout
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: underrun count: 2   
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: stopThread
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: Stopping the AudioTrackThread...
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: AudioTrackThread has now been stopped.
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: Calling AudioTrack.stop...
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: AudioTrack.stop is done.
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: doAudioTrackStateCallback: 1
+I/org.webrtc.Logging(15010): WebRtcAudioTrackExternal: releaseAudioResources
+I/org.webrtc.Logging(15010): NetworkMonitor: Stop monitoring with native observer 484189414336
+I/org.webrtc.Logging(15010): NetworkMonitorAutoDetect: Unregister network callback
+I/flutter (15010): [2026-07-23 09:36:50.430] Level.debug rtc_session.dart:1617 ::: close() | closing local MediaStream
+I/flutter (15010): [2026-07-23 09:36:50.492] Level.debug dialog.dart:125 ::: dialog owuw26905gbektgrvpt882odrxhq4r8330b797-b5fd-41ef-b1c8-b6cc0ab11c63 deleted
+
+je crois qu'il ya aussi un problème coté serveur
+Executing [s@macro-get-vmcontext:300] NoOp("PJSIP/1005-00000005", "") in new stack
+    -- Executing [s-CHANUNAVAIL@macro-vm:2] Gosub("PJSIP/1005-00000005", "asaphone-force-ulaw,s,1") in new stack
+    -- Executing [s@asaphone-force-ulaw:1] GotoIf("PJSIP/1005-00000005", "0?done") in new stack
+    -- Executing [s@asaphone-force-ulaw:2] Set("PJSIP/1005-00000005", "CHANNEL(audiowriteformat)=ulaw") in new stack
+[2026-07-23 09:48:31] WARNING[29052][C-00000004]: func_channel.c:802 func_channel_write_real: Unknown or unavailable item requested: 'audiowriteformat'
+    -- Executing [s@asaphone-force-ulaw:3] Set("PJSIP/1005-00000005", "CHANNEL(audioreadformat)=ulaw") in new stack
+[2026-07-23 09:48:31] WARNING[29052][C-00000004]: func_channel.c:802 func_channel_write_real: Unknown or unavailable item requested: 'audioreadformat'
+    -- Executing [s@asaphone-force-ulaw:4] Return("PJSIP/1005-00000005", "") in new stack
+    -- Executing [s-CHANUNAVAIL@macro-vm:3] VoiceMail("PJSIP/1005-00000005", "1003@default,u") in new stack
+    -- <PJSIP/1005-00000005> Playing '/var/spool/asterisk/voicemail/default/1003/unavail.gsm' (language 'en')
+    -- <PJSIP/1005-00000005> Playing 'vm-intro.g722' (language 'en')
+    -- <PJSIP/1005-00000005> Playing 'beep.g722' (language 'en')
+    -- Recording the message
+[2026-07-23 09:48:43] WARNING[29052][C-00000004]: app.c:1950 __ast_play_and_record: No audio available on PJSIP/1005-00000005??
+    -- User hung up
+    -- Recording was 0 seconds long but needs to be at least 1 - abandoning
+  == Spawn extension (macro-vm, s-CHANUNAVAIL, 3) exited non-zero on 'PJSIP/1005-00000005' in macro 'vm'
+  == Spawn extension (macro-exten-vm, s, 14) exited non-zero on 'PJSIP/1005-00000005' in macro 'exten-vm'
+  == Spawn extension (from-internal, 1003, 3) exited non-zero on 'PJSIP/1005-00000005'
+    -- Executing [h@from-internal:1] Macro("PJSIP/1005-00000005", "hangupcall") in new stack
+    -- Executing [s@macro-hangupcall:1] GotoIf("PJSIP/1005-00000005", "1?theend") in new stack
+    -- Goto (macro-hangupcall,s,3)
+[2026-07-23 09:48:43] ERROR[4760]: cdr.c:3481 ast_cdr_getvar: Unable to find CDR for channel PJSIP/1005-00000005
+    -- Executing [s@macro-hangupcall:3] ExecIf("PJSIP/1005-00000005", "0?Set(CDR(recordingfile)=)") in new stack
+[2026-07-23 09:48:43] ERROR[4760]: cdr.c:3481 ast_cdr_getvar: Unable to find CDR for channel PJSIP/1005-00000005
+    -- Executing [s@macro-hangupcall:4] Hangup("PJSIP/1005-00000005", "") in new stack
+  == Spawn extension (macro-hangupcall, s, 4) exited non-zero on 'PJSIP/1005-00000005' in macro 'hangupcall'
+  == Spawn extension (from-internal, h, 1) exited non-zero on 'PJSIP/1005-00000005'
+
+l'audio ne passe pas, on écoute pas ceque la boite vocal dis
